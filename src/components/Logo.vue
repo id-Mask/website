@@ -2,6 +2,10 @@
 import { ref, onMounted } from 'vue'
 import { useThemeVars } from 'naive-ui'
 
+
+// TODO:
+//  1. Scale on hover
+//  2. Auto hover on mobile and loop over the items 
 const themeVars = useThemeVars()
 
 const word = ref('Mask')
@@ -67,9 +71,9 @@ onMounted( async () => {
   <div class="center-container">
     <div class="shine1" style="width: 90em;">
       <n-space vertical align="center">
-        <n-h1 class="shine2">🦸</n-h1>
-        <n-h1 class="shine2">id-{{ word }}</n-h1>
-        <n-text depth="3" class="shine2">
+        <n-h1 class="shine2 shine3">🦸</n-h1>
+        <n-h1 class="shine2 shine3">id-{{ word }}</n-h1>
+        <n-text depth="3" class="shine2 shine3">
           zk-powered-<n-gradient-text type="primary">identity</n-gradient-text>
         </n-text>
       </n-space>
@@ -101,6 +105,14 @@ onMounted( async () => {
 }
 .shine2:hover {
   filter: drop-shadow(0 0 2em v-bind(themeVars.infoColor));
+}
+
+.shine3 {
+  will-change: filter;
+  transition: filter 900ms;
+}
+.shine3:hover {
+  filter: drop-shadow(0 0 1em v-bind(themeVars.infoColor));
 }
 
 </style>
