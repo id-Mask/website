@@ -2,10 +2,16 @@
 import { ref, onMounted } from 'vue'
 import { useThemeVars } from 'naive-ui'
 import { useIsMobile } from '../utils'
+import { useStore } from 'vuex'
 
 const themeVars = useThemeVars()
 const isMobile = useIsMobile()
+const store = useStore()
 const emits = defineEmits(['logoClick'])
+
+const changeTheme = () => {
+
+}
 
 
 </script>
@@ -38,6 +44,18 @@ const emits = defineEmits(['logoClick'])
               </n-icon>
             </template>
             Docs
+          </n-button>
+          <n-button tertiary type="primary" size="large" @click="store.dispatch('theme/changeTheme')">
+            <template #icon>
+              <n-icon>
+                <div v-if="store.getters['theme/themeIsLight']">
+                  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M3 12h1m8-9v1m8 8h1m-9 8v1M5.6 5.6l.7.7m12.1-.7l-.7.7m0 11.4l.7.7m-12.1-.7l-.7.7"></path></g></svg>
+                </div>
+                <div v-else>
+                  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24"><path d="M12 3h.393a7.5 7.5 0 0 0 7.92 12.446A9 9 0 1 1 12 2.992z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                </div>
+              </n-icon>
+            </template>
           </n-button>
         </n-space>
       </template>
