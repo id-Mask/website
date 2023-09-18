@@ -9,7 +9,8 @@ const state = () => ({
   // overrides for both light and dark
   themeOverrides: {
     common: {
-      borderRadius: '7px'
+      borderRadius: '7px',
+      primaryColor: '#5F5FEAFF',
     },
   },
 
