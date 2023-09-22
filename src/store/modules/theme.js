@@ -11,6 +11,7 @@ const state = () => ({
     common: {
       borderRadius: '7px',
       primaryColor: '#5F5FEAFF',
+      successColor: '#5F5FEAFF',
     },
   },
 
