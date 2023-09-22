@@ -6,6 +6,8 @@ const store = useStore()
 
 import header_ from './components/header_.vue'
 import LandingPage from './components/LandingPage.vue'
+import mainPage from './components/mainPage.vue'
+import footer_ from './components/footer_.vue'
 
 </script>
 
@@ -20,9 +22,12 @@ import LandingPage from './components/LandingPage.vue'
             <header_ style="position: absolute; z-index: 1;"/>
             <n-layout-content style="padding: 0 2rem;">
               <LandingPage/>
+              <mainPage/>
             </n-layout-content>
           </n-layout>
-
+          <n-layout-footer bordered>
+            <footer_ />
+          </n-layout-footer>
         </n-loading-bar-provider>
       </n-notification-provider>
     </n-theme-editor>
