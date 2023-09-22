@@ -68,9 +68,16 @@ const loopOverEmojis = async () => {
     "👩‍🎤", "👩‍🎨", "🧑‍🚀", "🧑‍🚒", "👮‍♂️", "🕵️‍♂️", "💂‍♂️", "👷", "🫅", "🤵", "👰",
     "🎅", "🦸", "🦹", "🧙", "🧚", "🧛", "🧜", "🧝", "🧞", "🧟"
   ]
+
+  // a bit of a side thing, but lets also set favicon value
+  const favicon = document.getElementById('favicon')
+
   while (true) {
     const randomIndex = Math.floor(Math.random() * emojis.length)
     emoji.value = emojis[randomIndex]
+    favicon.href = `data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22
+      viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>
+      ${emojis[randomIndex]}</text></svg>`
     await sleep(4000)
   }
 }
@@ -93,13 +100,13 @@ onMounted( async () => {
 
 <template>
 
-  <div class="center-container">
+  <div class="centered-container" style="height: 100vh;">
     <div class="shine1" style="width: 90em;">
-      <n-space vertical align="center">
-        <n-text style="font-size: 300%" class="shine2 shine3 transparent" :class="[blurEmoji ? 'blur' : '']">{{ emoji }}</n-text>
-        <n-text style="font-size: 300%" class="shine2 shine3 transparent" id="text1">Id-{{ word }}</n-text>
-        <n-text style="font-size: 130%" depth="3" class="shine2 shine3 transparent">
-          zk-powered-<n-gradient-text type="primary" class="transparent">identity</n-gradient-text>
+      <n-space vertical align="center" class="prevent-select">
+        <n-text style="font-size: 300%" class="shine2 shine3" :class="[blurEmoji ? 'blur' : '']">{{ emoji }}</n-text>
+        <n-text style="font-size: 300%" class="shine2 shine3" id="text1">Id-{{ word }}</n-text>
+        <n-text style="font-size: 130%" depth="3" class="shine2 shine3">
+          zk-powered-<n-gradient-text type="primary">identity</n-gradient-text>
         </n-text>
       </n-space>
     </div>
@@ -109,20 +116,9 @@ onMounted( async () => {
 
 <style scoped>
 
-.center-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-
 .blur {
   filter: blur(4px);
   transition: color 1s ease, text-shadow 1s ease;
-}
-
-.transparent::selection {
-  background-color: rgba(255,255,255,0.1);
 }
 
 .shine1 {
