@@ -7,9 +7,9 @@ const themeVars = useThemeVars()
 
 const tabValue = ref('Create')
 const proofs = ref([
-  { name: 'Non-Sanctions', emoji: '🏛️', text: 'Prove that your name is not included on the OFAC sanctions list.', isSelected: true },
-  { name: 'Adulthood', emoji: '👵',  text: 'Prove that you have lived for more than a certain number of years.',  isSelected: false },
-  { name: 'Unique-human', emoji: '🧠',  text: 'Generate an exclusive identifier that is uniquely yours.',  isSelected: false }
+  { name: 'Proof of Non-Sanctions', emoji: '🏛️', text: 'Prove that your name is not included on the OFAC sanctions list.', isSelected: true },
+  { name: 'Proof of Adulthood', emoji: '👵',  text: 'Prove that you have lived for more than a certain number of years.',  isSelected: false },
+  { name: 'Proof of Unique-human', emoji: '🧠',  text: 'Generate an exclusive identifier that is uniquely yours.',  isSelected: false }
 ])
 
 const selectProof = (proofName) => {
@@ -52,7 +52,7 @@ onMounted( async () => {
                     {{ proof.emoji }}
                   </n-text>
                 </n-avatar>
-                <n-space vertical align="start" :size="0">
+                <n-space vertical align="start" :size="5">
                 <n-text :depth="2">
                   {{ proof.name }}
                 </n-text>
@@ -87,7 +87,8 @@ onMounted( async () => {
 
 .selected {
   border-width: 4px;
-  transition: border-width 0.1s ease-in-out;
+  border-color: v-bind(themeVars.primaryColor);
+  transition: border-width 0.0s ease-in-out;
 }
 
 
