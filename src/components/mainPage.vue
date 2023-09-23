@@ -28,10 +28,8 @@ onMounted( async () => {
 </script>
 
 <template>
-
   <n-divider style="width: 30%" class="centered-container" dashed/>
-
-  <div class="centered-container" style="height: 100vh;">
+  <div class="centered-container" style="padding: 8em 0em;">
     <n-space :size="30" justify="center" vertical>
 
       <n-space justify="center">
@@ -39,46 +37,48 @@ onMounted( async () => {
       </n-space>
 
       <n-space horizontal justify="center">
-        <div v-for="proof in proofs">
-          <n-card
-            @click="selectProof(proof.name)"
-            style="cursor: pointer; max-width: 18em;"
-            :class="proof.isSelected ? 'selected' : ''"
-          >
-            <template #default>
-              <n-space horizontal>
-                <n-avatar :size="46">
-                  <n-text style="font-size: 20px;">
-                    {{ proof.emoji }}
+        <n-grid x-gap="12" y-gap="12" cols="xs:1 s:2 m:3 l:3 xl:3 2xl:3" responsive="screen">
+          <n-gi v-for="proof in proofs">
+            <n-card
+              @click="selectProof(proof.name)"
+              style="cursor: pointer; max-width: 18em;"
+              :class="proof.isSelected ? 'selected' : ''"
+            >
+              <template #default>
+                <n-space horizontal>
+                  <n-avatar :size="46">
+                    <n-text style="font-size: 20px;">
+                      {{ proof.emoji }}
+                    </n-text>
+                  </n-avatar>
+                  <n-space vertical align="start" :size="5">
+                  <n-text :depth="2">
+                    {{ proof.name }}
                   </n-text>
-                </n-avatar>
-                <n-space vertical align="start" :size="5">
-                <n-text :depth="2">
-                  {{ proof.name }}
-                </n-text>
-                <n-text :depth="3" style="font-size: 90%">
-                  {{ proof.text }}
-                </n-text>
+                  <n-text :depth="3" style="font-size: 90%">
+                    {{ proof.text }}
+                  </n-text>
+                  </n-space>
                 </n-space>
-              </n-space>
-            </template>
-          </n-card>
-        </div>
+              </template>
+            </n-card>
+          </n-gi>
+        </n-grid>
       </n-space>
 
-    <n-tabs type="segment" v-model="tabValue" animated>
-      <n-tab-pane name="Create" tab="Create">
-        <createProofs />
-      </n-tab-pane>
-      <n-tab-pane name="Consume" tab="Consume">
-        <createProofs />
-      </n-tab-pane>
-      <n-tab-pane name="Explore" tab="Explore">
-        <createProofs />
-      </n-tab-pane>
-    </n-tabs>
+      <n-tabs type="segment" v-model="tabValue" animated>
+        <n-tab-pane name="Create" tab="Create">
+          <createProofs />
+        </n-tab-pane>
+        <n-tab-pane name="Consume" tab="Consume">
+          <createProofs />
+        </n-tab-pane>
+        <n-tab-pane name="Explore" tab="Explore">
+          <createProofs />
+        </n-tab-pane>
+      </n-tabs>
 
-  </n-space>
+    </n-space>
   </div>
 
 </template>
@@ -90,6 +90,5 @@ onMounted( async () => {
   border-color: v-bind(themeVars.primaryColor);
   transition: border-width 0.0s ease-in-out;
 }
-
 
 </style>

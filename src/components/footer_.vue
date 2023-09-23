@@ -12,8 +12,7 @@ onMounted( async () => {
 </script>
 
 <template>
-
-  <div class="centered-text">
+  <div class="centered-text" style="height: 25vh;">
   </div>
 </template>
 

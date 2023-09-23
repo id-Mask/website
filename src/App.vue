@@ -2,12 +2,12 @@
 import { useStore } from 'vuex'
 import { NThemeEditor } from 'naive-ui'
 
-const store = useStore()
-
 import header_ from './components/header_.vue'
 import LandingPage from './components/LandingPage.vue'
 import mainPage from './components/mainPage.vue'
 import footer_ from './components/footer_.vue'
+
+const store = useStore()
 
 </script>
 
@@ -20,7 +20,7 @@ import footer_ from './components/footer_.vue'
 
           <n-layout>
             <header_ style="position: absolute; z-index: 1;"/>
-            <n-layout-content style="padding: 0 2rem;">
+            <n-layout-content>
               <LandingPage/>
               <mainPage/>
             </n-layout-content>
@@ -28,6 +28,7 @@ import footer_ from './components/footer_.vue'
           <n-layout-footer bordered>
             <footer_ />
           </n-layout-footer>
+
         </n-loading-bar-provider>
       </n-notification-provider>
     </n-theme-editor>
