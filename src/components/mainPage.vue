@@ -68,7 +68,7 @@ onMounted( async () => {
 
       <n-tabs type="segment" v-model="tabValue" animated>
         <n-tab-pane name="Create" tab="Create">
-          <createProofs />
+          <createProofs :selectedProof="proofs.filter((proof) => proof.isSelected)[0].name"/>
         </n-tab-pane>
         <n-tab-pane name="Consume" tab="Consume">
           <createProofs />

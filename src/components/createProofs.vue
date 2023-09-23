@@ -2,6 +2,10 @@
 import { ref, onMounted } from 'vue'
 import { useThemeVars } from 'naive-ui'
 
+const props = defineProps({
+  selectedProof: String,
+})
+
 onMounted( async () => {
   console.log('createProofs mounted')
 })
@@ -16,7 +20,7 @@ onMounted( async () => {
     <template #header>
       <n-space vertical :size="20">
         <n-space justify="space-between">
-          <div>Create Proof of X</div>
+          <div>Create {{ props.selectedProof }}</div>
           <div>1/5</div>
         </n-space>
       <n-progress
