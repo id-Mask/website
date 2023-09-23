@@ -41,7 +41,7 @@ onMounted( async () => {
           <n-gi v-for="proof in proofs">
             <n-card
               @click="selectProof(proof.name)"
-              style="cursor: pointer; max-width: 18em;"
+              style="cursor: pointer;"
               :class="proof.isSelected ? 'selected' : ''"
             >
               <template #default>
