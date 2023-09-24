@@ -3,37 +3,55 @@ import { ref, onMounted } from 'vue'
 import { useThemeVars } from 'naive-ui'
 import { useIsMobile } from '../utils'
 import { useStore } from 'vuex'
+import { sleep } from './../utils.js'
 
 const themeVars = useThemeVars()
 const isMobile = useIsMobile()
 const store = useStore()
 const emits = defineEmits(['logoClick'])
 
-const changeTheme = () => {
+const char = ref('')
 
+const loopChars = async () => {
+  const charSet = ['—', '\\', '|', '/', '—', '\\', '|', '/', '—']
+  while (true) {
+    let index = 0
+    while (index < charSet.length) {
+      char.value = charSet[index]
+      index++
+      await sleep(100)
+    }
+    await sleep(5000)
+  }
 }
 
+onMounted(() => {
+  loopChars()
+})
 
 </script>
 
 <template>
   <n-layout-header bordered>
-    <n-page-header style="padding: 1em 2em 1em 2em;">
-      <template #title>
-        <!-- <a href="/" style="text-decoration: none; color: inherit">
-          <b>MINA protocol</b> <n-text depth="3"><br> Node dashboard</n-text>
-        </a> -->
+    <n-page-header :style="isMobile ? 'padding: 0em 1em' : 'padding: 1em 2em'">
+      <template v-if="!isMobile" #title>
+        <a href="/" style="text-decoration: none; color: inherit">
+          <n-text :depth="2">
+            <b>Id<n-gradient-text type="primary">{{ char }}</n-gradient-text>Mask</b>
+          </n-text>
+          <!-- <n-text depth="3" style="font-size: 70%"><br>zk-powered-<n-gradient-text type="primary">identity</n-gradient-text></n-text> -->
+        </a>
       </template>
       <template #header>
       </template>
-      <template #avatar>
-        <!-- <n-element>
+      <template v-if="!isMobile" #avatar>
+        <a href="/" style="text-decoration: none; color: inherit">
           <n-avatar :size="64" class="logo" @click="$emit('logoClick')">
-            <n-text style="font-size: 36px;">
-              🦸
+            <n-text style="font-size: 26px;">
+              {{ store.getters['settings/getEmoji'] }}
             </n-text>
           </n-avatar>
-        </n-element> -->
+        </a>
       </template>
       <template #extra>
         <n-space horizontal>
@@ -66,4 +84,16 @@ const changeTheme = () => {
 </template>
 
 <style scoped>
+
+.logo {
+  will-change: filter;
+  transition: filter .9s ease-out;
+  transition: transform .6s ease-out;
+  cursor: pointer;
+}
+.logo:hover {
+  filter: drop-shadow(0em 0em 0.3em v-bind(themeVars.primaryColor));
+  transform: scale(1.1);
+}
+
 </style>
