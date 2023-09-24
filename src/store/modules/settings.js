@@ -1,23 +1,24 @@
 
 const state = () => ({
-  state: null
+  state: null,
+  emoji: null
 })
 
 const getters = {
-  getState(state) {
-    return state.state
+  getEmoji(state) {
+    return state.emoji
   },
 }
 
 const actions = {
-  async changeState({ commit }) {
-    commit('changeState')
+  async changeEmoji({ commit }, emoji) {
+    commit('changeEmoji', emoji)
   }
 }
 
 const mutations = {
-  changeState(state) {
-    state.state = state
+  changeEmoji(state, emoji) {
+    state.emoji = emoji
   }
 }
 

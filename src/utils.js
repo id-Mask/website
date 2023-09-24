@@ -26,3 +26,7 @@ export const merge = (object1, object2) => {
     }, { ...object1 })
   }
 }
+
+export const sleep = (ms) => {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}

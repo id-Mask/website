@@ -1,8 +1,13 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useThemeVars } from 'naive-ui'
+import { useIsMobile } from '../utils'
+import { useStore } from 'vuex'
+import { sleep } from './../utils.js'
 
 const themeVars = useThemeVars()
+const store = useStore()
+const isMobile = useIsMobile()
 
 // emoji configs
 const emoji = ref('')
@@ -12,10 +17,6 @@ const blurEmoji = ref(false)
 const word = ref('Mask')
 const words = ['Mask']
 const alphabet = '0123456789abcdefghijklmnopqrstuvwxyzM '
-
-const sleep = (ms) => {
-  return new Promise(resolve => setTimeout(resolve, ms))
-}
 
 const loopOverWords = async () => {
 
@@ -75,6 +76,7 @@ const loopOverEmojis = async () => {
   while (true) {
     const randomIndex = Math.floor(Math.random() * emojis.length)
     emoji.value = emojis[randomIndex]
+    store.dispatch('settings/changeEmoji', emojis[randomIndex])
     favicon.href = `data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22
       viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>
       ${emojis[randomIndex]}</text></svg>`
@@ -96,22 +98,42 @@ onMounted( async () => {
   loopOverEmojis()
   applyRandomEmojiBlur()
 })
+
+defineExpose({
+  emoji,
+})
+
 </script>
 
 <template>
-
-  <div class="centered-container" style="height: 100vh;">
-    <div class="shine1" style="width: 90em;">
-      <n-space vertical align="center" class="prevent-select">
-        <n-text style="font-size: 300%" class="shine2 shine3" :class="[blurEmoji ? 'blur' : '']">{{ emoji }}</n-text>
-        <n-text style="font-size: 300%" class="shine2 shine3" id="text1">Id-{{ word }}</n-text>
-        <n-text style="font-size: 130%" depth="3" class="shine2 shine3">
-          zk-powered-<n-gradient-text type="primary">identity</n-gradient-text>
+  <div :style="(isMobile ? 'padding-top: 10em; height: 85vh;' : 'padding-top: 20em; height: 65vh')">
+    <n-space vertical align="center">
+      <div class="shine1">
+        <n-space vertical align="center" class="prevent-select shine1">
+          <n-text style="font-size: 300%" class="shine2 shine3" :class="[blurEmoji ? 'blur' : '']">{{ emoji }}</n-text>
+          <n-text style="font-size: 300%" class="shine2 shine3" id="text1">Id-{{ word }}</n-text>
+          <n-text style="font-size: 130%" depth="3" class="shine2 shine3">
+            zk-powered-<n-gradient-text type="primary">identity</n-gradient-text>
+          </n-text>
+          <br><br>
+        </n-space>
+      </div>
+      <n-card style="max-width: 25em;" class="scale-on-hover card-shine">
+        <n-text style="font-size: 90%;" depth="3">
+          <div style="text-align: justify;">
+            <p>
+              Prove statements about yourself without revealing any personal details.
+              Sounds <n-gradient-text type="primary">like magic?</n-gradient-text>
+            </p>
+            <p>
+              While it might sound like it, the aim it to make it unremarkable everyday reality,
+              not magic or a distant futuristic technology. Give it a try below.
+            </p>
+          </div>
         </n-text>
-      </n-space>
-    </div>
-  </div>
-
+      </n-card>
+    </n-space>
+</div>
 </template>
 
 <style scoped>
@@ -139,8 +161,21 @@ onMounted( async () => {
   will-change: filter;
   transition: filter 900ms;
 }
+
 .shine3:hover {
   filter: drop-shadow(0 0 1em v-bind(themeVars.infoColor));
+}
+
+.scale-on-hover {
+  transition: transform .8s;
+}
+
+.scale-on-hover:hover {
+  transform: scale(1.05);
+}
+
+.card-shine {
+  filter: drop-shadow(0 0 0.5em v-bind(themeVars.primaryColor));
 }
 
 </style>
