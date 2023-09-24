@@ -10,18 +10,18 @@ const isMobile = useIsMobile()
 const store = useStore()
 const emits = defineEmits(['logoClick'])
 
-const char = ref('')
+const char = ref('-')
 
 const loopChars = async () => {
-  const charSet = ['—', '\\', '|', '/', '—', '\\', '|', '/', '—']
+  const charSet = ['—', '\\', '|', '/', '—', '\\', '|', '/', '-']
   while (true) {
+    await sleep(5000)
     let index = 0
     while (index < charSet.length) {
       char.value = charSet[index]
       index++
       await sleep(100)
     }
-    await sleep(5000)
   }
 }
 
