@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useThemeVars } from 'naive-ui'
 import { useIsMobile } from '../utils'
 import { useStore } from 'vuex'
@@ -17,6 +17,31 @@ const blurEmoji = ref(false)
 const word = ref('Mask')
 const words = ['Mask']
 const alphabet = '0123456789abcdefghijklmnopqrstuvwxyzM '
+
+// intro text taht will be 'typed'
+const texts = ref([
+  {
+    'text': 'Prove statements about yourself without revealing any personal details. Sounds',
+    'placeholder': ''
+  },
+  {
+    'text': 'like magic?',
+    'placeholder': ''
+  },
+  {
+    'text': 'While it might sound like it, the aim is to make it unremarkable everyday reality, not a distant futuristic technology. Give it a try below.',
+    'placeholder': ''
+  },
+])
+
+const typeText = async () => {
+  for (let i = 0; i < texts.value.length; i++) {
+    for (const char of texts.value[i].text) {
+      texts.value[i].placeholder += char
+      await sleep(10)
+    }
+  }
+}
 
 const loopOverWords = async () => {
 
@@ -95,6 +120,7 @@ const applyRandomEmojiBlur = async () => {
 
 onMounted( async () => {
   loopOverWords()
+  typeText()
   loopOverEmojis()
   applyRandomEmojiBlur()
 })
@@ -122,12 +148,10 @@ defineExpose({
         <n-text style="font-size: 90%;" depth="3">
           <div style="text-align: justify;">
             <p>
-              Prove statements about yourself without revealing any personal details.
-              Sounds <n-gradient-text type="primary">like magic?</n-gradient-text>
+              {{ texts[0].placeholder }} <n-gradient-text type="primary">{{ texts[1].placeholder }}</n-gradient-text>
             </p>
             <p>
-              While it might sound like it, the aim it to make it unremarkable everyday reality,
-              not magic or a distant futuristic technology. Give it a try below.
+              {{ texts[2].placeholder }}
             </p>
           </div>
         </n-text>
