@@ -1,14 +1,52 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { reactive, ref, onMounted, watch } from 'vue'
 import { useThemeVars } from 'naive-ui'
+
+// hljs stuff
+import hljs from 'highlight.js/lib/core'
+import json from 'highlight.js/lib/languages/json'
+hljs.registerLanguage('json', json)
+
+const themeVars = useThemeVars()
 
 const props = defineProps({
   selectedProof: String,
 })
 
+const data = reactive({
+  sources:  [
+    { name: 'Smart-ID' },
+    { name: 'Mock-service' }
+  ],
+  selectedSource: null,
+  personalIdentificationNumber: null,
+  isLoading: false,
+  pid: ''
+})
+
+const getPID = async () => {
+  data.isLoading = true
+  const response = await fetch("https://smart-id-oracle-2qz4wkdima-uc.a.run.app/get_mock_data", {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  data.isLoading = false
+  return await response.json()
+}
+
+watch(() => data.selectedSource, async (_selectedSource) => {
+  if (_selectedSource == 'Mock-service') {
+    data.pid = await getPID()
+  }
+})
+
+
 onMounted( async () => {
   console.log('createProofs mounted')
 })
+
 </script>
 
 <template>
@@ -34,7 +72,37 @@ onMounted( async () => {
     </template>
     <template #header-extra>
     </template>
-    Card Content
+    <n-space vertical>
+      <n-text type="default">
+        Streamline your personal identification data
+      </n-text>
+      <n-radio-group v-model:value="data.selectedSource" size="medium" :disabled="data.isLoading">
+        <n-radio-button
+          v-for="source in data.sources"
+          :value="source.name"
+          :label="source.name"
+        />
+      </n-radio-group>
+      <n-input-group v-if="data.selectedSource == 'Smart-ID'">
+        <n-button type="primary">
+          Get data
+        </n-button>
+        <n-input
+          v-model:value="data.personalIdentificationNumber"
+          placeholder="Personal Identification Number"
+        />
+      </n-input-group>
+      <n-spin :show="data.isLoading">
+        <n-card v-if="data.pid">
+          <template #action>
+            <n-text>
+              <n-code :code="JSON.stringify(data.pid, null, 2)" syle="font-size: 20px" :hljs="hljs" language="json" />
+            </n-text>
+          </template>
+        </n-card>
+      </n-spin>
+    </n-space>
+
     <template #footer>
       #footer
     </template>
@@ -59,5 +127,13 @@ onMounted( async () => {
   </n-card>
 </template>
 
-<style scoped>
+<style>
+
+.hljs-key {
+  color: #5F5FEAFF !important;
+}
+.hljs-string {
+  color: #5F5FEAFF !important;
+}
+
 </style>

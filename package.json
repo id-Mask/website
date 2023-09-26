@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@fontsource/jetbrains-mono": "^5.0.12",
+    "highlight.js": "^11.8.0",
     "vhook": "^1.0.0",
     "vue": "^3.3.4",
     "vuex": "^4.1.0"
