@@ -40,6 +40,10 @@ onMounted(() => {
             <b>Id<n-gradient-text type="primary">{{ char }}</n-gradient-text>Mask</b>
           </n-text>
           <!-- <n-text depth="3" style="font-size: 70%"><br>zk-powered-<n-gradient-text type="primary">identity</n-gradient-text></n-text> -->
+          <br>
+          <n-tag :bordered="false" type="success" style="font-size: 50%; border-radius: 7px;" size="small">
+            <n-gradient-text type="primary">testnet release</n-gradient-text>
+          </n-tag>
         </a>
       </template>
       <template #header>
