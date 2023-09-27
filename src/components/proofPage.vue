@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useThemeVars } from 'naive-ui'
-import createProofs from './createProofs.vue'
+import proofCard from './proofCard.vue'
 
 const themeVars = useThemeVars()
 
@@ -29,7 +29,7 @@ onMounted( async () => {
 
 <template>
   <n-divider style="width: 30%" class="centered-container" dashed/>
-  <div class="centered-container" style="padding: 8em 0em;">
+  <div style="padding: 8em 0em;">
     <n-space :size="30" justify="center" vertical>
 
       <n-space justify="center">
@@ -68,19 +68,18 @@ onMounted( async () => {
 
       <n-tabs type="segment" v-model="tabValue" animated>
         <n-tab-pane name="Create" tab="Create">
-          <createProofs :selectedProof="proofs.filter((proof) => proof.isSelected)[0].name"/>
+          <proofCard :selectedProof="proofs.filter((proof) => proof.isSelected)[0].name"/>
         </n-tab-pane>
         <n-tab-pane name="Consume" tab="Consume">
-          <createProofs />
+          <!-- <proofCard /> -->
         </n-tab-pane>
         <n-tab-pane name="Explore" tab="Explore">
-          <createProofs />
+          <!-- <proofCard /> -->
         </n-tab-pane>
       </n-tabs>
 
     </n-space>
   </div>
-
 </template>
 
 <style scoped>
