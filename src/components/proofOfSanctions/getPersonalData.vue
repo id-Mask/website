@@ -46,7 +46,7 @@ watch(() => data.selectedSource, async (_selectedSource) => {
 
 <template>
 
-    <n-space vertical>
+    <n-space vertical :size="8">
       <n-text type="default">
         Streamline your personal identification data
       </n-text>
@@ -73,7 +73,7 @@ watch(() => data.selectedSource, async (_selectedSource) => {
           placeholder="Personal Identification Number"
         />
       </n-input-group>
-      <n-spin :show="data.isLoading">
+      <n-spin :show="data.isLoading" style="padding-top: 1.3em;">
         <n-card v-if="data.pid">
           <template #action>
             <n-space justify="end">
