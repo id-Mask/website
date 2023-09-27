@@ -5,7 +5,7 @@ import { useBreakpoint } from 'vooks'
 
 import header_ from './components/header_.vue'
 import LandingPage from './components/LandingPage.vue'
-import mainPage from './components/mainPage.vue'
+import proofPage from './components/proofPage.vue'
 import footer_ from './components/footer_.vue'
 
 const store = useStore()
@@ -26,15 +26,15 @@ const breakpoint = useBreakpoint()
             :content-style="
                'margin: 0 auto;' +
                  (['xs'].includes(breakpoint) ? 'padding: 0em 2em;' : '') +
-                 (['s'].includes(breakpoint) ? 'padding: 0em 3em;' : '') +
-                 (['m'].includes(breakpoint)  ? 'padding: 0em 6em;' : '') +
-                 (['l'].includes(breakpoint)  ? 'padding: 0em 10em;' : '') +
+                 (['s'].includes(breakpoint) ? 'padding: 0em 6em;' : '') +
+                 (['m'].includes(breakpoint)  ? 'padding: 0em 15em;' : '') +
+                 (['l'].includes(breakpoint)  ? 'padding: 0em 20em;' : '') +
                  (['xl'].includes(breakpoint)  ? 'padding: 0em 30em;' : '') +
                  (['xxl', '2xl'].includes(breakpoint)  ? 'padding: 0em 40em;' : '')
                "
             >
               <LandingPage/>
-              <mainPage/>
+              <proofPage/>
             </n-layout-content>
           </n-layout>
           <n-layout-footer bordered>
