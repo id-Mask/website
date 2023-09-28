@@ -49,10 +49,16 @@ const setFinished = () => {
   proofs.value[props.selectedProof].steps[currentStep.value].finished = true
 
   // set as finished for other proofs as well..?
-  // if I already got the personal data into one proof, no need to repeat it in other.
+  // only set if the step has the same component name
+  // in practive this will only be the first stop, I guess..?
+  // This might have to be refactored later, I dont thik this is good design.
   const stepName = proofs.value[props.selectedProof].steps[currentStep.value].component
-  for (let key in proofs.value) {
-    console.log(key)
+  for (let proof in proofs.value) {
+    for (let step = 0; step < proofs.value[proof].steps.length; step++) {
+      if (proofs.value[proof].steps[step].component == stepName) {
+        proofs.value[proof].steps[step].finished = true
+      }
+    }
   }
 }
 

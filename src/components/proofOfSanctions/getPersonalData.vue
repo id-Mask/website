@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref, onMounted, watch, defineEmits } from 'vue'
+import { reactive, ref, onMounted, watch } from 'vue'
 import { useThemeVars } from 'naive-ui'
 
 // hljs stuff
@@ -50,7 +50,7 @@ watch(() => data.selectedSource, async (_selectedSource) => {
       <n-text type="default">
         Gather your personal identification data
       </n-text>
-      <n-text :depth="3" style="font-size: 90%">
+      <n-text :depth="3" style="font-size: 90%; text-align: justify;">
         <p>
           The data will include your name, surname and personal identification number which also includes your birthdate.
           In the next steps, you will use this data to check against OFAC sanctions database.
@@ -64,34 +64,26 @@ watch(() => data.selectedSource, async (_selectedSource) => {
           :label="source.name"
         />
       </n-radio-group>
-      <n-input-group v-if="data.selectedSource == 'Smart-ID'">
-        <n-button type="primary">
-          Get data
-        </n-button>
-        <n-input
-          v-model:value="data.personalIdentificationNumber"
-          placeholder="Personal Identification Number"
-        />
-      </n-input-group>
+      <n-collapse-transition :show="data.selectedSource == 'Smart-ID'">
+        <n-input-group>
+          <n-button type="primary">
+            Get data
+          </n-button>
+          <n-input
+            v-model:value="data.personalIdentificationNumber"
+            placeholder="Personal Identification Number"
+          />
+        </n-input-group>
+      </n-collapse-transition>
       <n-spin :show="data.isLoading" style="padding-top: 1.3em;">
-        <n-card v-if="data.pid">
+        <n-card v-if="data.pid || data.isLoading">
           <template #action>
             <n-space justify="space-between" align="start">
               <n-tag :bordered="false" size="small" :style="'border-radius:' + themeVars.borderRadius">
-                <!-- <template #icon>
-                  <n-icon :color="themeVars.primaryColor">
-                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32"><path d="M18 30h-4a2 2 0 0 1-2-2v-7a2 2 0 0 1-2-2v-6a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v6a2 2 0 0 1-2 2v7a2 2 0 0 1-2 2zm-5-18a.94.94 0 0 0-1 1v6h2v9h4v-9h2v-6a.94.94 0 0 0-1-1z" fill="currentColor"></path><path d="M16 9a4 4 0 1 1 4-4a4 4 0 0 1-4 4zm0-6a2 2 0 1 0 2 2a2 2 0 0 0-2-2z" fill="currentColor"></path></svg>
-                  </n-icon>
-                </template> -->
                 <n-text :depth="3">
-                  Your personal id data:
+                  Your personal identification data:
                 </n-text>
               </n-tag>
-              <!-- <span>
-                <n-text depth="3">
-                  Your personal id data:
-                </n-text>
-              </span> -->
               <n-button strong secondary type="tertiary" size="small" @click="data.blurData = !data.blurData">
                 <template #icon>
                   <n-icon :size="20">
