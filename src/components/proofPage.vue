@@ -67,16 +67,18 @@ onMounted( async () => {
       </n-space>
 
       <n-tabs type="segment" v-model="tabValue" animated>
-        <n-tab-pane name="Create" tab="Create">
+        <n-tab-pane name="Create" tab="Create" display-directive="show">
           <KeepAlive>
             <proofCard :selectedProof="proofs.filter((proof) => proof.isSelected)[0].name" />
           </KeepAlive>
         </n-tab-pane>
-        <n-tab-pane name="Consume" tab="Consume">
+        <n-tab-pane name="Consume" tab="Consume" display-directive="show">
           <!-- <proofCard /> -->
+          place for card
         </n-tab-pane>
-        <n-tab-pane name="Explore" tab="Explore">
+        <n-tab-pane name="Explore" tab="Explore" display-directive="show">
           <!-- <proofCard /> -->
+          place for card
         </n-tab-pane>
       </n-tabs>
 

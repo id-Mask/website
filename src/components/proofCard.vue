@@ -2,6 +2,7 @@
 import { reactive, ref, onMounted, watch } from 'vue'
 import getPersonalData from './proofOfSanctions/getPersonalData.vue'
 import getOFACData from './proofOfSanctions/getOFACData.vue'
+import compileProgram from './proofOfAge/compileProgram.vue'
 
 const props = defineProps({
   selectedProof: String,
@@ -11,6 +12,7 @@ const props = defineProps({
 const components = {
   'getPersonalData': getPersonalData,
   'getOFACData': getOFACData,
+  'compileProgram': compileProgram,
 }
 
 const proofs = ref({
@@ -26,7 +28,7 @@ const proofs = ref({
   'Proof of Adulthood': {
     steps: [
       { component: 'getPersonalData', finished: false },
-      { component: 'getOFACData', finished: false },
+      { component: 'compileProgram', finished: false },
       // { component: 'compileZKP' },
       // { component: 'createProof' },
       // { component: 'saveProof' },
