@@ -47,6 +47,13 @@ const currentStep = ref(0)
 
 const setFinished = () => {
   proofs.value[props.selectedProof].steps[currentStep.value].finished = true
+
+  // set as finished for other proofs as well..?
+  // if I already got the personal data into one proof, no need to repeat it in other.
+  const stepName = proofs.value[props.selectedProof].steps[currentStep.value].component
+  for (let key in proofs.value) {
+    console.log(key)
+  }
 }
 
 onMounted( async () => {
@@ -65,9 +72,17 @@ onMounted( async () => {
       <n-space vertical :size="20">
         <n-space justify="space-between">
           <div>Create {{ props.selectedProof }}</div>
-          <div>
-            {{ proofs[props.selectedProof].steps.filter(step => step.finished).length }} /
-            {{ proofs[props.selectedProof].steps.length }}</div>
+          <n-space horizontal align="start">
+            <n-collapse-transition :show="proofs[props.selectedProof].steps[currentStep].finished">
+            <n-icon-wrapper>
+              <n-icon :size="18">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5a.984.984 0 0 0-1.4 0a.984.984 0 0 0 0 1.4l4.19 4.19c.39.39 1.02.39 1.41 0L20.3 7.7a.984.984 0 0 0 0-1.4a.984.984 0 0 0-1.4 0L9 16.2z" fill="currentColor"></path></svg>
+              </n-icon>
+            </n-icon-wrapper>
+            </n-collapse-transition>
+            {{ currentStep + 1 }} /
+            {{ proofs[props.selectedProof].steps.length }}
+          </n-space>
         </n-space>
       <n-progress
         style="margin: 0 0px 12px 0"
@@ -81,17 +96,15 @@ onMounted( async () => {
       />
     </n-space>
     </template>
-    <!-- <template #header-extra>
-    </template> -->
 
+    <!-- https://vuejs.org/guide/built-ins/keep-alive.html#basic-usage -->
+    <KeepAlive>
       <component
         :is="components[proofs[props.selectedProof].steps[currentStep].component]"
         @finished="setFinished()"
       />
+    </KeepAlive>
 
-    <!-- <template #footer>
-      #footer
-    </template> -->
     <template #action>
       <n-space>
         <n-button
