@@ -26,6 +26,11 @@ export default defineConfig({
     crossOriginIsolation(),
   ],
   optimizeDeps: {
-    esbuildOptions: { target: "es2022", supported: { bigint: true } },
+    esbuildOptions: { target: "esnext", supported: { bigint: true } },
   },
+
+  // https://github.com/vitejs/vite/issues/6985
+  build: {
+    target: 'esnext'
+  }
 })
