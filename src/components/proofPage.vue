@@ -7,8 +7,8 @@ const themeVars = useThemeVars()
 
 const tabValue = ref('Create')
 const proofs = ref([
-  { name: 'Proof of Non-Sanctions', emoji: '🏛️', text: 'Prove that your name is not included on the OFAC sanctions list.', isSelected: true },
-  { name: 'Proof of Adulthood', emoji: '👵',  text: 'Prove that you have lived for more than a certain number of years.',  isSelected: false },
+  { name: 'Proof of Adulthood', emoji: '👵',  text: 'Prove that you have lived for more than a certain number of years.',  isSelected: true },
+  { name: 'Proof of Non-Sanctions', emoji: '🏛️', text: 'Prove that your name is not included on the OFAC sanctions list.', isSelected: false },
   { name: 'Proof of Unique-human', emoji: '🧠',  text: 'Generate an exclusive identifier that is uniquely yours.',  isSelected: false }
 ])
 

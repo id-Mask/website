@@ -53,7 +53,7 @@ watch(() => data.selectedSource, async (_selectedSource) => {
       <n-text :depth="3" style="font-size: 90%; text-align: justify;">
         <p>
           The data will include your name, surname and personal identification number which also includes your birthdate.
-          In the next steps, you will use this data to check against OFAC sanctions database.
+          In the next steps, you will use this data to create proofs asociated with it.
           Pick your personal identification data streamline service below.
         </p>
       </n-text>
