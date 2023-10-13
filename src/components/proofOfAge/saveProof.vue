@@ -31,13 +31,13 @@ onMounted(async () => {
 
     <n-text :depth="3" style="font-size: 90%; text-align: justify;">
       <p>
-        You have two options how you can save the proof you've created. Chose one depending on your use case.
+        You have two options how you can save the proof you've just created. Choose one depending on your use case.
       </p>
       <p>
-        If you save it as as JSON to your device, you can later share it with third parties and they will consime it and verify themselves.
+        If you save it as as JSON to your device, you can later share it with third parties and they will consume it and verify it themselves.
       </p>
       <p>
-        If you save it to the Mina blockchain, the network will verify it and you will be able to share your proof by simply referencing your public key.
+        If you save it to the Mina blockchain, the network will verify it and you will be able to share your proof by simply referencing your Mina blockchain public address.
       </p>
     </n-text>
 
