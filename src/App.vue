@@ -29,8 +29,8 @@ const breakpoint = useBreakpoint()
                  (['s'].includes(breakpoint) ? 'padding: 0em 6em;' : '') +
                  (['m'].includes(breakpoint)  ? 'padding: 0em 15em;' : '') +
                  (['l'].includes(breakpoint)  ? 'padding: 0em 20em;' : '') +
-                 (['xl'].includes(breakpoint)  ? 'padding: 0em 30em;' : '') +
-                 (['xxl', '2xl'].includes(breakpoint)  ? 'padding: 0em 40em;' : '')
+                 (['xl'].includes(breakpoint)  ? 'padding: 0em 40em;' : '') +
+                 (['xxl', '2xl'].includes(breakpoint)  ? 'padding: 0em 50em;' : '')
                "
             >
               <LandingPage/>
