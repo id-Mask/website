@@ -19,11 +19,7 @@ const props = defineProps({
 
 <template>
   <n-space justify="space-between" align="start">
-    <!-- <n-tag :bordered="false" size="small" :style="'border-radius:' + themeVars.borderRadius"> -->
-      <!-- <n-text :depth="3"> -->
-        {{ props.text }}
-      <!-- </n-text> -->
-    <!-- </n-tag> -->
+    {{ props.text }}
     <n-button strong secondary type="tertiary" size="small" @click="blur = !blur">
       <template #icon>
         <n-icon :size="20">
@@ -38,18 +34,27 @@ const props = defineProps({
   </n-scrollbar>
 </template>
 
-<style scoped>
+<style>
 
 .code {
   font-family: "JetBrains Mono";
   font-size: 90%;
 }
 
-.hljs-key {
-  color: #5F5FEAFF !important;
+.hljs-punctuation {
+  color: v-bind(themeVars.textColor1) !important;
 }
+
+.hljs-attr {
+  color: v-bind(themeVars.textColor3) !important;
+}
+
+.hljs-number {
+  color: v-bind(themeVars.primaryColor) !important;
+}
+
 .hljs-string {
-  color: #5F5FEAFF !important;
+  color: v-bind(themeVars.primaryColor) !important;
 }
 
 .blur {
