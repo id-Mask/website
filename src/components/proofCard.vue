@@ -3,7 +3,8 @@ import { reactive, ref, onMounted, watch } from 'vue'
 import getPersonalData from './proofOfSanctions/getPersonalData.vue'
 import getOFACData from './proofOfSanctions/getOFACData.vue'
 import compileProgram from './proofOfAge/compileProgram.vue'
-import produceProof from './proofOfAge/produceProof.vue'
+import createProof from './proofOfAge/createProof.vue'
+import saveProof from './proofOfAge/saveProof.vue'
 
 const props = defineProps({
   selectedProof: String,
@@ -14,7 +15,8 @@ const components = {
   'getPersonalData': getPersonalData,
   'getOFACData': getOFACData,
   'compileProgram': compileProgram,
-  'produceProof': produceProof,
+  'createProof': createProof,
+  'saveProof': saveProof,
 }
 
 const proofs = ref({
@@ -31,7 +33,8 @@ const proofs = ref({
     steps: [
       { component: 'getPersonalData', finished: false },
       { component: 'compileProgram', finished: false },
-      { component: 'produceProof', finished: false },
+      { component: 'createProof', finished: false },
+      { component: 'saveProof', finished: false },
       // { component: 'compileZKP' },
       // { component: 'createProof' },
       // { component: 'saveProof' },

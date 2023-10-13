@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useThemeVars } from 'naive-ui'
 import { sleep } from './../../utils.js'
 import { proofOfAge } from './../zkPrograms/ProofOfAge.js'
 import {
@@ -8,6 +9,11 @@ import {
   Signature
 } from 'o1js'
 
+import hljs from 'highlight.js/lib/core'
+import json from 'highlight.js/lib/languages/json'
+hljs.registerLanguage('json', json)
+
+const themeVars = useThemeVars()
 const data = ref({
   proof: null,
   isLoading: false,
@@ -42,7 +48,7 @@ const createProof = async () => {
       Field(mock_data.data.timestamp),
       Signature.fromJSON(mock_data.signature)
     );
-    data.value.proof = JSON.stringify(proof.toJSON()).slice(0, 300) + ' ...'
+    data.value.proof = JSON.stringify(proof.toJSON(), null, 2)
     data.value.isLoading = false
     emit('finished')
 }
@@ -56,12 +62,16 @@ onMounted(async () => {
 
   <n-space vertical>
     <n-text type="default">
-      Produce the proof
+      Create the proof
     </n-text>
 
     <n-text :depth="3" style="font-size: 90%; text-align: justify;">
       <p>
         The proof generation will again take some time. Once it is finished, you'll be able to pick options what you want to do with it.
+      </p>
+      <p>
+        Note that the generated proof does not include any of your private data. It includes public inputs which in this case is the number of years you're proving you are older than,
+        public outputs, which is always 1 and shows that your age is more than the number of years, and the proof itself which is cryptographic jumble of letters and numbers.
       </p>
       <p>
         Below, input the number of years you wish to prove you're older than.
@@ -80,8 +90,11 @@ onMounted(async () => {
     <n-spin :show="data.isLoading" style="padding-top: 1.3em;">
       <n-card v-if="data.proof || data.isLoading">
         <template #action>
-          Proof: <br><br>
-          {{ data.proof }}
+          Created proof:
+          <br><br>
+          <n-scrollbar x-scrollable>
+            <n-code :code="data.proof ? data.proof : '{}'" :hljs="hljs" language="json" class="code" style="white-space: nowrap;"/>
+          </n-scrollbar>
         </template>
       </n-card>
     </n-spin>
@@ -91,5 +104,26 @@ onMounted(async () => {
 </template>
 
 <style>
+
+.code {
+  font-family: "JetBrains Mono";
+  font-size: 90%;
+}
+
+.hljs-punctuation {
+  color: v-bind(themeVars.textColor1) !important;
+}
+
+.hljs-attr {
+  color: v-bind(themeVars.textColor3) !important;
+}
+
+.hljs-number {
+  color: v-bind(themeVars.primaryColor) !important;
+}
+
+.hljs-string {
+  color: v-bind(themeVars.primaryColor) !important;
+}
 
 </style>

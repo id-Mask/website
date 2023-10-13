@@ -13,7 +13,7 @@ const emit = defineEmits(['finished'])
 onMounted(async () => {
   data.value.isLoading = true
   const { verificationKey } = await proofOfAge.compile();
-  data.value.verificationKey = verificationKey.slice(0, 300) + ' ...'
+  data.value.verificationKey = verificationKey
   data.value.isLoading = false
   emit('finished')
 })
@@ -28,7 +28,8 @@ onMounted(async () => {
     </n-text>
     <n-text :depth="3" style="font-size: 90%; text-align: justify;">
       <p>
-        Before you use the program to produce a proof, we need to get the program into you browser and compile it. That is what is being done right now.
+        Before you use the program to produce a proof, we need to get the program into you browser and compile it.
+        The aim is to keep your data inside the browser. How else are we going to completely preserve the privacy of it?
         This usually takes a while, so be ready to wait a bit. In the mean time, you can check out the program
         <a href="https://github.com/id-Mask/smart-contracts/blob/main/src/ProofOfAge.ts" target="_blank">source code</a>.
       </p>
@@ -37,16 +38,19 @@ onMounted(async () => {
         The verification key is not really important right now, but it plays a key role during the verification of the proof you're about to create.
       </p>
     </n-text>
-
     <n-spin :show="data.isLoading" style="padding-top: 1.3em;">
       <n-card v-if="data.verificationKey || data.isLoading">
         <template #action>
-          Verification key: <br><br>
-          {{ data.verificationKey }}
+          Verification key:
+          <br><br>
+          <n-scrollbar style="max-height: 200px">
+            <n-text :depth="3">
+              {{ data.verificationKey }}
+            </n-text>
+          </n-scrollbar>
         </template>
       </n-card>
     </n-spin>
-
   </n-space>
 
 </template>
