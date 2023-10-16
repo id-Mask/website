@@ -139,6 +139,7 @@ defineExpose({
           <n-text style="font-size: 300%" class="shine2 shine3" :class="[blurEmoji ? 'blur' : '']">{{ emoji }}</n-text>
           <n-text style="font-size: 300%" class="shine2 shine3" id="text1">Id-{{ word }}</n-text>
           <n-text style="font-size: 130%" depth="3" class="shine2 shine3">
+            <!-- :gradient="{from: themeVars.primaryColorHover, to: themeVars.primaryColor, deg: 90}" -->
             zk-powered-<n-gradient-text type="primary">identity</n-gradient-text>
           </n-text>
           <br><br>
