@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useThemeVars } from 'naive-ui'
 import proofCard from './proofCard.vue'
+import verifyer from './componentUtils/verifyer.vue'
 
 const themeVars = useThemeVars()
 
@@ -73,8 +74,7 @@ onMounted( async () => {
           </KeepAlive>
         </n-tab-pane>
         <n-tab-pane name="Consume" tab="Consume" display-directive="show">
-          <!-- <proofCard /> -->
-          place for card
+          <verifyer :selectedProof="proofs.filter((proof) => proof.isSelected)[0].name" />
         </n-tab-pane>
         <n-tab-pane name="Explore" tab="Explore" display-directive="show">
           <!-- <proofCard /> -->
