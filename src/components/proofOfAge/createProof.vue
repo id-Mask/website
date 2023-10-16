@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useThemeVars } from 'naive-ui'
+import { useStore } from 'vuex'
 import { sleep } from './../../utils.js'
 import { proofOfAge } from './../zkPrograms/ProofOfAge.js'
 import {
@@ -13,6 +14,7 @@ import hljs from 'highlight.js/lib/core'
 import json from 'highlight.js/lib/languages/json'
 hljs.registerLanguage('json', json)
 
+const store = useStore()
 const themeVars = useThemeVars()
 const data = ref({
   proof: null,
@@ -48,7 +50,13 @@ const createProof = async () => {
       Field(mock_data.data.timestamp),
       Signature.fromJSON(mock_data.signature)
     );
-    data.value.proof = JSON.stringify(proof.toJSON(), null, 2)
+
+    const jsonProof = proof.toJSON()
+    data.value.proof = JSON.stringify(jsonProof, null, 2)
+
+    // save proof to store (to be able to access it form other components)
+    store.dispatch('proofs/saveProof', {proofName: 'proofOfAge', proof: jsonProof})
+
     data.value.isLoading = false
     emit('finished')
 }
@@ -64,7 +72,6 @@ onMounted(async () => {
     <n-text type="default">
       Create the proof
     </n-text>
-
     <n-text :depth="3" style="font-size: 90%; text-align: justify;">
       <p>
         The proof generation will again take some time. Once it is finished, you'll be able to pick options what you want to do with it.

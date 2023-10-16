@@ -29,7 +29,7 @@ onMounted(async () => {
     <n-text :depth="3" style="font-size: 90%; text-align: justify;">
       <p>
         Before you use the program to produce a proof, we need to get the program into you browser and compile it.
-        The aim is to keep your data inside the browser. How else are we going to completely preserve the privacy of it?
+        The aim is to keep your data inside the browser. That is why the program must reside on your device, not a server.
         This usually takes a while, so be ready to wait a bit. In the mean time, you can check out the program
         <a href="https://github.com/id-Mask/smart-contracts/blob/main/src/ProofOfAge.ts" target="_blank">source code</a>.
       </p>
