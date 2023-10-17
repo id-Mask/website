@@ -1,23 +1,44 @@
 
 const state = () => ({
-  proofs: {},
+
+  /* state structure
+
+  proofs: {
+    proofOfAge: {
+      proof: '',
+      verificationKey: '',
+    },
+    proofOfNonSanctions: {
+      proof: '',
+      verificationKey: '',
+    }
+    proofOfUnique: {
+      proof: '',
+      verificationKey: '',
+    }
+  }
+
+ */
+
+
+  data: {},
 })
 
 const getters = {
-  getProofs(state) {
-    return state.proofs
+  getData(state) {
+    return state.data
   },
 }
 
 const actions = {
-  async saveProof({ commit }, data) {
-    commit('updateProof', data)
+  async saveData({ commit }, data) {
+    commit('updateData', data)
   }
 }
 
 const mutations = {
-  updateProof(state, data) {
-    state.proofs[data.proofName] = data.proof
+  updateData(state, data) {
+    state.data[data.proofName] = data.proof ? { proof: data.proof } : { verificationKey: data.verificationKey }
   }
 }
 

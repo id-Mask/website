@@ -1,8 +1,14 @@
 <script setup>
 import { ref } from 'vue'
 import { useThemeVars } from 'naive-ui'
+import { useStore } from 'vuex'
+import { useMessage } from 'naive-ui'
+import { verify } from 'o1js';
+import { proofOfAge } from './zkPrograms/ProofOfAge.js'
 
 const themeVars = useThemeVars()
+const store = useStore()
+const message = useMessage()
 
 const props = defineProps({
   selectedProof: String,
@@ -10,20 +16,46 @@ const props = defineProps({
 
 const fileList = ref([])
 
-const verifyProof = (proof) => {
-  console.log('verifying: ', proof)
+const verifyProof = async (proof) => {
+
+  // check if the proof is compiled and vk saved
+  // if not compile and save verificationKey to store
+  let vk = store.getters['proofs/getData']?.[props.selectedProof]?.verificationKey
+  if (!vk) {
+    message.warning('Please be patient. Before verification the program must be compiled.')
+    const { verificationKey } = await proofOfAge.compile()
+    store.dispatch('proofs/saveData', { proofName: props.selectedProof, verificationKey: verificationKey })
+    vk = store.getters['proofs/getData']?.[props.selectedProof]?.verificationKey
+  }
+
+  // verify if the provided proof is correct
+  let msg = message.loading('verifying', { closable: true, duration: 10000 })
+  try {
+    let ok = await verify(proof, vk);
+    if (ok) {
+      msg.type = 'success'
+      msg.content = 'Provided proof is valid'
+    } else {
+      msg.type = 'error'
+      msg.content = 'Failed to verify the proof'
+    }
+  } catch (error) {
+    msg.type = 'error'
+    msg.content = 'Something is wrong.'
+  }
+
 }
 
-const handleUpload = ({file, event}) => {
+const handleUpload = async ({file, event}) => {
   var reader = new FileReader()
-  reader.onload = (event) => {
+  reader.onload = async (event) => {
     try {
       var json = JSON.parse(reader.result)
     } catch (error) {
       console.error(error)
     }
-    verifyProof(json)
-    fileList.value = []
+    await verifyProof(json)
+    // fileList.value = []
   }
   reader.readAsText(file.file)
 }
@@ -48,7 +80,7 @@ const handleUpload = ({file, event}) => {
           1. If user saved their proof to their local device and shared a JSON file with you,
           drop it below and you'll verify if the proof is valid.
         </p>
-        <n-upload :max="1" @change="handleUpload" v-model:file-list="fileList" :show-file-list="false">
+        <n-upload @change="handleUpload" v-model:file-list="fileList" :show-file-list="false">
           <n-upload-dragger>
             <div>
               <n-icon size="28" :depth="3">

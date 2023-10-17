@@ -1,11 +1,17 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useStore } from 'vuex'
 import { sleep } from './../../utils.js'
 import { proofOfAge } from './../zkPrograms/ProofOfAge.js'
 
+const store = useStore()
 const data = ref({
   verificationKey: null,
   isLoading: false
+})
+
+const props = defineProps({
+  selectedProof: String,
 })
 
 const emit = defineEmits(['finished'])
@@ -13,6 +19,7 @@ const emit = defineEmits(['finished'])
 onMounted(async () => {
   data.value.isLoading = true
   const { verificationKey } = await proofOfAge.compile();
+  store.dispatch('proofs/saveData', { proofName: props.selectedProof, verificationKey: verificationKey })
   data.value.verificationKey = verificationKey
   data.value.isLoading = false
   emit('finished')
@@ -21,7 +28,6 @@ onMounted(async () => {
 </script>
 
 <template>
-
   <n-space vertical>
     <n-text type="default">
       Compile the zero-knowledge-powered program in your browser.

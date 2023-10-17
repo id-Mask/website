@@ -22,6 +22,11 @@ const data = ref({
   ageToProveInYears: null,
 })
 
+const props = defineProps({
+  selectedProof: String,
+})
+
+
 const emit = defineEmits(['finished'])
 
 const createProof = async () => {
@@ -55,7 +60,7 @@ const createProof = async () => {
     data.value.proof = JSON.stringify(jsonProof, null, 2)
 
     // save proof to store (to be able to access it form other components)
-    store.dispatch('proofs/saveProof', {proofName: 'proofOfAge', proof: jsonProof})
+    store.dispatch('proofs/saveData', { proofName: props.selectedProof, proof: jsonProof })
 
     data.value.isLoading = false
     emit('finished')

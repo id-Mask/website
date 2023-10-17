@@ -10,6 +10,10 @@ hljs.registerLanguage('json', json)
 
 const emit = defineEmits(['finished'])
 
+const props = defineProps({
+  selectedProof: String,
+})
+
 const themeVars = useThemeVars()
 
 const data = reactive({
@@ -45,7 +49,6 @@ watch(() => data.selectedSource, async (_selectedSource) => {
 </script>
 
 <template>
-
     <n-space vertical :size="8">
       <n-text type="default">
         Gather your personal identification data
