@@ -5,7 +5,7 @@ import { useBreakpoint } from 'vooks'
 
 import header_ from './components/header_.vue'
 import LandingPage from './components/LandingPage.vue'
-import proofPage from './components/proofPage.vue'
+import ProofPage from './components/ProofPage.vue'
 import footer_ from './components/footer_.vue'
 
 const store = useStore()
@@ -19,28 +19,30 @@ const breakpoint = useBreakpoint()
     <n-theme-editor>
       <n-notification-provider>
         <n-loading-bar-provider>
+          <n-message-provider>
 
-          <n-layout>
-            <header_ style="position: absolute; z-index: 1;"/>
-            <n-layout-content
-            :content-style="
-               'margin: 0 auto;' +
-                 (['xs'].includes(breakpoint) ? 'padding: 0em 2em;' : '') +
-                 (['s'].includes(breakpoint) ? 'padding: 0em 6em;' : '') +
-                 (['m'].includes(breakpoint)  ? 'padding: 0em 15em;' : '') +
-                 (['l'].includes(breakpoint)  ? 'padding: 0em 20em;' : '') +
-                 (['xl'].includes(breakpoint)  ? 'padding: 0em 40em;' : '') +
-                 (['xxl', '2xl'].includes(breakpoint)  ? 'padding: 0em 40em;' : '')
-               "
-            >
-              <LandingPage/>
-              <proofPage/>
-            </n-layout-content>
-          </n-layout>
-          <n-layout-footer bordered>
-            <footer_ />
-          </n-layout-footer>
+            <n-layout>
+              <header_ style="position: absolute; z-index: 1;"/>
+              <n-layout-content
+              :content-style="
+                 'margin: 0 auto;' +
+                   (['xs'].includes(breakpoint) ? 'padding: 0em 2em;' : '') +
+                   (['s'].includes(breakpoint) ? 'padding: 0em 6em;' : '') +
+                   (['m'].includes(breakpoint)  ? 'padding: 0em 15em;' : '') +
+                   (['l'].includes(breakpoint)  ? 'padding: 0em 20em;' : '') +
+                   (['xl'].includes(breakpoint)  ? 'padding: 0em 40em;' : '') +
+                   (['xxl', '2xl'].includes(breakpoint)  ? 'padding: 0em 40em;' : '')
+                 "
+              >
+                <LandingPage/>
+                <ProofPage/>
+              </n-layout-content>
+            </n-layout>
+            <n-layout-footer bordered>
+              <footer_ />
+            </n-layout-footer>
 
+          </n-message-provider>
         </n-loading-bar-provider>
       </n-notification-provider>
     </n-theme-editor>
