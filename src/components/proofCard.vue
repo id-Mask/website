@@ -19,6 +19,8 @@ const components = {
   'saveProof': saveProof,
 }
 
+
+// make sure there's a global instance with unified keys. ProofPage should be ground truth. Here should inherit.
 const proofs = ref({
   'Proof of Non-Sanctions': {
     steps: [
@@ -116,6 +118,7 @@ onMounted( async () => {
       <component
         :is="components[proofs[props.selectedProof].steps[currentStep].component]"
         @finished="setFinished()"
+        :selectedProof="props.selectedProof"
       />
     </KeepAlive>
 
