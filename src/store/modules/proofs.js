@@ -1,9 +1,8 @@
 
 const state = () => ({
 
-  /* state structure
-
-  proofs: {
+  /* e.g.
+  {
     proofOfAge: {
       proof: '',
       verificationKey: '',
@@ -17,9 +16,7 @@ const state = () => ({
       verificationKey: '',
     }
   }
-
  */
-
 
   data: {},
 })
@@ -38,7 +35,9 @@ const actions = {
 
 const mutations = {
   updateData(state, data) {
-    state.data[data.proofName] = data.proof ? { proof: data.proof } : { verificationKey: data.verificationKey }
+    const { proofName, ...updateData } = data
+    const existingData = state.data[proofName] || {}
+    state.data[proofName] = { ...existingData, ...updateData }
   }
 }
 
