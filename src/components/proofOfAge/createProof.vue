@@ -4,6 +4,7 @@ import { useThemeVars } from 'naive-ui'
 import { useStore } from 'vuex'
 import { sleep } from './../../utils.js'
 import { proofOfAge } from './../zkPrograms/ProofOfAge.js'
+import { useMessage } from 'naive-ui'
 import {
   CircuitString,
   Field,
@@ -14,6 +15,7 @@ import hljs from 'highlight.js/lib/core'
 import json from 'highlight.js/lib/languages/json'
 hljs.registerLanguage('json', json)
 
+const message = useMessage()
 const store = useStore()
 const themeVars = useThemeVars()
 const data = ref({
@@ -50,24 +52,31 @@ const createProof = async () => {
     }
     */
 
-    const proof = await proofOfAge.proveAge(
-      Field(data.value.ageToProveInYears),
-      CircuitString.fromString(pid.data.name),
-      CircuitString.fromString(pid.data.surname),
-      CircuitString.fromString(pid.data.country),
-      CircuitString.fromString(pid.data.pno),
-      Field(pid.data.timestamp),
-      Signature.fromJSON(pid.signature)
-    );
+    try {
+      const proof = await proofOfAge.proveAge(
+        Field(data.value.ageToProveInYears),
+        CircuitString.fromString(pid.data.name),
+        CircuitString.fromString(pid.data.surname),
+        CircuitString.fromString(pid.data.country),
+        CircuitString.fromString(pid.data.pno),
+        Field(pid.data.timestamp),
+        Signature.fromJSON(pid.signature)
+      );
 
-    const jsonProof = proof.toJSON()
-    data.value.proof = JSON.stringify(jsonProof, null, 2)
+      const jsonProof = proof.toJSON()
+      data.value.proof = JSON.stringify(jsonProof, null, 2)
 
-    // save proof to store (to be able to access it form other components)
-    store.dispatch('proofs/saveData', { proofName: props.selectedProof, proof: jsonProof })
-
+      // save proof to store (to be able to access it form other components)
+      store.dispatch('proofs/saveData', { proofName: props.selectedProof, proof: jsonProof })
+      emit('finished')
+    } catch (error) {
+      console.error(error);
+      message.error(
+        'Something is wrong. You sure you are old enough? 👵🏼',
+        { closable: true, duration: 10000 }
+      )
+    }
     data.value.isLoading = false
-    emit('finished')
 }
 
 onMounted(async () => {
