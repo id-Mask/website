@@ -17,6 +17,10 @@ const props = defineProps({
 
 const store = useStore()
 const themeVars = useThemeVars()
+const verificationCodeModal = ref({
+  show: false,
+  verificationCode: null,
+})
 
 const data = reactive({
   sources:  [
@@ -24,29 +28,78 @@ const data = reactive({
     { name: 'Mock-service' }
   ],
   selectedSource: null,
+  selectedCountry: null,
   personalIdentificationNumber: null,
   isLoading: false,
   pid: '',
 })
 
-const getPID = async () => {
-  data.isLoading = true
+const getSmartIDPID = async () => {
+  const sessionData = await fetch("https://smart-id-oracle-2qz4wkdima-uc.a.run.app/initiateSession", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      pno: data.personalIdentificationNumber,
+      country: data.selectedCountry,
+      displayText: '🙋, this is idMask requesting your data 🙌'
+    }),
+  })
+  const sessionData_ = await sessionData.json()
+
+  // show modal with verification code
+  verificationCodeModal.value.show = true
+  verificationCodeModal.value.verificationCode = sessionData_.verificationCode
+
+  const response = await fetch("https://smart-id-oracle-2qz4wkdima-uc.a.run.app/getData", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(sessionData_),
+  })
+  const response_ = await response.json()
+
+  verificationCodeModal.value.show = false
+  return response_
+}
+
+const getMockPID = async () => {
   const response = await fetch("https://smart-id-oracle-2qz4wkdima-uc.a.run.app/get_mock_data", {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
   })
-  const response_ = await response.json()
-  data.isLoading = false
-  emit('finished')
-  store.dispatch('pid/saveData', response_)
-  return response_
+  return await response.json()
+}
+
+const getPID = async () => {
+    data.isLoading = true
+    let response = null
+
+    switch (data.selectedSource) {
+      case 'Mock-service':
+        response = await getMockPID()
+        break;
+      case 'Smart-ID':
+        response = await getSmartIDPID()
+        break;
+      default:
+        console.log(`Sorry, we are out of ${data.selectedSource}.`)
+    }
+
+    data.isLoading = false
+    emit('finished')
+    store.dispatch('pid/saveData', response)
+    data.pid = response
 }
 
 watch(() => data.selectedSource, async (_selectedSource) => {
+  // trigger on click (needed because it'r radio, not a button)
   if (_selectedSource == 'Mock-service') {
-    data.pid = await getPID()
+    await getPID()
   }
 })
 
@@ -64,7 +117,7 @@ watch(() => data.selectedSource, async (_selectedSource) => {
           Pick your personal identification data streamline service below.
         </p>
       </n-text>
-      <n-radio-group v-model:value="data.selectedSource" size="medium" :disabled="data.isLoading">
+      <n-radio-group v-model:value="data.selectedSource" :disabled="data.isLoading">
         <n-radio-button
           v-for="source in data.sources"
           :value="source.name"
@@ -73,12 +126,33 @@ watch(() => data.selectedSource, async (_selectedSource) => {
       </n-radio-group>
       <n-collapse-transition :show="data.selectedSource == 'Smart-ID'">
         <n-input-group>
-          <n-button type="primary">
+          <n-button type="primary" @click="getPID()">
             Get data
           </n-button>
-          <n-input
+          <n-select
+            placeholder=""
+            :options="[
+              {
+                label: 'EE',
+                value: 'EE',
+              },
+              {
+                label: 'LV',
+                value: 'LV',
+              },
+              {
+                label: 'LT',
+                value: 'LT',
+              }
+            ]"
+            v-model:value="data.selectedCountry"
+            style="width: 80px;"
+          />
+          <n-input-number
+            style="width: 100%"
             v-model:value="data.personalIdentificationNumber"
             placeholder="Personal Identification Number"
+            :show-button="false"
           />
         </n-input-group>
       </n-collapse-transition>
@@ -93,6 +167,25 @@ watch(() => data.selectedSource, async (_selectedSource) => {
         </n-card>
       </n-spin>
     </n-space>
+
+    <n-modal v-model:show="verificationCodeModal.show" :mask-closable="false">
+      <n-card
+        style="max-width: 270px"
+        title="Verification Code"
+        :bordered="true"
+      >
+        <n-space justify="center">
+        <n-p :depth="3">
+          Make sure the verification code does match!
+        </n-p>
+        <n-h1>
+          <n-text type="primary">
+            {{ verificationCodeModal.verificationCode }}
+          </n-text>
+        </n-h1>
+      </n-space>
+      </n-card>
+    </n-modal>
 
 </template>
 
