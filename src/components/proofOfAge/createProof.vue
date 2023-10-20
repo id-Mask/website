@@ -31,7 +31,10 @@ const emit = defineEmits(['finished'])
 
 const createProof = async () => {
     data.value.isLoading = true
-    const mock_data = {
+    const pid = store.getters['pid/getData']
+
+    /* pid e.g.:
+    const pid = {
       "data": {
         "name": "Douglas",
         "surname": "Ouse",
@@ -45,15 +48,16 @@ const createProof = async () => {
       },
       "publicKey": "B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN"
     }
+    */
 
     const proof = await proofOfAge.proveAge(
       Field(data.value.ageToProveInYears),
-      CircuitString.fromString(mock_data.data.name),
-      CircuitString.fromString(mock_data.data.surname),
-      CircuitString.fromString(mock_data.data.country),
-      CircuitString.fromString(mock_data.data.pno),
-      Field(mock_data.data.timestamp),
-      Signature.fromJSON(mock_data.signature)
+      CircuitString.fromString(pid.data.name),
+      CircuitString.fromString(pid.data.surname),
+      CircuitString.fromString(pid.data.country),
+      CircuitString.fromString(pid.data.pno),
+      Field(pid.data.timestamp),
+      Signature.fromJSON(pid.signature)
     );
 
     const jsonProof = proof.toJSON()

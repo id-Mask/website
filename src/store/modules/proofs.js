@@ -2,21 +2,21 @@
 const state = () => ({
 
   /* e.g.
-  {
-    proofOfAge: {
-      proof: '',
-      verificationKey: '',
-    },
-    proofOfNonSanctions: {
-      proof: '',
-      verificationKey: '',
+    {
+      proofOfAge: {
+        proof: '',
+        verificationKey: '',
+      },
+      proofOfNonSanctions: {
+        proof: '',
+        verificationKey: '',
+      }
+      proofOfUnique: {
+        proof: '',
+        verificationKey: '',
+      }
     }
-    proofOfUnique: {
-      proof: '',
-      verificationKey: '',
-    }
-  }
- */
+  */
 
   data: {},
 })

@@ -1,6 +1,7 @@
 <script setup>
 import { reactive, ref, onMounted, watch } from 'vue'
 import { useThemeVars } from 'naive-ui'
+import { useStore } from 'vuex'
 import hidableDataWindow from './../componentUtils/hidableDataWindow.vue'
 
 // hljs stuff
@@ -14,6 +15,7 @@ const props = defineProps({
   selectedProof: String,
 })
 
+const store = useStore()
 const themeVars = useThemeVars()
 
 const data = reactive({
@@ -35,9 +37,11 @@ const getPID = async () => {
       'Content-Type': 'application/json',
     },
   })
+  const response_ = await response.json()
   data.isLoading = false
   emit('finished')
-  return await response.json()
+  store.dispatch('pid/saveData', response_)
+  return response_
 }
 
 watch(() => data.selectedSource, async (_selectedSource) => {
