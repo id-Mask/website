@@ -39,14 +39,14 @@ const createProof = async () => {
     const pid = {
       "data": {
         "name": "Douglas",
-        "surname": "Ouse",
+        "surname": "Lyphe",
         "country": "EE",
-        "pno": "PNOLT-40411112845",
-        "timestamp": 1696597311
+        "pno": "PNOEE-67807022776",
+        "currentDate": "2023-10-26"
       },
       "signature": {
-        "r": "4005815270229227556085198150684933726274609081525843350186808600943204775509",
-        "s": "22010117647676154345205272589800128568196540356023825778384435699657257987616"
+        "r": "24098777140448874930684151839724232933324153889241260987160800793000424886288",
+        "s": "26350209170644202625120216193969973021906199319302861651891544714558488811023"
       },
       "publicKey": "B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN"
     }
@@ -59,7 +59,7 @@ const createProof = async () => {
         CircuitString.fromString(pid.data.surname),
         CircuitString.fromString(pid.data.country),
         CircuitString.fromString(pid.data.pno),
-        Field(pid.data.timestamp),
+        CircuitString.fromString(pid.data.currentDate),
         Signature.fromJSON(pid.signature)
       );
 

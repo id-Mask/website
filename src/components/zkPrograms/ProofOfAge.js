@@ -8,7 +8,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import { Field, method, Experimental, Signature, CircuitString, Bool, SmartContract, State, state, } from 'o1js';
-import { verifyOracleData, parseUnixTimestampFromPNO } from './utils.js';
+import { verifyOracleData, parseDateFromPNO, parseDateFromDateString, } from './utils.js';
 export const proofOfAge = Experimental.ZkProgram({
     publicInput: Field,
     publicOutput: Bool,
@@ -19,23 +19,34 @@ export const proofOfAge = Experimental.ZkProgram({
                 CircuitString,
                 CircuitString,
                 CircuitString,
-                Field,
+                CircuitString,
                 Signature, // zkOracle data signature
             ],
-            method(ageToProveInYears, name, surname, country, pno, timestamp, signature) {
+            method(ageToProveInYears, name, surname, country, pno, currentDate, signature) {
                 // verity zkOracle data
-                const verified = verifyOracleData(name, surname, country, pno, timestamp, signature);
+                const verified = verifyOracleData(name, surname, country, pno, currentDate, signature);
                 verified.assertTrue();
-                // verify that (current time - age to prove) > date of birth
-                const secondsPerYear = Field(31536000); // 365 * 24 * 60 * 60;
-                const dateOfBirthUnixTimestamp = parseUnixTimestampFromPNO(pno);
+                const [birthYear, birthMonth, birthDay] = parseDateFromPNO(pno);
+                const [currentYear, currentMonth, currentDay] = parseDateFromDateString(currentDate);
                 // edge case: https://discord.com/channels/484437221055922177/1136989663152840714
-                timestamp
-                    .greaterThan(ageToProveInYears.mul(secondsPerYear))
-                    .assertTrue();
-                const olderThanAgeToProve = timestamp
-                    .sub(ageToProveInYears.mul(secondsPerYear))
-                    .greaterThan(dateOfBirthUnixTimestamp);
+                currentYear.greaterThan(birthYear).assertTrue();
+                // convert everything to days, so that it is easy to compare two numbers
+                // numbers (year, month, day) will be expressed in days, e.g. 2010 = 2010 * 365
+                const daysPerYear = Field(365);
+                const daysPerMonth = Field(30);
+                const birthDateInDays = birthYear
+                    .mul(daysPerYear)
+                    .add(birthMonth.mul(daysPerMonth))
+                    .add(birthDay);
+                const currentDateInDays = currentYear
+                    .mul(daysPerYear)
+                    .add(currentMonth.mul(daysPerMonth))
+                    .add(currentDay);
+                const ageToProveInDays = ageToProveInYears.mul(daysPerYear);
+                // verify that (current date - age to prove) > date of birth
+                const olderThanAgeToProve = currentDateInDays
+                    .sub(ageToProveInDays)
+                    .greaterThan(birthDateInDays);
                 olderThanAgeToProve.assertTrue();
                 return olderThanAgeToProve;
             },

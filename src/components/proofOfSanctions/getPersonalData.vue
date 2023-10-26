@@ -66,7 +66,7 @@ const getSmartIDPID = async () => {
 }
 
 const getMockPID = async () => {
-  const response = await fetch("https://smart-id-oracle-2qz4wkdima-uc.a.run.app/get_mock_data", {
+  const response = await fetch("https://smart-id-oracle-2qz4wkdima-uc.a.run.app/getSmartIDMockData", {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

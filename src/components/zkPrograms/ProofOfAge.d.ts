@@ -16,7 +16,7 @@ export declare const proofOfAge: {
     publicInputType: typeof import("o1js/dist/node/lib/field.js").Field & ((x: string | number | bigint | import("o1js/dist/node/lib/field.js").Field | Uint8Array | import("o1js/dist/node/lib/field.js").FieldVar) => import("o1js/dist/node/lib/field.js").Field);
     publicOutputType: typeof import("o1js/dist/node/lib/bool.js").Bool & ((x: boolean | import("o1js/dist/node/lib/bool.js").Bool | import("o1js/dist/node/lib/field.js").FieldVar) => import("o1js/dist/node/lib/bool.js").Bool);
 } & {
-    proveAge: (publicInput: import("o1js/dist/node/lib/field.js").Field, ...args: [any, any, any, any, import("o1js/dist/node/lib/field.js").Field, Signature] & any[]) => Promise<Proof<import("o1js/dist/node/lib/field.js").Field, import("o1js/dist/node/lib/bool.js").Bool>>;
+    proveAge: (publicInput: import("o1js/dist/node/lib/field.js").Field, ...args: [any, any, any, any, any, Signature] & any[]) => Promise<Proof<import("o1js/dist/node/lib/field.js").Field, import("o1js/dist/node/lib/bool.js").Bool>>;
 };
 export declare class ProofOfAge extends SmartContract {
     num: State<import("o1js/dist/node/lib/field.js").Field>;
