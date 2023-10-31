@@ -18,7 +18,11 @@ const state = () => ({
     }
   */
 
-  data: {},
+  data: {
+    proofOfAge: {
+      address: 'B62qqpAFkz374qJpuFKYZPjT1KxSmnLoY4zEc878FaW4DSxgYNXZiny'
+    }
+  },
 })
 
 const getters = {

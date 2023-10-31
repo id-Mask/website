@@ -1,10 +1,14 @@
 
 const state = () => ({
   state: null,
-  emoji: null
+  emoji: null,
+  graphQLURL: 'https://berkeley.graphql.minaexplorer.com/',
 })
 
 const getters = {
+  getGraphQlEnpoint(state) {
+    return state.graphQLURL
+  },
   getEmoji(state) {
     return state.emoji
   },

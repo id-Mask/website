@@ -15,8 +15,9 @@ const props = defineProps({
 })
 
 const fileList = ref([])
+const address = ref('')
 
-const verifyProof = async (proof) => {
+const verifyStandaloneProof = async (proof) => {
 
   // check if the proof is compiled and vk saved
   // if not compile and save verificationKey to store
@@ -54,10 +55,82 @@ const handleUpload = async ({file, event}) => {
     } catch (error) {
       console.error(error)
     }
-    await verifyProof(json)
+    await verifyStandaloneProof(json)
     // fileList.value = []
   }
   reader.readAsText(file.file)
+}
+
+const verifyOnChainProof = async () => {
+
+  const checkIfAddressHasProof = async (URL, zkAppAddress, address) => {
+    const response = await fetch(URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: `
+          query MyQuery {
+            events(query: {
+              zkAppCommandHash: {
+                zkappCommand: {
+                  accountUpdates: {
+                    body: {publicKey: "${zkAppAddress}"}
+                  },
+                  feePayer: {
+                    body: {
+                      publicKey: "${address}"
+                    }
+                  }
+                }
+              },
+              canonical: true
+            }) {
+              blockHeight
+              canonical
+              dateTime
+              event
+              zkAppCommandHash {
+                zkappCommand {
+                  feePayer {
+                    body {
+                      publicKey
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `,
+      }),
+    })
+    const response_ = await response.json()
+    return response_.data.events.length > 0 ? true : false
+  }
+
+  let msg = message.loading('verifying', { closable: true, duration: 10000 })
+
+  const proof = props.selectedProof.includes('Adulthood') ? 'proofOfAge' : ''
+  const zkAppAddress = store.getters['proofs/getData'][proof].address
+  const URL = store.getters['settings/getGraphQlEnpoint']
+
+  try {
+    let ok = await checkIfAddressHasProof(URL, zkAppAddress, address.value);
+    if (ok) {
+      msg.type = 'success'
+      msg.content = 'Provided proof is valid'
+    } else {
+      msg.type = 'error'
+      msg.content = 'Failed to verify the proof'
+    }
+  } catch (error) {
+    msg.type = 'error'
+    msg.content = 'Something is wrong.'
+  }
+
+
+
 }
 
 </script>
@@ -101,10 +174,10 @@ const handleUpload = async ({file, event}) => {
         </p>
         <div>
           <n-input-group>
-            <n-button type="primary">
+            <n-button type="primary" @click="verifyOnChainProof">
               Verify
             </n-button>
-            <n-input :style="{ width: '100%' }" />
+            <n-input :style="{ width: '100%' }" v-model:value="address"/>
           </n-input-group>
         </div>
       </n-text>
