@@ -1,27 +1,30 @@
 
 const state = () => ({
-
-  /* e.g.
-    {
-      proofOfAge: {
-        proof: '',
-        verificationKey: '',
-      },
-      proofOfNonSanctions: {
-        proof: '',
-        verificationKey: '',
-      }
-      proofOfUnique: {
-        proof: '',
-        verificationKey: '',
-      }
-    }
-  */
-
   data: {
     proofOfAge: {
-      address: 'B62qqpAFkz374qJpuFKYZPjT1KxSmnLoY4zEc878FaW4DSxgYNXZiny'
-    }
+      displayName: 'Proof of Age',
+      emoji: '👵',
+      text: 'Prove that you have lived for more than a certain number of years.',
+      address: 'B62qqpAFkz374qJpuFKYZPjT1KxSmnLoY4zEc878FaW4DSxgYNXZiny',
+      proof: null,
+      verificationKey: null,
+    },
+    proofOfNonSanctions: {
+      displayName: 'Proof of Non-Sanctions',
+      emoji: '🏛️',
+      text: 'Prove that your name is not included on the OFAC sanctions list.',
+      address: null,
+      proof: null,
+      verificationKey: null,
+    },
+    proofOfUniqueHuman: {
+      displayName: 'Proof of Unique Human',
+      emoji: '🧠',
+      text: 'Generate an exclusive identifier that is uniquely yours.',
+      address: null,
+      proof: null,
+      verificationKey: null,
+    },
   },
 })
 

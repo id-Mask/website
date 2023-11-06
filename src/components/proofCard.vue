@@ -1,11 +1,13 @@
 <script setup>
 import { reactive, ref, onMounted, watch } from 'vue'
+import { useStore } from 'vuex'
 import getPersonalData from './proofOfSanctions/getPersonalData.vue'
 import getOFACData from './proofOfSanctions/getOFACData.vue'
 import compileProgram from './proofOfAge/compileProgram.vue'
 import createProof from './proofOfAge/createProof.vue'
 import saveProof from './proofOfAge/saveProof.vue'
 
+const store = useStore()
 const props = defineProps({
   selectedProof: String,
 })
@@ -22,7 +24,7 @@ const components = {
 
 // make sure there's a global instance with unified keys. ProofPage should be ground truth. Here should inherit.
 const proofs = ref({
-  'Proof of Non-Sanctions': {
+  proofOfNonSanctions: {
     steps: [
       { component: 'getPersonalData', finished: false },
       { component: 'getOFACData', finished: false },
@@ -31,7 +33,7 @@ const proofs = ref({
       // { component: 'saveProof' },
     ]
   },
-  'Proof of Adulthood': {
+  proofOfAge: {
     steps: [
       { component: 'getPersonalData', finished: false },
       { component: 'compileProgram', finished: false },
@@ -42,7 +44,7 @@ const proofs = ref({
       // { component: 'saveProof' },
     ]
   },
-  'Proof of Unique-human': {
+  proofOfUniqueHuman: {
     steps: [
       { component: 'getPersonalData', finished: false },
       { component: 'getOFACData', finished: false },
@@ -52,6 +54,13 @@ const proofs = ref({
     ]
   }
 })
+
+// map proof key to it's display name
+const mapping = ref({})
+const proofData = store.getters['proofs/getData']
+Object.keys(proofData).forEach(key => {
+  mapping.value[key] = proofData[key].displayName;
+});
 
 const currentStep = ref(0)
 
@@ -73,7 +82,7 @@ const setFinished = () => {
 }
 
 onMounted( async () => {
-  console.log('createProofs mounted')
+  console.log('proof card mounted')
 })
 
 </script>
@@ -87,7 +96,7 @@ onMounted( async () => {
     <template #header>
       <n-space vertical :size="20">
         <n-space justify="space-between">
-          <div>Create {{ props.selectedProof }}</div>
+          <div>Create {{ mapping[props.selectedProof] }}</div>
           <n-space horizontal align="start">
             <n-collapse-transition :show="proofs[props.selectedProof].steps[currentStep].finished">
             <n-icon-wrapper>

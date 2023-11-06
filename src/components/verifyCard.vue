@@ -16,6 +16,7 @@ const props = defineProps({
 
 const fileList = ref([])
 const address = ref('')
+const isLoading = ref(false)
 
 const verifyStandaloneProof = async (proof) => {
 
@@ -109,29 +110,35 @@ const verifyOnChainProof = async () => {
     return response_.data.events.length > 0 ? true : false
   }
 
+  isLoading.value = true
   let msg = message.loading('verifying', { closable: true, duration: 10000 })
 
-  const proof = props.selectedProof.includes('Adulthood') ? 'proofOfAge' : ''
-  const zkAppAddress = store.getters['proofs/getData'][proof].address
+  const zkAppAddress = store.getters['proofs/getData'][props.selectedProof].address
   const URL = store.getters['settings/getGraphQlEnpoint']
 
   try {
     let ok = await checkIfAddressHasProof(URL, zkAppAddress, address.value);
     if (ok) {
       msg.type = 'success'
-      msg.content = 'Provided proof is valid'
+      msg.content = 'Provided address has a proof'
     } else {
       msg.type = 'error'
-      msg.content = 'Failed to verify the proof'
+      msg.content = 'Failed to find the proof asociated with the address'
     }
   } catch (error) {
     msg.type = 'error'
     msg.content = 'Something is wrong.'
   }
-
-
+  isLoading.value = false
 
 }
+
+// map proof key to it's display name
+const mapping = ref({})
+const proofData = store.getters['proofs/getData']
+Object.keys(proofData).forEach(key => {
+  mapping.value[key] = proofData[key].displayName;
+});
 
 </script>
 
@@ -143,7 +150,7 @@ const verifyOnChainProof = async () => {
   >
     <template #header>
       <n-space vertical :size="20">
-        <div>Consume {{ props.selectedProof }}</div>
+        <div>Consume {{ mapping[props.selectedProof] }}</div>
       </n-space>
     </template>
       Consuming a proof requires you to perform one of the following:
@@ -174,7 +181,7 @@ const verifyOnChainProof = async () => {
         </p>
         <div>
           <n-input-group>
-            <n-button type="primary" @click="verifyOnChainProof">
+            <n-button type="primary" @click="verifyOnChainProof" :loading="isLoading">
               Verify
             </n-button>
             <n-input :style="{ width: '100%' }" v-model:value="address"/>

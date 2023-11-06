@@ -1,18 +1,21 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onBeforeMount } from 'vue'
 import { useThemeVars } from 'naive-ui'
+import { useStore } from 'vuex'
 import proofCard from './proofCard.vue'
 import verifyCard from './verifyCard.vue'
 import exploreCard from './exploreCard.vue'
 
 const themeVars = useThemeVars()
+const store = useStore()
 
 const tabValue = ref('Create')
-const proofs = ref([
-  { name: 'Proof of Adulthood', emoji: '👵',  text: 'Prove that you have lived for more than a certain number of years.',  isSelected: true },
-  { name: 'Proof of Non-Sanctions', emoji: '🏛️', text: 'Prove that your name is not included on the OFAC sanctions list.', isSelected: false },
-  { name: 'Proof of Unique-human', emoji: '🧠',  text: 'Generate an exclusive identifier that is uniquely yours.',  isSelected: false }
-])
+// const proofs = ref([
+//   { name: 'proofOfAge', displayName: 'Proof of Age',  emoji: '👵',  text: 'Prove that you have lived for more than a certain number of years.',  isSelected: true },
+//   { name: 'proofOfNonSanctions', displayName: 'Proof of Non-Sanctions', emoji: '🏛️', text: 'Prove that your name is not included on the OFAC sanctions list.', isSelected: false },
+//   { name: 'proofOfUniqueHuman', displayName: 'Proof of Unique Human', emoji: '🧠',  text: 'Generate an exclusive identifier that is uniquely yours.',  isSelected: false }
+// ])
+const proofs = ref([])
 
 const selectProof = (proofName) => {
   // mark as slected
@@ -24,9 +27,36 @@ const selectProof = (proofName) => {
   console.log(proofName)
 }
 
-onMounted( async () => {
-  console.log('mounted')
+onBeforeMount( async () => {
+  /*
+    Before mounting get the data from the store.
+    We want to have an array of proofs, e.g.
+    [
+      {
+        name: '',
+        displayName: '',
+        emoji: '',
+        text: '',
+        isSelected: bool
+      },
+      ...
+    ]
+  */
+  const data = store.getters['proofs/getData']
+  proofs.value = Object.keys(data).map(key => {
+    return {
+      name: key,
+      displayName: data[key].displayName,
+      emoji: data[key].emoji,
+      text: data[key].text,
+      isSelected: false,
+    };
+  });
+
+  // set first proof to selected
+  selectProof(Object.keys(data)[0])
 })
+
 </script>
 
 <template>
@@ -55,7 +85,7 @@ onMounted( async () => {
                   </n-avatar>
                   <n-space vertical align="start" :size="5">
                   <n-text :depth="2">
-                    {{ proof.name }}
+                    {{ proof.displayName }}
                   </n-text>
                   <n-text :depth="3" style="font-size: 90%">
                     {{ proof.text }}
