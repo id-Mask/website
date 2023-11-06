@@ -10,11 +10,6 @@ const themeVars = useThemeVars()
 const store = useStore()
 
 const tabValue = ref('Create')
-// const proofs = ref([
-//   { name: 'proofOfAge', displayName: 'Proof of Age',  emoji: '👵',  text: 'Prove that you have lived for more than a certain number of years.',  isSelected: true },
-//   { name: 'proofOfNonSanctions', displayName: 'Proof of Non-Sanctions', emoji: '🏛️', text: 'Prove that your name is not included on the OFAC sanctions list.', isSelected: false },
-//   { name: 'proofOfUniqueHuman', displayName: 'Proof of Unique Human', emoji: '🧠',  text: 'Generate an exclusive identifier that is uniquely yours.',  isSelected: false }
-// ])
 const proofs = ref([])
 
 const selectProof = (proofName) => {
@@ -24,7 +19,6 @@ const selectProof = (proofName) => {
       isSelected: (proof.name == proofName) ? true : false
     })
   )
-  console.log(proofName)
 }
 
 onBeforeMount( async () => {
