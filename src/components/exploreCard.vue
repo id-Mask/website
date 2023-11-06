@@ -1,5 +1,5 @@
 <script setup>
-import { ref, h } from 'vue'
+import { ref, h, onMounted } from 'vue'
 import { useThemeVars, NTag } from 'naive-ui'
 import { useStore } from 'vuex'
 import { useMessage } from 'naive-ui'
@@ -16,92 +16,111 @@ const props = defineProps({
 
 const columns = ref([
   {
-    title: "Name",
-    key: "name"
+    title: 'Date',
+    key: 'dateTime'
   },
   {
-    title: "Age",
-    key: "age"
+    title: 'Block',
+    key: 'blockHeight'
   },
   {
-    title: "Address",
-    key: "address"
-  },
-  {
-  title: "Tags",
-  key: "tags",
-  render(row) {
-    const tags = row.tags.map((tagKey) => {
+    title: 'Transaction',
+    key: 'zkAppCommandHash.hash',
+    render(row) {
+      let txHash = row.zkAppCommandHash.hash
+      let txHash_ = txHash.slice(0, 5) + ' ... ' + txHash.slice(-5)
+      let url = store.getters['settings/getBlockExplorerEnpoint']
       return h(
-        NTag,
-        {
-          style: {
-            marginRight: "6px"
-          },
-          type: "primary",
-          bordered: false
-        },
-        {
-          default: () => tagKey
-        }
-      );
-    });
-    return tags;
-  }
-}
+        'a', {
+          href: `${url}tx/${txHash}`,
+          target: '_blank'
+        }, txHash_
+      )
+    }
+  },
+  {
+    title: 'Address',
+    key: 'zkAppCommandHash.zkappCommand.feePayer.body.publicKey',
+    render(row) {
+      let address = row.zkAppCommandHash.zkappCommand.feePayer.body.publicKey
+      let publicKey_ = address.slice(0, 5) + ' ... ' + address.slice(-5)
+      let url = store.getters['settings/getBlockExplorerEnpoint']
+      return h(
+        'a', {
+          href: `${url}/account/${address}`,
+          target: '_blank'
+        }, publicKey_
+      )
+    }
+  },
+  {
+    title: 'Data',
+    key: 'event'
+  },
 ])
 
-const data = ref([
-  {
-    key: 0,
-    name: "John Brown",
-    age: 32,
-    address: "New York No. 1 Lake Park",
-    tags: ["nice", "developer"]
-  },
-  {
-    key: 1,
-    name: "Jim Green",
-    age: 42,
-    address: "London No. 1 Lake Park",
-    tags: ["wow"]
-  },
-  {
-    key: 2,
-    name: "Joe Black",
-    age: 32,
-    address: "Sidney No. 1 Lake Park",
-    tags: ["cool", "teacher"]
-  },
-  {
-    key: 1,
-    name: "Jim Green",
-    age: 42,
-    address: "London No. 1 Lake Park",
-    tags: ["wow"]
-  },
-  {
-    key: 2,
-    name: "Joe Black",
-    age: 32,
-    address: "Sidney No. 1 Lake Park",
-    tags: ["cool", "teacher"]
-  },
-  {
-    key: 1,
-    name: "Jim Green",
-    age: 42,
-    address: "London No. 1 Lake Park",
-    tags: ["wow"]
-  },
-  {
-    key: 2,
-    name: "Joe Black",
-    age: 32,
-    address: "Sidney No. 1 Lake Park",
-    tags: ["cool", "teacher"]
-  }
-])
+const isLoading = ref(false)
+const data = ref([])
+
+const getProofs = async (url, zkAppKey) => {
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      query: `
+        query MyQuery {
+          events(query: {
+            zkAppCommandHash: {
+              zkappCommand: {
+                accountUpdates: {
+                  body: {publicKey: "${zkAppKey}"}
+                },
+                feePayer: {}
+              }
+            },
+            canonical: true
+          }) {
+            blockHeight
+            canonical
+            dateTime
+            event
+            zkAppCommandHash {
+              zkappCommand {
+                feePayer {
+                  body {
+                    publicKey
+                  }
+                }
+              }
+              hash
+            }
+          }
+        }
+      `,
+    }),
+  });
+  const response_ = await response.json()
+  return response_
+};
+
+onMounted( async () => {
+  isLoading.value = true
+  const url = store.getters['settings/getGraphQlEnpoint']
+  const zkAppKey = store.getters['proofs/getData'][props.selectedProof].address
+
+  const data_ = await getProofs(url, zkAppKey)
+  data.value = data_.data.events
+  isLoading.value = false
+})
+
+// map proof key to it's display name
+const mapping = ref({})
+const proofData = store.getters['proofs/getData']
+Object.keys(proofData).forEach(key => {
+  mapping.value[key] = proofData[key].displayName;
+});
 
 </script>
 
@@ -113,15 +132,13 @@ const data = ref([
   >
     <template #header>
       <n-space vertical :size="20">
-        <div>Explore {{ props.selectedProof }}</div>
+        <div>Explore {{ mapping[props.selectedProof] }}</div>
       </n-space>
     </template>
-
-      Its possible to explore proofs that are put on chain. Proofs save to user's device stay private.
-
       <n-text :depth="3" style="font-size: 90%; text-align: justify;">
         <p>
-          Below are all of the proofs created and put on-chain. These addresses have certainly have asociated proofs.
+          It's only possible to explore proofs that are put on-chain. Proofs saved to user's device stay private.
+          Below are all of the {{ mapping[props.selectedProof] }} proofs created and put on-chain.
         </p>
       </n-text>
 
@@ -130,6 +147,7 @@ const data = ref([
         :columns="columns"
         :data="data"
         :pagination="{ pageSize: 5 }"
+        :loading="isLoading"
       />
 
     <template #action>

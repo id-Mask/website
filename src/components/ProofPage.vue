@@ -101,7 +101,7 @@ onBeforeMount( async () => {
         <n-tab-pane name="Consume" tab="Consume" display-directive="show">
           <verifyCard :selectedProof="proofs.filter((proof) => proof.isSelected)[0].name" />
         </n-tab-pane>
-        <n-tab-pane name="Explore" tab="Explore" display-directive="show">
+        <n-tab-pane name="Explore" tab="Explore" display-directive="if">
           <exploreCard :selectedProof="proofs.filter((proof) => proof.isSelected)[0].name" />
         </n-tab-pane>
       </n-tabs>
