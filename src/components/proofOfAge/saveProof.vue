@@ -3,6 +3,9 @@ import { ref, onMounted } from 'vue'
 import { useThemeVars } from 'naive-ui'
 import { useStore } from 'vuex'
 
+import { Mina, PublicKey, fetchAccount } from 'o1js'
+import { proofOfAge, ProofOfAge, ProofOfAgeProof } from './../zkPrograms/ProofOfAge.js'
+
 const store = useStore()
 const themeVars = useThemeVars()
 const data = ref({
@@ -33,8 +36,72 @@ const saveProof = async () => {
   emit('finished')
 }
 
-onMounted(async () => {
-})
+const saveProofOnChain_ = async () => {
+  const proofJson = store.getters['proofs/getData'][props.selectedProof].proof
+  const zkProgram = proofOfAge
+  const SmartContractProgram = ProofOfAge
+  const zkAppAddress = store.getters['proofs/getData'][props.selectedProof].address
+  await saveProofOnChain(
+    proofJson,
+    ProofOfAgeProof,
+    SmartContractProgram,
+    zkAppAddress
+  )
+  emit('finished')
+}
+
+const saveProofOnChain = async (
+  proofJson,
+  ProofJson,
+  SmartContractProgram,
+  zkAppAddress
+) => {
+
+  // setup Mina network
+  const networkURL = 'https://proxy.berkeley.minaexplorer.com/graphql';
+  const Network = Mina.Network(networkURL);
+  Mina.setActiveInstance(Network);
+
+  // connect wallet
+  const accounts = await window.mina.requestAccounts()
+
+  // compile
+  await SmartContractProgram.compile();
+
+  // json -> proof
+  const proof = ProofJson.fromJSON(proofJson);
+  console.log('proof', proof);
+
+  // fetch on-chain state
+  const zkAppAddress_ = PublicKey.fromBase58(zkAppAddress);
+  let { account, error } = await fetchAccount({ publicKey: zkAppAddress_ });
+  console.log('fetch account', account, error)
+
+  try {
+    // create transaction
+    const tx = await Mina.transaction(() => {
+      let zkApp = new SmartContractProgram(zkAppAddress_);
+      zkApp.verifyProof(proof);
+    });
+    await tx.prove();
+    console.log(tx.toJSON());
+
+    // send transaction
+    const { hash } = await window.mina.sendTransaction({
+      transaction: tx.toJSON(),
+      feePayer: {
+        fee: '',
+        memo: 'id-Mask',
+      },
+    })
+    console.log('Transaction sent!', hash)
+
+  } catch (error) {
+    console.log(error);
+  };
+
+};
+
 
 </script>
 
@@ -66,7 +133,7 @@ onMounted(async () => {
         </template>
         Save as json
       </n-button>
-      <n-button>
+      <n-button @click="saveProofOnChain_()">
         <template #icon>
           <n-icon :color="themeVars.primaryColor">
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512"><path d="M440.9 136.3a4 4 0 0 0 0-6.91L288.16 40.65a64.14 64.14 0 0 0-64.33 0L71.12 129.39a4 4 0 0 0 0 6.91L254 243.88a4 4 0 0 0 4.06 0z" fill="currentColor"></path><path d="M54 163.51a4 4 0 0 0-6 3.49v173.89a48 48 0 0 0 23.84 41.39L234 479.51a4 4 0 0 0 6-3.46V274.3a4 4 0 0 0-2-3.46z" fill="currentColor"></path><path d="M272 275v201a4 4 0 0 0 6 3.46l162.15-97.23A48 48 0 0 0 464 340.89V167a4 4 0 0 0-6-3.45l-184 108a4 4 0 0 0-2 3.45z" fill="currentColor"></path></svg>

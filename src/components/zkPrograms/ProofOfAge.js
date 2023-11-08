@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Field, method, Experimental, Signature, CircuitString, Bool, SmartContract, State, state, } from 'o1js';
+import { Field, method, Experimental, Signature, CircuitString, Bool, SmartContract, Permissions, } from 'o1js';
 import { verifyOracleData, parseDateFromPNO, parseDateFromDateString, } from './utils.js';
 export const proofOfAge = Experimental.ZkProgram({
     publicInput: Field,
@@ -53,30 +53,41 @@ export const proofOfAge = Experimental.ZkProgram({
         },
     },
 });
+/*
+Use the zkPragram defined above to create an on-chain smart contract that
+consume the proof created by the program above and thus 'put' the proof on chain
+*/
+export class ProofOfAgeProof extends Experimental.ZkProgram.Proof(proofOfAge) {
+}
 export class ProofOfAge extends SmartContract {
     constructor() {
         super(...arguments);
-        this.num = State();
+        this.events = {
+            'provided-valid-proof-with-age': Field,
+        };
     }
     init() {
         super.init();
-        this.num.set(Field(1));
+        // https://docs.minaprotocol.com/zkapps/o1js/permissions#types-of-permissions
+        this.account.permissions.set({
+            ...Permissions.default(),
+        });
     }
-    proveAge() {
-        // proof.verify().assertTrue();
-        const currentState = this.num.getAndAssertEquals();
-        const newState = currentState.add(1);
-        this.num.set(newState);
+    verifyProof(proof) {
+        // if the proof is invalid, this will fail
+        // its impossible to run past this withought a valid proof
+        proof.verify();
+        // the above is enough to be able to check if an address has a proof
+        // but there needs to be a way to save the number of years that are proved
+        // emit an event with number of years to be able to query it via archive nodes
+        // surely events are not designed for this, but it will do the trick..?
+        this.emitEvent('provided-valid-proof-with-age', proof.publicInput);
     }
 }
 __decorate([
-    state(Field),
-    __metadata("design:type", Object)
-], ProofOfAge.prototype, "num", void 0);
-__decorate([
     method,
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [ProofOfAgeProof]),
     __metadata("design:returntype", void 0)
-], ProofOfAge.prototype, "proveAge", null);
+], ProofOfAge.prototype, "verifyProof", null);
 //# sourceMappingURL=ProofOfAge.js.map

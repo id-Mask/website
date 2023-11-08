@@ -1,4 +1,4 @@
-import { Field, PublicKey, Circuit, } from 'o1js';
+import { Field, PublicKey, PrivateKey, Signature, CircuitString, Circuit, } from 'o1js';
 const verifyOracleData = (name, surname, country, pno, currentDate, signature) => {
     const PUBLIC_KEY = 'B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN';
     const publicKey = PublicKey.fromBase58(PUBLIC_KEY);
@@ -59,5 +59,30 @@ const parseDateFromDateString = (currentDate) => {
     const dateDay = dayFirstDigit.mul(Field(10)).add(daySecondDigit);
     return [dateYears, dateMonth, dateDay];
 };
-export { verifyOracleData, parseDateFromPNO, parseDateFromDateString };
+const zkOracleResponseMock = () => {
+    const personalData = {
+        name: 'Hilary',
+        surname: 'Ouse',
+        country: 'EE',
+        pno: 'PNOLT-41111117143',
+        currentDate: '2023-10-24',
+    };
+    const TESTING_PRIVATE_KEY = process.env.TESTING_PRIVATE_KEY;
+    const privateKey = PrivateKey.fromBase58(TESTING_PRIVATE_KEY);
+    const publicKey = privateKey.toPublicKey();
+    const dataToSign = [
+        ...CircuitString.fromString(personalData.name).toFields(),
+        ...CircuitString.fromString(personalData.surname).toFields(),
+        ...CircuitString.fromString(personalData.country).toFields(),
+        ...CircuitString.fromString(personalData.pno).toFields(),
+        ...CircuitString.fromString(personalData.currentDate).toFields(),
+    ];
+    const signature = Signature.create(privateKey, dataToSign);
+    return {
+        data: personalData,
+        signature: signature.toJSON(),
+        publicKey: publicKey.toBase58(),
+    };
+};
+export { verifyOracleData, parseDateFromPNO, parseDateFromDateString, zkOracleResponseMock, };
 //# sourceMappingURL=utils.js.map
