@@ -103,14 +103,17 @@ onMounted(async () => {
       </p>
     </n-text>
 
-    <n-input-number
-      v-model:value="data.ageToProveInYears"
-      placeholder="the number of years"
-      min="1"
-    />
-    <n-button type="primary" @click="createProof()">
-      Create proof
-    </n-button>
+    <n-input-group>
+      <n-button type="primary" @click="createProof()">
+        Create proof
+      </n-button>
+      <n-input-number
+        v-model:value="data.ageToProveInYears"
+        placeholder="the number of years"
+        style="width: 100%;"
+        min="1"
+      />
+    </n-input-group>
 
     <n-spin :show="data.isLoading" style="padding-top: 1.3em;">
       <n-card v-if="data.proof || data.isLoading">
@@ -118,7 +121,13 @@ onMounted(async () => {
           Created proof:
           <br><br>
           <n-scrollbar x-scrollable>
-            <n-code :code="data.proof ? data.proof : '{}'" :hljs="hljs" language="json" class="code" style="white-space: nowrap;"/>
+            <n-code
+              :code="data.proof ? data.proof : '{}'"
+              :hljs="hljs"
+              language="json"
+              class="code"
+              style="white-space: nowrap;"
+            />
           </n-scrollbar>
         </template>
       </n-card>

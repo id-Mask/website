@@ -18,7 +18,7 @@ const fileList = ref([])
 const address = ref('')
 const isLoading = ref(false)
 
-const verifyStandaloneProof = async (proof) => {
+const verifyJSONProof = async (proof) => {
 
   // check if the proof is compiled and vk saved
   // if not compile and save verificationKey to store
@@ -56,7 +56,7 @@ const handleUpload = async ({file, event}) => {
     } catch (error) {
       console.error(error)
     }
-    await verifyStandaloneProof(json)
+    await verifyJSONProof(json)
     // fileList.value = []
   }
   reader.readAsText(file.file)

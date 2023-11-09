@@ -54,7 +54,7 @@ onBeforeMount( async () => {
 </script>
 
 <template>
-  <n-divider style="width: 30%" class="centered-container" dashed/>
+  <n-divider style="width: 30%" dashed class="centered-element" />
   <div style="padding: 8em 0em;">
     <n-space :size="30" justify="center" vertical>
 
@@ -116,6 +116,12 @@ onBeforeMount( async () => {
   border-width: 4px;
   border-color: v-bind(themeVars.primaryColor);
   transition: border-width 0.0s ease-in-out;
+}
+
+.centered-element {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
 }
 
 </style>

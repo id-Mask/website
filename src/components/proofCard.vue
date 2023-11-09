@@ -137,6 +137,7 @@ onMounted( async () => {
           tertiary
           type="primary"
           @click="currentStep == 0 ? false : currentStep --"
+          :disabled="currentStep == 0"
         >
           <template #icon>
             <n-icon>
@@ -148,7 +149,7 @@ onMounted( async () => {
           tertiary
           type="primary"
           @click="currentStep >= (proofs[props.selectedProof].steps.length - 1) ? false : currentStep ++"
-          :disabled="!proofs[props.selectedProof].steps[currentStep].finished"
+          :disabled="!proofs[props.selectedProof].steps[currentStep].finished || (currentStep == (proofs[props.selectedProof].steps.length - 1))"
         >
           <template #icon>
             <n-icon>

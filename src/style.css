@@ -4,6 +4,10 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+
+  /* --link-color: #5F5FEAFF; /* Change this color to your preferred link color */ */
+  /* --visited-link-color: #1bbbeb; /* Change this color to your preferred visited link color */ */
+
 }
 
 
@@ -11,12 +15,13 @@ body {
   font-family: "JetBrains Mono";
 }
 
-.centered-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-left: auto;
-  margin-right: auto;
+a {
+  /* color: var(--link-color); */
+  /* text-decoration: underline; */
+}
+
+a:visited {
+  /* color: var(--visited-link-color); */
 }
 
 .prevent-select {
