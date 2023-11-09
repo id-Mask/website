@@ -1,14 +1,16 @@
 <script setup>
-import { ref, h, onMounted } from 'vue'
-import { useThemeVars, NTag } from 'naive-ui'
+import { ref, h, onMounted, watch } from 'vue'
+import { useThemeVars, NTag, useMessage } from 'naive-ui'
 import { useStore } from 'vuex'
-import { useMessage } from 'naive-ui'
 import { verify } from 'o1js';
+import { useBreakpoint } from 'vooks'
+
 import { proofOfAge } from './zkPrograms/ProofOfAge.js'
 
 const themeVars = useThemeVars()
 const store = useStore()
 const message = useMessage()
+const breakpoint = useBreakpoint()
 
 const props = defineProps({
   selectedProof: String,
@@ -47,7 +49,7 @@ const columns = ref([
       let url = store.getters['settings/getBlockExplorerEnpoint']
       return h(
         'a', {
-          href: `${url}/account/${address}`,
+          href: `${url}account/${address}`,
           target: '_blank'
         }, publicKey_
       )
@@ -105,15 +107,24 @@ const getProofs = async (url, zkAppKey) => {
   return response_
 };
 
-onMounted( async () => {
+const updateTable = async () => {
   isLoading.value = true
   const url = store.getters['settings/getGraphQlEnpoint']
   const zkAppKey = store.getters['proofs/getData'][props.selectedProof].address
 
   const data_ = await getProofs(url, zkAppKey)
-  data.value = data_.data.events
+  data.value = data_.data.events.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime))
   isLoading.value = false
+}
+
+onMounted( async () => {
+  await updateTable()
 })
+
+// trigger when another proof is selected
+watch(() => props.selectedProof,
+  async () => { await updateTable() }
+)
 
 // map proof key to it's display name
 const mapping = ref({})
@@ -125,6 +136,7 @@ Object.keys(proofData).forEach(key => {
 </script>
 
 <template>
+
   <br>
   <n-card
     :segmented="{ content: true, footer: 'soft' }"
@@ -137,8 +149,9 @@ Object.keys(proofData).forEach(key => {
     </template>
       <n-text :depth="3" style="font-size: 90%; text-align: justify;">
         <p>
-          It's only possible to explore proofs that are put on-chain. Proofs saved to user's device stay private.
-          Below are all of the {{ mapping[props.selectedProof] }} proofs created and put on-chain.
+          Proofs saved to user's device stay completely private and invincible.
+          However, it's possible to explore proofs that are put on-chain.
+          Below are the proofs created and put on-chain.
         </p>
       </n-text>
 
@@ -148,6 +161,7 @@ Object.keys(proofData).forEach(key => {
         :data="data"
         :pagination="{ pageSize: 5 }"
         :loading="isLoading"
+        :style="breakpoint == 'xs' ? 'font-size: 80%' : ''"
       />
 
     <template #action>

@@ -150,10 +150,10 @@ Object.keys(proofData).forEach(key => {
   >
     <template #header>
       <n-space vertical :size="20">
-        <div>Consume {{ mapping[props.selectedProof] }}</div>
+        <div>Verify {{ mapping[props.selectedProof] }}</div>
       </n-space>
     </template>
-      Consuming a proof requires you to perform one of the following:
+      Verifying a proof requires you to perform one of the following:
 
       <n-text :depth="3" style="font-size: 90%; text-align: justify;">
         <p>
