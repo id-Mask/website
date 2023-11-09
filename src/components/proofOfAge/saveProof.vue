@@ -1,11 +1,14 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useThemeVars } from 'naive-ui'
+import { ref, onMounted, h } from 'vue'
+import { useThemeVars, useMessage, useNotification } from 'naive-ui'
 import { useStore } from 'vuex'
+import { sleep } from './../../utils.js'
 
 import { Mina, PublicKey, fetchAccount } from 'o1js'
 import { proofOfAge, ProofOfAge, ProofOfAgeProof } from './../zkPrograms/ProofOfAge.js'
 
+const notification = useNotification()
+const message = useMessage()
 const store = useStore()
 const themeVars = useThemeVars()
 const data = ref({
@@ -18,6 +21,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['finished'])
+const isLoading = ref(false)
 
 const saveProof = async () => {
   data.value.isLoading = true
@@ -57,18 +61,25 @@ const saveProofOnChain = async (
   zkAppAddress
 ) => {
 
+  isLoading.value = true
+
   // setup Mina network
+  let msgReactive = message.create('1/7 Setting up Mina network 🛰️', { type: 'loading', duration: 10e9 })
   const networkURL = 'https://proxy.berkeley.minaexplorer.com/graphql';
   const Network = Mina.Network(networkURL);
   Mina.setActiveInstance(Network);
 
   // connect wallet
+  msgReactive.content = "2/7 Connecting wallet 👛"
   const accounts = await window.mina.requestAccounts()
 
   // compile
+  msgReactive.content = "3/7 Compiling smart contract ZK program 👩‍💻"
   await SmartContractProgram.compile();
+  await sleep(500)
 
   // json -> proof
+  msgReactive.content = "4/7 Preparing transaction data 🔄"
   const proof = ProofJson.fromJSON(proofJson);
   console.log('proof', proof);
 
@@ -79,14 +90,15 @@ const saveProofOnChain = async (
 
   try {
     // create transaction
+    msgReactive.content = "5/7 Creating zk proof ⚗️"
     const tx = await Mina.transaction(() => {
       let zkApp = new SmartContractProgram(zkAppAddress_);
       zkApp.verifyProof(proof);
     });
     await tx.prove();
-    console.log(tx.toJSON());
 
     // send transaction
+    msgReactive.content = "6/7 Sending transaction 📤"
     const { hash } = await window.mina.sendTransaction({
       transaction: tx.toJSON(),
       feePayer: {
@@ -94,14 +106,32 @@ const saveProofOnChain = async (
         memo: 'id-Mask',
       },
     })
+
+    emit('finished')
     console.log('Transaction sent!', hash)
-
+    msgReactive.content = "7/7 Transaction sent"
+    msgReactive.type = 'success'
+    const url = `${store.getters['settings/getBlockExplorerEnpoint']}tx/${hash}`
+    notification.success({
+      content: 'Follow the transaction in block explorer',
+      meta: () => h('a', { href: url, target: '_blank' }, 'transaction url'),
+      duration: undefined,
+      keepAliveOnHover: true
+    })
   } catch (error) {
-    console.log(error);
+    console.log('Err', error);
+    message.create(
+      typeof error === 'object' && error !== null
+        ? JSON.stringify(error)
+        : String(error),
+      { type: 'error', closable: true }
+    );
+  } finally {
+    isLoading.value = false
+    await sleep(10000)
+    message.destroyAll()
   };
-
 };
-
 
 </script>
 
@@ -133,7 +163,7 @@ const saveProofOnChain = async (
         </template>
         Save as json
       </n-button>
-      <n-button @click="saveProofOnChain_()">
+      <n-button @click="saveProofOnChain_()" :loading="isLoading">
         <template #icon>
           <n-icon :color="themeVars.primaryColor">
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512"><path d="M440.9 136.3a4 4 0 0 0 0-6.91L288.16 40.65a64.14 64.14 0 0 0-64.33 0L71.12 129.39a4 4 0 0 0 0 6.91L254 243.88a4 4 0 0 0 4.06 0z" fill="currentColor"></path><path d="M54 163.51a4 4 0 0 0-6 3.49v173.89a48 48 0 0 0 23.84 41.39L234 479.51a4 4 0 0 0 6-3.46V274.3a4 4 0 0 0-2-3.46z" fill="currentColor"></path><path d="M272 275v201a4 4 0 0 0 6 3.46l162.15-97.23A48 48 0 0 0 464 340.89V167a4 4 0 0 0-6-3.45l-184 108a4 4 0 0 0-2 3.45z" fill="currentColor"></path></svg>
