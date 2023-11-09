@@ -2,6 +2,7 @@
 const state = () => ({
   state: null,
   emoji: null,
+  // https://api.minascan.io/node/berkeley/v1/graphql
   graphQLURL: 'https://berkeley.graphql.minaexplorer.com/',
   blockExplorer: 'https://minascan.io/berkeley/',
 })
