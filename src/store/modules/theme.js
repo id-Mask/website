@@ -15,6 +15,9 @@ const state = () => ({
       primaryColorPressed: '#1b8beb',
       successColor: '#5F5FEAFF',
     },
+    Message: {
+      padding: '20px 40px'
+    }
   },
 
   // separate overrides for dark / light only
