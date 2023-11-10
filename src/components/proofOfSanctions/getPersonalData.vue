@@ -1,6 +1,6 @@
 <script setup>
 import { reactive, ref, onMounted, watch } from 'vue'
-import { useThemeVars } from 'naive-ui'
+import { useThemeVars, useMessage } from 'naive-ui'
 import { useStore } from 'vuex'
 import hidableDataWindow from './../componentUtils/hidableDataWindow.vue'
 
@@ -15,6 +15,7 @@ const props = defineProps({
   selectedProof: String,
 })
 
+const message = useMessage()
 const store = useStore()
 const themeVars = useThemeVars()
 const verificationCodeModal = ref({
@@ -91,6 +92,11 @@ const getPID = async () => {
     }
 
     data.isLoading = false
+    // handle error here:
+    if (response.error) {
+      message.error(JSON.stringify(response))
+      return null
+    }
     emit('finished')
     store.dispatch('pid/saveData', response)
     data.pid = response
