@@ -17,6 +17,8 @@ const props = defineProps({
 const fileList = ref([])
 const address = ref('')
 const isLoading = ref(false)
+const showModal = ref(false)
+const modalData = ref({})
 
 const verifyJSONProof = async (proof) => {
 
@@ -24,7 +26,7 @@ const verifyJSONProof = async (proof) => {
   // if not compile and save verificationKey to store
   let vk = store.getters['proofs/getData']?.[props.selectedProof]?.verificationKey
   if (!vk) {
-    message.warning('Please be patient. Before verification the program must be compiled.')
+    message.loading('Please be patient. Before verification the program must be compiled.')
     const { verificationKey } = await proofOfAge.compile()
     store.dispatch('proofs/saveData', { proofName: props.selectedProof, verificationKey: verificationKey })
     vk = store.getters['proofs/getData']?.[props.selectedProof]?.verificationKey
@@ -37,6 +39,8 @@ const verifyJSONProof = async (proof) => {
     if (ok) {
       msg.type = 'success'
       msg.content = 'Provided proof is valid'
+      modalData.value = proof.publicInput
+      showModal.value = true
     } else {
       msg.type = 'error'
       msg.content = 'Failed to verify the proof'
@@ -107,7 +111,7 @@ const verifyOnChainProof = async () => {
       }),
     })
     const response_ = await response.json()
-    return response_.data.events.length > 0 ? true : false
+    return response_
   }
 
   isLoading.value = true
@@ -117,17 +121,21 @@ const verifyOnChainProof = async () => {
   const URL = store.getters['settings/getGraphQlEnpoint']
 
   try {
-    let ok = await checkIfAddressHasProof(URL, zkAppAddress, address.value);
+    let response = await checkIfAddressHasProof(URL, zkAppAddress, address.value)
+    let events = response.data.events.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime))
+    let ok = events.length > 0 ? true : false
     if (ok) {
       msg.type = 'success'
       msg.content = 'Provided address has a proof'
+      modalData.value = events[0].event
+      showModal.value = true
     } else {
       msg.type = 'error'
       msg.content = 'Failed to find the proof asociated with the address'
     }
   } catch (error) {
     msg.type = 'error'
-    msg.content = 'Something is wrong.'
+    msg.content = `Something is wrong: ${error}`
   }
   isLoading.value = false
 
@@ -192,6 +200,26 @@ Object.keys(proofData).forEach(key => {
     <template #action>
     </template>
   </n-card>
+
+  <n-modal v-model:show="showModal">
+    <n-card
+      style="max-width: 270px"
+      title="Verified proof data"
+      :bordered="true"
+    >
+      <n-space justify="center">
+      <n-p :depth="3">
+        Provided proof is valid, below is the data that it carries
+      </n-p>
+      <n-h1>
+        <n-text type="primary">
+          {{ modalData }}
+        </n-text>
+      </n-h1>
+    </n-space>
+    </n-card>
+  </n-modal>
+
 </template>
 
 <style>
