@@ -54,7 +54,6 @@ onBeforeMount( async () => {
 </script>
 
 <template>
-  <n-divider style="width: 30%" dashed class="centered-element" />
   <div style="padding: 8em 0em;">
     <n-space :size="30" justify="center" vertical>
 
