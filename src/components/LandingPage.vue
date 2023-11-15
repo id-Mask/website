@@ -29,7 +29,7 @@ const texts = ref([
     'placeholder': ''
   },
   {
-    'text': 'While it might sound like it, the aim is to make it unremarkable everyday reality, not a distant futuristic technology. Give it a try below.',
+    'text': 'While it might sound like it, the aim is to make it unremarkable everyday reality, not a distant technology. Give it a try below.',
     'placeholder': ''
   },
 ])
@@ -114,7 +114,7 @@ const applyRandomEmojiBlur = async () => {
     blurEmoji.value = false
     await sleep(5000)
     blurEmoji.value = true
-    await sleep(2000)
+    await sleep(5000)
   }
 }
 
@@ -139,8 +139,12 @@ defineExpose({
           <n-text style="font-size: 300%" class="shine2 shine3" :class="[blurEmoji ? 'blur' : '']">{{ emoji }}</n-text>
           <n-text style="font-size: 300%" class="shine2 shine3" id="text1">Id-{{ word }}</n-text>
           <n-text style="font-size: 130%" depth="3" class="shine2 shine3">
-            <!-- :gradient="{from: themeVars.primaryColorHover, to: themeVars.primaryColor, deg: 90}" -->
-            zk-powered-<n-gradient-text type="primary" :gradient="{ from: themeVars.primaryColorHover, to: themeVars.primaryColor, deg: 90 }">identity</n-gradient-text>
+            zk-powered-<n-gradient-text
+                type="primary"
+                :gradient="{ from: themeVars.primaryColorHover, to: themeVars.primaryColor, deg: 90 }"
+              >
+              identity
+            </n-gradient-text>
           </n-text>
           <br><br>
         </n-space>
@@ -149,7 +153,13 @@ defineExpose({
         <n-text style="font-size: 90%;" depth="3">
           <div style="text-align: justify;">
             <p>
-              {{ texts[0].placeholder }} <n-gradient-text type="primary">{{ texts[1].placeholder }}</n-gradient-text>
+              {{ texts[0].placeholder }}
+              <n-gradient-text
+                type="primary"
+                :gradient="{ from: themeVars.primaryColorHover, to: themeVars.primaryColor, deg: 90 }"
+              >
+                {{ texts[1].placeholder }}
+              </n-gradient-text>
             </p>
             <p>
               {{ texts[2].placeholder }}
