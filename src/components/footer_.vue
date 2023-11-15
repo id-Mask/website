@@ -8,6 +8,11 @@ const store = useStore()
 
 const proofs = store.getters['proofs/getData']
 
+const backedBy = [
+  { name: 'MINA Protocol', url: 'https://minaprotocol.com/' },
+  { name: 'zkIgnite Cohort 2', url: 'https://zkignite.minaprotocol.com/' }
+]
+
 const shortenAddress = (address) => {
   return address.slice(0, 5) + '...' + address.slice(-5)
 }
@@ -24,9 +29,9 @@ const addressToUrl = (address) => {
         <n-h4>Backed by:</n-h4>
         <n-divider />
         <n-space vertical>
-          <div v-for="item in ['Mina', 'zkIgnite']">
+          <div v-for="item in backedBy">
             <n-text :depth="3" style="font-size: 90%;">
-              {{ item }}
+              <a :href="item.url" target="_blank"> {{ item.name }} </a>
             </n-text>
           </div>
         </n-space>
