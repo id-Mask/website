@@ -22,7 +22,16 @@ const state = () => ({
 
   // separate overrides for dark / light only
   themeOverridesDarkOnly: { },
-  themeOverridesLightOnly: { },
+  themeOverridesLightOnly: {
+    Message: {
+      color: '#EFEFF5FF',
+      colorInfo: '#EFEFF5FF',
+      colorSuccess: '#EFEFF5FF',
+      colorError: '#EFEFF5FF',
+      colorWarning: '#EFEFF5FF',
+      colorLoading: '#EFEFF5FF'
+    }
+  },
 })
 
 const getters = {
