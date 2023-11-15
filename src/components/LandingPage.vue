@@ -132,7 +132,7 @@ defineExpose({
 </script>
 
 <template>
-  <div :style="(isMobile ? 'padding-top: 10em; height: 85vh;' : 'padding-top: 20em; height: 65vh')">
+  <div :style="(isMobile ? 'padding-top: 10em; height: 70vh;' : 'padding-top: 20em; height: 65vh')">
     <n-space vertical align="center">
       <div class="shine1">
         <n-space vertical align="center" class="prevent-select shine1">
@@ -168,7 +168,7 @@ defineExpose({
         </n-text>
       </n-card>
     </n-space>
-</div>
+  </div>
 </template>
 
 <style scoped>
