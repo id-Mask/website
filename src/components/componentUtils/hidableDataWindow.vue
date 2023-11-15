@@ -12,7 +12,8 @@ const blur = ref(true)
 
 const props = defineProps({
   text: String,
-  data: String
+  data: String,
+  blur: { type: Boolean, required: false, default: true },
 })
 
 </script>
@@ -20,7 +21,7 @@ const props = defineProps({
 <template>
   <n-space justify="space-between" align="start">
     {{ props.text }}
-    <n-button strong secondary type="tertiary" size="small" @click="blur = !blur">
+    <n-button v-if="props.blur" strong secondary type="tertiary" size="small" @click="blur = !blur">
       <template #icon>
         <n-icon :size="20">
           <svg v-if="data.blurData" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M12 19c-4 0-7.333-2.333-10-7c2.667-4.667 6-7 10-7s7.333 2.333 10 7c-.42.736-.858 1.414-1.311 2.033"></path><path d="M15 19l2 2l4-4"></path></g></svg>
@@ -29,8 +30,16 @@ const props = defineProps({
       </template>
     </n-button>
   </n-space>
+  <div :style="props.blur ? '' : 'padding-top: 7px;'" />
   <n-scrollbar x-scrollable>
-    <n-code :code="props.data" :hljs="hljs" language="json" class="code" :class="blur ? 'blur' : ''" style="white-space: nowrap;"/>
+    <n-code
+      :code="props.data"
+      :hljs="hljs"
+      language="json"
+      class="code"
+      :class="props.blur ? (blur ? 'blur' : '') : ''"
+      style="white-space: nowrap;"
+    />
   </n-scrollbar>
 </template>
 

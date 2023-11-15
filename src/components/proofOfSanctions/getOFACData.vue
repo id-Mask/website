@@ -3,6 +3,7 @@ import { ref, reactive } from 'vue'
 import { useStore } from 'vuex'
 import hidableDataWindow from './../componentUtils/hidableDataWindow.vue'
 
+const emit = defineEmits(['finished'])
 const store = useStore()
 
 const data = reactive({
@@ -30,6 +31,7 @@ const getData = async () => {
   store.state.sanctions.data = response_
 
   data.isLoading = false
+  emit('finished')
 }
 
 </script>
@@ -74,6 +76,7 @@ const getData = async () => {
           <hidableDataWindow
             text="OFAC matches:"
             :data="JSON.stringify(store.state.sanctions.data, null, 2)"
+            :blur="false"
           />
         </template>
       </n-card>
