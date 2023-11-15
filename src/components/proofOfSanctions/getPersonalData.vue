@@ -29,7 +29,7 @@ const data = reactive({
     { name: 'Mock-service' }
   ],
   selectedSource: null,
-  selectedCountry: null,
+  selectedCountry: 'EE',
   personalIdentificationNumber: null,
   isLoading: false,
   pid: '',
