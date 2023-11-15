@@ -1,10 +1,12 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useStore } from 'vuex'
+import { useMessage } from 'naive-ui'
 import hidableDataWindow from './../componentUtils/hidableDataWindow.vue'
 
 const emit = defineEmits(['finished'])
 const store = useStore()
+const message = useMessage()
 
 const data = reactive({
   minScore: 95,
@@ -14,7 +16,6 @@ const data = reactive({
 const getData = async () => {
 
   data.isLoading = true
-  store.state.sanctions.data = null
 
   const url = store.state.settings.zkOracle
   const response = await fetch(url + 'getOFACmatches', {
@@ -32,6 +33,20 @@ const getData = async () => {
 
   data.isLoading = false
   emit('finished')
+
+  // trigger message
+  if (response_.data.isMatched == 0) {
+    message.create(
+      'Success: Your data does not match any of the OFAC entries',
+      { type: 'success', duration: 10000, closable: true }
+    )
+  } else {
+    message.create(
+      'OFAC match found !?',
+      { type: 'error', duration: 10000, closable: true }
+    )
+  }
+
 }
 
 </script>
@@ -81,29 +96,6 @@ const getData = async () => {
         </template>
       </n-card>
     </n-spin>
-
-    <div v-if="store.state.sanctions.data">
-      <div v-if="!store.state.sanctions.data.data.isMatched">
-        <n-alert title="" type="success" style="margin-top: 15px;">
-          <template #header>
-            <n-text :depth="0" style="font-size: 90%; text-align: justify;">
-              Success: Your data does not match any of the OFAC entries
-            </n-text>
-          </template>
-        </n-alert>
-      </div>
-
-      <div v-else>
-        <n-alert title="" type="error" style="margin-top: 15px;">
-          <template #header>
-            <n-text :depth="0" style="font-size: 90%; text-align: justify;">
-              OFAC match found
-            </n-text>
-          </template>
-        </n-alert>
-      </div>
-    </div>
-
   </n-space>
 
 </template>
