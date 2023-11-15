@@ -26,13 +26,14 @@ const verificationCodeModal = ref({
 const data = reactive({
   sources:  [
     { name: 'Smart-ID' },
-    { name: 'Mock-service' }
+    { name: 'Mock-ID' }
   ],
   selectedSource: null,
   selectedCountry: 'EE',
   personalIdentificationNumber: null,
   isLoading: false,
   pid: '',
+  inputType: 'text'
 })
 
 const getSmartIDPID = async () => {
@@ -83,7 +84,7 @@ const getPID = async () => {
   let response = null
 
   switch (data.selectedSource) {
-    case 'Mock-service':
+    case 'Mock-ID':
       response = await getMockPID()
       break;
     case 'Smart-ID':
@@ -106,8 +107,17 @@ const getPID = async () => {
 
 watch(() => data.selectedSource, async (_selectedSource) => {
   // trigger on click (needed because it'r radio, not a button)
-  if (_selectedSource == 'Mock-service') {
+  if (_selectedSource == 'Mock-ID') {
     await getPID()
+  }
+})
+
+// this is a hack to make sure the input is not regarded as password
+// and explorers do not suggest to save it. This works because on load
+// input type is text, and then once the user starts typing it's set to password
+watch(() => data.personalIdentificationNumber, (_personalIdentificationNumber) => {
+  if (_personalIdentificationNumber.length > 0) {
+    data.inputType = 'password'
   }
 })
 
@@ -156,8 +166,10 @@ watch(() => data.selectedSource, async (_selectedSource) => {
             v-model:value="data.selectedCountry"
             style="width: 80px;"
           />
-          <n-input-number
+          <n-input
             style="width: 100%"
+            :type="data.inputType"
+            show-password-on="mousedown"
             v-model:value="data.personalIdentificationNumber"
             placeholder="Personal Identification Number"
             :show-button="false"
