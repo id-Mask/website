@@ -5,6 +5,7 @@ const state = () => ({
   // https://api.minascan.io/node/berkeley/v1/graphql
   graphQLURL: 'https://berkeley.graphql.minaexplorer.com/',
   blockExplorer: 'https://minascan.io/berkeley/',
+  zkOracle: 'https://id-mask-oracle-2qz4wkdima-uc.a.run.app/',
 })
 
 const getters = {

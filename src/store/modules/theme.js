@@ -2,7 +2,7 @@ import { darkTheme, lightTheme } from 'naive-ui'
 import { merge } from '../../utils'
 
 const state = () => ({
-  themeIsLight: JSON.parse(localStorage.getItem('themeIsLight')),
+  themeIsLight: JSON.parse(localStorage.getItem('themeIsLight')) || true,
   lightTheme: lightTheme,
   darkTheme: darkTheme,
 
@@ -11,8 +11,8 @@ const state = () => ({
     common: {
       borderRadius: '7px',
       primaryColor: '#5F5FEAFF',
-      primaryColorHover: '#1bbbeb',
-      primaryColorPressed: '#1b8beb',
+      primaryColorHover: '#06bef5',
+      primaryColorPressed: '#09dbfd',
       successColor: '#5F5FEAFF',
     },
     Message: {

@@ -36,7 +36,8 @@ const data = reactive({
 })
 
 const getSmartIDPID = async () => {
-  const sessionData = await fetch("https://smart-id-oracle-2qz4wkdima-uc.a.run.app/initiateSession", {
+  const url = store.state.settings.zkOracle
+  const sessionData = await fetch(url + 'initiateSession', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -53,7 +54,7 @@ const getSmartIDPID = async () => {
   verificationCodeModal.value.show = true
   verificationCodeModal.value.verificationCode = sessionData_.verificationCode
 
-  const response = await fetch("https://smart-id-oracle-2qz4wkdima-uc.a.run.app/getData", {
+  const response = await fetch(url + 'getData', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -67,7 +68,8 @@ const getSmartIDPID = async () => {
 }
 
 const getMockPID = async () => {
-  const response = await fetch("https://smart-id-oracle-2qz4wkdima-uc.a.run.app/getSmartIDMockData", {
+  const url = store.state.settings.zkOracle
+  const response = await fetch(url + 'getSmartIDMockData', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -77,29 +79,29 @@ const getMockPID = async () => {
 }
 
 const getPID = async () => {
-    data.isLoading = true
-    let response = null
+  data.isLoading = true
+  let response = null
 
-    switch (data.selectedSource) {
-      case 'Mock-service':
-        response = await getMockPID()
-        break;
-      case 'Smart-ID':
-        response = await getSmartIDPID()
-        break;
-      default:
-        console.log(`Sorry, we are out of ${data.selectedSource}.`)
-    }
+  switch (data.selectedSource) {
+    case 'Mock-service':
+      response = await getMockPID()
+      break;
+    case 'Smart-ID':
+      response = await getSmartIDPID()
+      break;
+    default:
+      console.log(`Sorry, we are out of ${data.selectedSource}.`)
+  }
 
-    data.isLoading = false
-    // handle error here:
-    if (response.error) {
-      message.error(JSON.stringify(response))
-      return null
-    }
-    emit('finished')
-    store.dispatch('pid/saveData', response)
-    data.pid = response
+  data.isLoading = false
+  // handle error here:
+  if (response.error) {
+    message.error(JSON.stringify(response))
+    return null
+  }
+  emit('finished')
+  store.dispatch('pid/saveData', response)
+  data.pid = response
 }
 
 watch(() => data.selectedSource, async (_selectedSource) => {

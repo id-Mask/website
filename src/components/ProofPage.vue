@@ -59,7 +59,13 @@ onBeforeMount( async () => {
     <n-space :size="30" justify="center" vertical>
 
       <n-space justify="center">
-        <n-h1><n-gradient-text type="primary">Identity</n-gradient-text> Proofs</n-h1>
+        <n-h1>
+          <n-gradient-text
+            type="primary"
+            :gradient="{ from: themeVars.primaryColorHover, to: themeVars.primaryColor, deg: 90 }"
+          >Identity</n-gradient-text>
+          Proofs
+        </n-h1>
       </n-space>
 
       <n-space horizontal justify="center">
