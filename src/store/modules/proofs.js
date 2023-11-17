@@ -12,7 +12,7 @@ const state = () => ({
     proofOfNonSanctions: {
       displayName: 'Proof of Non-Sanctions',
       emoji: '🏛️',
-      text: 'Prove that your name is not included on the OFAC sanctions list.',
+      text: 'Prove that your name is not included in the OFAC sanctions list.',
       address: null,
       proof: null,
       verificationKey: null,
