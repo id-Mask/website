@@ -4,7 +4,8 @@ import { useStore } from 'vuex'
 import getPersonalData from './proofOfSanctions/getPersonalData.vue'
 import getOFACData from './proofOfSanctions/getOFACData.vue'
 import compileProgram from './proofOfAge/compileProgram.vue'
-import createProof from './proofOfAge/createProof.vue'
+import createProofOfAge from './proofOfAge/createProofOfAge.vue'
+import createProofOfSanctions from './proofOfSanctions/createProofOfSanctions.vue'
 import saveProof from './proofOfAge/saveProof.vue'
 
 const store = useStore()
@@ -17,7 +18,8 @@ const components = {
   'getPersonalData': getPersonalData,
   'getOFACData': getOFACData,
   'compileProgram': compileProgram,
-  'createProof': createProof,
+  'createProofofAge': createProofOfAge,
+  'createProofOfSanctions': createProofOfSanctions,
   'saveProof': saveProof,
 }
 
@@ -28,7 +30,7 @@ const proofs = ref({
     steps: [
       { component: 'getPersonalData', finished: false },
       { component: 'compileProgram', finished: false },
-      { component: 'createProof', finished: false },
+      { component: 'createProofofAge', finished: false },
       { component: 'saveProof', finished: false },
       // { component: 'compileZKP' },
       // { component: 'createProof' },
@@ -40,7 +42,7 @@ const proofs = ref({
       { component: 'getPersonalData', finished: false },
       { component: 'compileProgram', finished: false },
       { component: 'getOFACData', finished: false },
-      { component: 'createProof', finished: false },
+      { component: 'createProofOfSanctions', finished: false },
       { component: 'saveProof', finished: false },
     ]
   },

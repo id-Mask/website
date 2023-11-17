@@ -3,13 +3,15 @@ import { ref, onMounted } from 'vue'
 import { useThemeVars } from 'naive-ui'
 import { useStore } from 'vuex'
 import { sleep } from './../../utils.js'
-import { proofOfAge } from './../zkPrograms/ProofOfAge.js'
 import { useMessage } from 'naive-ui'
 import {
   CircuitString,
   Field,
+  Bool,
   Signature
 } from 'o1js'
+
+import { proofOfSanctions, PublicInput } from './../zkPrograms/ProofOfSanctions.js'
 
 import hljs from 'highlight.js/lib/core'
 import json from 'highlight.js/lib/languages/json'
@@ -28,40 +30,52 @@ const props = defineProps({
   selectedProof: String,
 })
 
-
 const emit = defineEmits(['finished'])
 
 const createProof = async () => {
     data.value.isLoading = true
-    const pid = store.getters['pid/getData']
+    emit('finished', false)
+    const ofacData = store.state.sanctions.data
 
     /* pid e.g.:
-    const pid = {
+    const ofacData = {
       "data": {
-        "name": "Douglas",
-        "surname": "Lyphe",
-        "country": "EE",
-        "pno": "PNOEE-67807022776",
-        "currentDate": "2023-10-26"
+        "isMatched": 0,
+        "minScore": 95,
+        "currentDate": "2023-11-17"
       },
       "signature": {
-        "r": "24098777140448874930684151839724232933324153889241260987160800793000424886288",
-        "s": "26350209170644202625120216193969973021906199319302861651891544714558488811023"
+        "r": "8385305162155431653982403636492076158195401748235962038052254520261262346192",
+        "s": "20488907727414495015698000834244181034194863548194503532107929980174798919322"
       },
-      "publicKey": "B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN"
+      "publicKey": "B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN",
+      "metaData": {
+        "error": false,
+        "sourcesUsed": [
+          {
+            "source": "SDN",
+            "publishDate": "11/16/2023"
+          }
+        ],
+        "matches": {
+          "Douglas Doe": []
+        }
+      }
     }
     */
 
     try {
-      const proof = await proofOfAge.proveAge(
-        Field(data.value.ageToProveInYears),
-        CircuitString.fromString(pid.data.name),
-        CircuitString.fromString(pid.data.surname),
-        CircuitString.fromString(pid.data.country),
-        CircuitString.fromString(pid.data.pno),
-        CircuitString.fromString(pid.data.currentDate),
-        Signature.fromJSON(pid.signature)
-      );
+
+      const publicInput = new PublicInput({
+        isMatched: Bool(ofacData.data.isMatched),
+        minScore: Field(ofacData.data.minScore),
+        currentDate: CircuitString.fromString(ofacData.data.currentDate),
+      })
+
+      const proof = await proofOfSanctions.proveSanctions(
+        publicInput,
+        Signature.fromJSON(ofacData.signature)
+      )
 
       const jsonProof = proof.toJSON()
       data.value.proof = JSON.stringify(jsonProof, null, 2)
@@ -72,7 +86,7 @@ const createProof = async () => {
     } catch (error) {
       console.error(error);
       message.error(
-        'Something is wrong. You sure you are old enough? 👵🏼',
+        'Something is wrong. Are you sure you are not sanctioned? 🏛️',
         { closable: true, duration: 10000 }
       )
     }
@@ -107,12 +121,6 @@ onMounted(async () => {
       <n-button type="primary" @click="createProof()">
         Create proof
       </n-button>
-      <n-input-number
-        v-model:value="data.ageToProveInYears"
-        placeholder="the number of years"
-        style="width: 100%;"
-        min="1"
-      />
     </n-input-group>
 
     <n-spin :show="data.isLoading" style="padding-top: 1.3em;">
@@ -120,7 +128,7 @@ onMounted(async () => {
         <template #action>
           Created proof:
           <br><br>
-          <n-scrollbar x-scrollable>
+          <n-scrollbar style="max-height: 300px" x-scrollable>
             <n-code
               :code="data.proof ? data.proof : '{}'"
               :hljs="hljs"
