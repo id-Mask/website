@@ -8,14 +8,16 @@ const state = () => ({
       address: 'B62qqpAFkz374qJpuFKYZPjT1KxSmnLoY4zEc878FaW4DSxgYNXZiny',
       proof: null,
       verificationKey: null,
+      url: 'https://github.com/id-Mask/smart-contracts/blob/main/src/ProofOfAge.ts',
     },
-    proofOfNonSanctions: {
+    proofOfSanctions: {
       displayName: 'Proof of Non-Sanctions',
       emoji: '🏛️',
       text: 'Prove that your name is not included in the OFAC sanctions list.',
-      address: null,
+      address: 'B62qqhjvvE3dwiX2hF2cZRfmHA7euo8MrzvZhPHgXJNb57vuiWePAWC',
       proof: null,
       verificationKey: null,
+      url: 'https://github.com/id-Mask/smart-contracts/blob/main/src/ProofOfSanctions.ts',
     },
     proofOfUniqueHuman: {
       displayName: 'Proof of Unique Human',
@@ -24,6 +26,7 @@ const state = () => ({
       address: null,
       proof: null,
       verificationKey: null,
+      url: null,
     },
   },
 })
