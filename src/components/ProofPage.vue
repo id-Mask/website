@@ -74,6 +74,8 @@ onBeforeMount( async () => {
               @click="selectProof(proof.name)"
               style="cursor: pointer;"
               :class="proof.isSelected ? 'selected' : ''"
+              embedded
+              hoverable
             >
               <template #default>
                 <n-space horizontal>
