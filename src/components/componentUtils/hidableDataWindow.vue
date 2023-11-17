@@ -31,7 +31,7 @@ const props = defineProps({
     </n-button>
   </n-space>
   <div :style="props.blur ? '' : 'padding-top: 7px;'" />
-  <n-scrollbar x-scrollable>
+  <n-scrollbar style="max-height: 300px" x-scrollable>
     <n-code
       :code="props.data"
       :hljs="hljs"
