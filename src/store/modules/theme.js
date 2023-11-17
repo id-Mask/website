@@ -2,7 +2,7 @@ import { darkTheme, lightTheme } from 'naive-ui'
 import { merge } from '../../utils'
 
 const state = () => ({
-  themeIsLight: JSON.parse(localStorage.getItem('themeIsLight')) || true,
+  themeIsLight: JSON.parse(localStorage.getItem('themeIsLight')) ?? true,
   lightTheme: lightTheme,
   darkTheme: darkTheme,
 
