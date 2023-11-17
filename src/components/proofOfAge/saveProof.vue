@@ -3,9 +3,23 @@ import { ref, onMounted, h } from 'vue'
 import { useThemeVars, useMessage, useNotification } from 'naive-ui'
 import { useStore } from 'vuex'
 import { sleep } from './../../utils.js'
-
 import { Mina, PublicKey, fetchAccount } from 'o1js'
+
 import { proofOfAge, ProofOfAge, ProofOfAgeProof } from './../zkPrograms/ProofOfAge.js'
+import { proofOfSanctions, ProofOfSanctions, ProofOfSanctionsProof } from './../zkPrograms/ProofOfSanctions.js'
+
+const proofs = {
+  proofOfAge: {
+    // ZkProgram: proofOfAge,
+    SmartContract: ProofOfAge,
+    ProofOfZkProgram: ProofOfAgeProof
+  },
+  proofOfSanctions: {
+    // ZkProgram: proofOfSanctions,
+    SmartContract: ProofOfSanctions,
+    ProofOfZkProgram: ProofOfSanctionsProof
+  },
+}
 
 const notification = useNotification()
 const message = useMessage()
@@ -42,12 +56,13 @@ const saveProof = async () => {
 
 const saveProofOnChain_ = async () => {
   const proofJson = store.getters['proofs/getData'][props.selectedProof].proof
-  const zkProgram = proofOfAge
-  const SmartContractProgram = ProofOfAge
+  // const ZkProgram = proofs[props.selectedProof].ZkProgram
+  const SmartContractProgram = proofs[props.selectedProof].SmartContract
+  const ProofOfZkProgram = proofs[props.selectedProof].ProofOfZkProgram
   const zkAppAddress = store.getters['proofs/getData'][props.selectedProof].address
   await saveProofOnChain(
     proofJson,
-    ProofOfAgeProof,
+    ProofOfZkProgram,
     SmartContractProgram,
     zkAppAddress
   )
@@ -118,6 +133,7 @@ const saveProofOnChain = async (
       duration: undefined,
       keepAliveOnHover: true
     })
+    isLoading.value = false
     await sleep(10000)
     message.destroyAll()
   } catch (error) {

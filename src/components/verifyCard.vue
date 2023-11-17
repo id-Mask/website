@@ -4,7 +4,13 @@ import { useThemeVars } from 'naive-ui'
 import { useStore } from 'vuex'
 import { useMessage } from 'naive-ui'
 import { verify } from 'o1js';
+
 import { proofOfAge } from './zkPrograms/ProofOfAge.js'
+import { proofOfSanctions } from './zkPrograms/ProofOfSanctions.js'
+const proofs = {
+  proofOfAge: proofOfAge,
+  proofOfSanctions: proofOfSanctions
+}
 
 const themeVars = useThemeVars()
 const store = useStore()
@@ -24,18 +30,16 @@ const verifyJSONProof = async (proof) => {
 
   // check if the proof is compiled and vk saved
   // if not compile and save verificationKey to store
-  let vk = store.getters['proofs/getData']?.[props.selectedProof]?.verificationKey
-  if (!vk) {
+  if (!store.state.proofs.data[props.selectedProof].verificationKey) {
     message.loading('Please be patient. Before verification the program must be compiled.')
-    const { verificationKey } = await proofOfAge.compile()
-    store.dispatch('proofs/saveData', { proofName: props.selectedProof, verificationKey: verificationKey })
-    vk = store.getters['proofs/getData']?.[props.selectedProof]?.verificationKey
+    const { verificationKey } = await proofs[props.selectedProof].compile()
+    store.state.proofs.data[props.selectedProof].verificationKey = verificationKey
   }
 
   // verify if the provided proof is correct
   let msg = message.loading('verifying', { closable: true, duration: 10000 })
   try {
-    let ok = await verify(proof, vk);
+    let ok = await verify(proof, store.state.proofs.data[props.selectedProof].verificationKey);
     if (ok) {
       msg.type = 'success'
       msg.content = 'Provided proof is valid'
@@ -117,7 +121,7 @@ const verifyOnChainProof = async () => {
   isLoading.value = true
   let msg = message.loading('verifying', { closable: true, duration: 10000 })
 
-  const zkAppAddress = store.getters['proofs/getData'][props.selectedProof].address
+  const zkAppAddress = store.state.proofs.data[props.selectedProof].address
   const URL = store.getters['settings/getGraphQlEnpoint']
 
   try {
@@ -211,11 +215,14 @@ Object.keys(proofData).forEach(key => {
       <n-p :depth="3">
         Provided proof is valid, below is the data that it carries
       </n-p>
+
+      <n-scrollbar style="max-height: 100px">
       <n-h1>
         <n-text type="primary">
           {{ modalData }}
         </n-text>
       </n-h1>
+      </n-scrollbar>
     </n-space>
     </n-card>
   </n-modal>

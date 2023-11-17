@@ -60,7 +60,8 @@ watch(() => props.selectedProof, async () => {
       </p>
       <p>
         After the program is compled, besides being able to actually run it, you also obtain a verification key.
-        The verification key is not really important right now, but it plays a key role during the verification of the proof you're about to create.
+        It's a unique cryptographic blueprint of this particular program.
+        While it's not really important right now, it plays a key role during the verification of the proof you're about to create.
       </p>
     </n-text>
     <n-spin :show="data.isLoading" style="padding-top: 1.3em;">
