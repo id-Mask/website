@@ -8,7 +8,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import { Field, method, Experimental, Signature, CircuitString, Bool, SmartContract, Permissions, } from 'o1js';
-import { verifyOracleData, parseDateFromPNO, parseDateFromDateString, } from './utils.js';
+import { verifyOracleData, parseDateFromPNO, parseDateFromDateString, } from './ProofOfAge.utils.js';
 export const proofOfAge = Experimental.ZkProgram({
     publicInput: Field,
     publicOutput: Bool,
