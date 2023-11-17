@@ -1,12 +1,18 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
 import { sleep } from './../../utils.js'
+
 import { proofOfAge } from './../zkPrograms/ProofOfAge.js'
+import { proofOfSanctions } from './../zkPrograms/ProofOfSanctions.js'
+
+const proofs = {
+  proofOfAge: proofOfAge,
+  proofOfSanctions: proofOfSanctions,
+}
 
 const store = useStore()
 const data = ref({
-  verificationKey: null,
   isLoading: false
 })
 
@@ -16,13 +22,25 @@ const props = defineProps({
 
 const emit = defineEmits(['finished'])
 
-onMounted(async () => {
+const compile = async () => {
+  emit('finished', false)
   data.value.isLoading = true
-  const { verificationKey } = await proofOfAge.compile();
-  store.dispatch('proofs/saveData', { proofName: props.selectedProof, verificationKey: verificationKey })
-  data.value.verificationKey = verificationKey
+  const hasVk = store.state.proofs.data[props.selectedProof].verificationKey
+  if (!hasVk) {
+    const { verificationKey } = await proofs[props.selectedProof].compile();
+    store.state.proofs.data[props.selectedProof].verificationKey = verificationKey
+  }
   data.value.isLoading = false
-  emit('finished')
+  emit('finished', true)
+}
+
+onMounted(async () => {
+  await compile()
+})
+
+// watch if selected proof change and compile another proof on select
+watch(() => props.selectedProof, async () => {
+  await compile()
 })
 
 </script>
@@ -34,24 +52,25 @@ onMounted(async () => {
     </n-text>
     <n-text :depth="3" style="font-size: 90%; text-align: justify;">
       <p>
-        Before you use the program to produce a proof, we need to get the program into you browser and compile it.
-        The aim is to keep your data inside the browser. That is why the program must reside on your device, not a server.
-        This usually takes a while, so be ready to wait a bit. In the mean time, you can check out the program
-        <a href="https://github.com/id-Mask/smart-contracts/blob/main/src/ProofOfAge.ts" target="_blank">source code</a>.
+        Before you use the program to produce a proof, you need to get the program into you browser and compile it.
+        This step ensures that your data remains secure within the confines of your browser, as the program operates
+        directly on your device rather than a remote server. Please be patient as this process may take some time.
+        Meanwhile, you can explore the program's
+        <a :href="store.state.proofs.data[props.selectedProof].url" target="_blank">source code</a>.
       </p>
       <p>
-        After the program is compled, besides being able to actually run it, we also obtain a verification key.
+        After the program is compled, besides being able to actually run it, you also obtain a verification key.
         The verification key is not really important right now, but it plays a key role during the verification of the proof you're about to create.
       </p>
     </n-text>
     <n-spin :show="data.isLoading" style="padding-top: 1.3em;">
-      <n-card v-if="data.verificationKey || data.isLoading">
+      <n-card v-if="store.state.proofs.data[props.selectedProof].verificationKey || data.isLoading">
         <template #action>
           Verification key:
           <br><br>
           <n-scrollbar style="max-height: 200px">
             <n-text :depth="3">
-              {{ data.verificationKey }}
+              {{ store.state.proofs.data[props.selectedProof].verificationKey }}
             </n-text>
           </n-scrollbar>
         </template>
