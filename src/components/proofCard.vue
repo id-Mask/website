@@ -24,15 +24,6 @@ const components = {
 
 // make sure there's a global instance with unified keys. ProofPage should be ground truth. Here should inherit.
 const proofs = ref({
-  proofOfNonSanctions: {
-    steps: [
-      { component: 'getPersonalData', finished: false },
-      { component: 'getOFACData', finished: false },
-      // { component: 'compileZKP' },
-      // { component: 'createProof' },
-      // { component: 'saveProof' },
-    ]
-  },
   proofOfAge: {
     steps: [
       { component: 'getPersonalData', finished: false },
@@ -42,6 +33,15 @@ const proofs = ref({
       // { component: 'compileZKP' },
       // { component: 'createProof' },
       // { component: 'saveProof' },
+    ]
+  },
+  proofOfSanctions: {
+    steps: [
+      { component: 'getPersonalData', finished: false },
+      { component: 'compileProgram', finished: false },
+      { component: 'getOFACData', finished: false },
+      { component: 'createProof', finished: false },
+      { component: 'saveProof', finished: false },
     ]
   },
   proofOfUniqueHuman: {
@@ -64,18 +64,18 @@ Object.keys(proofData).forEach(key => {
 
 const currentStep = ref(0)
 
-const setFinished = () => {
-  proofs.value[props.selectedProof].steps[currentStep.value].finished = true
+const setFinished = (val) => {
+  proofs.value[props.selectedProof].steps[currentStep.value].finished = val ?? true
 
   // set as finished for other proofs as well..?
   // only set if the step has the same component name
   // in practive this will only be the first stop, I guess..?
-  // This might have to be refactored later, I dont thik this is good design.
+  // This might have to be refactored later, not a perfect design.
   const stepName = proofs.value[props.selectedProof].steps[currentStep.value].component
   for (let proof in proofs.value) {
     for (let step = 0; step < proofs.value[proof].steps.length; step++) {
       if (proofs.value[proof].steps[step].component == stepName) {
-        proofs.value[proof].steps[step].finished = true
+        proofs.value[proof].steps[step].finished = val ?? true
       }
     }
   }
@@ -126,7 +126,7 @@ onMounted( async () => {
     <KeepAlive>
       <component
         :is="components[proofs[props.selectedProof].steps[currentStep].component]"
-        @finished="setFinished()"
+        @finished="(val) => setFinished(val)"
         :selectedProof="props.selectedProof"
       />
     </KeepAlive>
