@@ -18,7 +18,7 @@ const components = {
   'getPersonalData': getPersonalData,
   'getOFACData': getOFACData,
   'compileProgram': compileProgram,
-  'createProofofAge': createProofOfAge,
+  'createProofOfAge': createProofOfAge,
   'createProofOfSanctions': createProofOfSanctions,
   'saveProof': saveProof,
 }
@@ -30,7 +30,7 @@ const proofs = ref({
     steps: [
       { component: 'getPersonalData', finished: false },
       { component: 'compileProgram', finished: false },
-      { component: 'createProofofAge', finished: false },
+      { component: 'createProofOfAge', finished: false },
       { component: 'saveProof', finished: false },
       // { component: 'compileZKP' },
       // { component: 'createProof' },
@@ -67,13 +67,13 @@ Object.keys(proofData).forEach(key => {
 const currentStep = ref(0)
 
 const setFinished = (val) => {
-  proofs.value[props.selectedProof].steps[currentStep.value].finished = val ?? true
+  proofs.value[props.selectedProof].steps[getCurrentStep()].finished = val ?? true
 
   // set as finished for other proofs as well..?
   // only set if the step has the same component name
   // in practive this will only be the first stop, I guess..?
   // This might have to be refactored later, not a perfect design.
-  const stepName = proofs.value[props.selectedProof].steps[currentStep.value].component
+  const stepName = proofs.value[props.selectedProof].steps[getCurrentStep()].component
   for (let proof in proofs.value) {
     for (let step = 0; step < proofs.value[proof].steps.length; step++) {
       if (proofs.value[proof].steps[step].component == stepName) {
@@ -81,6 +81,14 @@ const setFinished = (val) => {
       }
     }
   }
+}
+
+const getCurrentStep = () => {
+  // whenever we switch from one proof to another, it might be the case that
+  // previously selected proof had more steps that newly selected proof
+  // thats why in such case we must move to maxStepLength instad of currentStep
+  const maxStepLength = proofs.value[props.selectedProof].steps.length - 1
+  return currentStep.value > maxStepLength ? maxStepLength : currentStep.value
 }
 
 onMounted( async () => {
@@ -100,7 +108,7 @@ onMounted( async () => {
         <n-space justify="space-between">
           <div>Create {{ mapping[props.selectedProof] }}</div>
           <n-space horizontal align="start">
-            <n-collapse-transition :show="proofs[props.selectedProof].steps[currentStep].finished">
+            <n-collapse-transition :show="proofs[props.selectedProof].steps[getCurrentStep()].finished">
             <n-icon-wrapper>
               <n-icon :size="18">
                 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5a.984.984 0 0 0-1.4 0a.984.984 0 0 0 0 1.4l4.19 4.19c.39.39 1.02.39 1.41 0L20.3 7.7a.984.984 0 0 0 0-1.4a.984.984 0 0 0-1.4 0L9 16.2z" fill="currentColor"></path></svg>
@@ -127,7 +135,7 @@ onMounted( async () => {
     <!-- https://vuejs.org/guide/built-ins/keep-alive.html#basic-usage -->
     <KeepAlive>
       <component
-        :is="components[proofs[props.selectedProof].steps[currentStep].component]"
+        :is="components[proofs[props.selectedProof].steps[getCurrentStep()].component]"
         @finished="(val) => setFinished(val)"
         :selectedProof="props.selectedProof"
       />
@@ -153,7 +161,7 @@ onMounted( async () => {
           size="medium"
           type="primary"
           @click="currentStep >= (proofs[props.selectedProof].steps.length - 1) ? false : currentStep ++"
-          :disabled="!proofs[props.selectedProof].steps[currentStep].finished || (currentStep == (proofs[props.selectedProof].steps.length - 1))"
+          :disabled="!proofs[props.selectedProof].steps[getCurrentStep()].finished || (currentStep == (proofs[props.selectedProof].steps.length - 1))"
         >
           <template #icon>
             <n-icon size="25">
