@@ -12,7 +12,7 @@
     "@fontsource/jetbrains-mono": "^5.0.12",
     "@vercel/analytics": "^1.1.1",
     "highlight.js": "^11.8.0",
-    "o1js": "0.13.*",
+    "o1js": "0.14.*",
     "vhook": "^1.0.0",
     "vue": "^3.3.4",
     "vuex": "^4.1.0"

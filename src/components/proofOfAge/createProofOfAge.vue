@@ -11,6 +11,7 @@ import {
 } from 'o1js'
 
 import { proofOfAge } from './../zkPrograms/ProofOfAge.js'
+import { PersonalData } from './../zkPrograms/ProofOfAge.utils.js'
 import { proofOfSanctions } from './../zkPrograms/ProofOfSanctions.js'
 
 import hljs from 'highlight.js/lib/core'
@@ -44,7 +45,7 @@ const createProof = async () => {
         "surname": "Lyphe",
         "country": "EE",
         "pno": "PNOEE-67807022776",
-        "currentDate": "2023-10-26"
+        "currentDate": 20231026
       },
       "signature": {
         "r": "24098777140448874930684151839724232933324153889241260987160800793000424886288",
@@ -55,13 +56,16 @@ const createProof = async () => {
     */
 
     try {
+      const personalData = new PersonalData({
+        name: CircuitString.fromString(pid.data.name),
+        surname: CircuitString.fromString(pid.data.surname),
+        country: CircuitString.fromString(pid.data.country),
+        pno: CircuitString.fromString(pid.data.pno),
+        currentDate: Field(pid.data.currentDate),
+      })
       const proof = await proofOfAge.proveAge(
         Field(data.value.ageToProveInYears),
-        CircuitString.fromString(pid.data.name),
-        CircuitString.fromString(pid.data.surname),
-        CircuitString.fromString(pid.data.country),
-        CircuitString.fromString(pid.data.pno),
-        CircuitString.fromString(pid.data.currentDate),
+        personalData,
         Signature.fromJSON(pid.signature)
       );
 

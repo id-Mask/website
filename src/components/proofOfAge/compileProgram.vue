@@ -3,6 +3,7 @@ import { ref, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
 import { sleep } from './../../utils.js'
 
+import { Cache } from 'o1js'
 import { proofOfAge } from './../zkPrograms/ProofOfAge.js'
 import { proofOfSanctions } from './../zkPrograms/ProofOfSanctions.js'
 
@@ -22,13 +23,44 @@ const props = defineProps({
 
 const emit = defineEmits(['finished'])
 
+const getCache = async () => {
+ /*
+  * Use google cloud bucket to download the cache files.
+  * TODO: figure out how to save the files so that it's possible to pass them to the cache as dir.
+  * How about we overwrite cache.read fn, to read for example from localStorage / sessionStorage? 
+  */
+
+  const fetchCache = false
+  if (fetchCache) {
+    const url = 'https://storage.googleapis.com/idmask/'
+    const files = [
+      'step-pk-zkproofofage-proveage.header',
+      'step-pk-zkproofofage-proveage',
+    ]
+    
+    for (let file of files) {
+      const response = await fetch(url + file)
+      const blob = await response.blob()
+      const localFilePath = `./cache/${file}`
+      const file_ = new File([blob], localFilePath)
+      console.log(file, file_)
+    }
+  }
+
+  const cache = Cache.FileSystem('./cache')
+  return cache
+}
+
 const compile = async () => {
   emit('finished', false)
   data.value.isLoading = true
   const hasVk = store.state.proofs.data[props.selectedProof].verificationKey
   if (!hasVk) {
-    const { verificationKey } = await proofs[props.selectedProof].compile();
+    const cache = getCache()
+    console.time('compiling')
+    const { verificationKey } = await proofs[props.selectedProof].compile({ cache: cache });
     store.state.proofs.data[props.selectedProof].verificationKey = verificationKey
+    console.timeEnd('compiling')
   }
   data.value.isLoading = false
   emit('finished', true)
