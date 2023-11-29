@@ -1,16 +1,22 @@
-import { Field, PublicKey, PrivateKey, Signature, CircuitString, Circuit, } from 'o1js';
-const verifyOracleData = (name, surname, country, pno, currentDate, signature) => {
-    const PUBLIC_KEY = 'B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN';
-    const publicKey = PublicKey.fromBase58(PUBLIC_KEY);
-    const validSignature = signature.verify(publicKey, [
-        ...name.toFields(),
-        ...surname.toFields(),
-        ...country.toFields(),
-        ...pno.toFields(),
-        ...currentDate.toFields(),
-    ]);
-    return validSignature;
-};
+import { Field, PrivateKey, Signature, CircuitString, Circuit, Struct, } from 'o1js';
+class PersonalData extends Struct({
+    name: CircuitString,
+    surname: CircuitString,
+    country: CircuitString,
+    pno: CircuitString,
+    currentDate: Field,
+}) {
+    // method for signature creation and verification
+    toFields() {
+        return [
+            ...this.name.toFields(),
+            ...this.surname.toFields(),
+            ...this.country.toFields(),
+            ...this.pno.toFields(),
+            this.currentDate,
+        ];
+    }
+}
 /*
 11 digits (https://learn.microsoft.com/en-us/purview/sit-defn-estonia-personal-identification-code):
 one digit that corresponds to sex and century of birth (odd number male, even number female; 1-2: 19th century; 3-4: 20th century; 5-6: 21st century)
@@ -19,6 +25,14 @@ three digits that correspond to a serial number separating persons born on the s
 one check digit
 */
 const parseDateFromPNO = (pno) => {
+    /*
+      pno: CircuitString is an array of 128 Fields, where each Field represents a char
+      Each char is represented in UTF-16 decimals, for example:
+        • 0 === 48
+        • 1 === 49
+        • 2 === 50
+      UTF-16 table: https://asecuritysite.com/coding/asc2
+    */
     // millenium
     const firstDigit = pno.values[6].value.sub(48);
     let century = Field(18);
@@ -31,58 +45,41 @@ const parseDateFromPNO = (pno) => {
     const monthSecondDigit = pno.values[10].value.sub(48);
     const dayFirstDigit = pno.values[11].value.sub(48);
     const daySecondDigit = pno.values[12].value.sub(48);
-    // express these Fields as YYYY-MM-DD
-    const dateYears = century
-        .mul(Field(100))
-        .add(decade.mul(Field(10)))
-        .add(year);
-    const dateMonth = monthFirstDigit.mul(Field(10)).add(monthSecondDigit);
-    const dateDay = dayFirstDigit.mul(Field(10)).add(daySecondDigit);
-    return [dateYears, dateMonth, dateDay];
-};
-const parseDateFromDateString = (currentDate) => {
-    // get century, decade, year, month and day
-    // from CircuitString, e.g 2023-10-25
-    const millenium = currentDate.values[0].value.sub(48);
-    const century = currentDate.values[1].value.sub(48);
-    const decade = currentDate.values[2].value.sub(48);
-    const year = currentDate.values[3].value.sub(48);
-    const monthFirstDigit = currentDate.values[5].value.sub(48);
-    const monthSecondDigit = currentDate.values[6].value.sub(48);
-    const dayFirstDigit = currentDate.values[8].value.sub(48);
-    const daySecondDigit = currentDate.values[9].value.sub(48);
-    // format these Fields as if YYYY-MM-DD
-    const dateYears = millenium
-        .mul(Field(1000))
-        .add(century.mul(Field(100)).add(decade.mul(Field(10)).add(year)));
-    const dateMonth = monthFirstDigit.mul(Field(10)).add(monthSecondDigit);
-    const dateDay = dayFirstDigit.mul(Field(10)).add(daySecondDigit);
-    return [dateYears, dateMonth, dateDay];
+    // express it as a single int, e.g. 20231124
+    const date = century
+        .mul(Field(1000000))
+        .add(decade.mul(Field(100000)))
+        .add(year.mul(Field(10000)))
+        .add(monthFirstDigit.mul(Field(1000)))
+        .add(monthSecondDigit.mul(Field(100)))
+        .add(dayFirstDigit.mul(Field(10)))
+        .add(daySecondDigit.mul(Field(1)));
+    return date;
 };
 const zkOracleResponseMock = () => {
-    const personalData = {
+    const TESTING_PRIVATE_KEY = process.env.TESTING_PRIVATE_KEY;
+    const privateKey = PrivateKey.fromBase58(TESTING_PRIVATE_KEY);
+    const publicKey = privateKey.toPublicKey();
+    const data = {
         name: 'Hilary',
         surname: 'Ouse',
         country: 'EE',
         pno: 'PNOLT-41111117143',
-        currentDate: '2023-10-24',
+        currentDate: 20231024,
     };
-    const TESTING_PRIVATE_KEY = process.env.TESTING_PRIVATE_KEY;
-    const privateKey = PrivateKey.fromBase58(TESTING_PRIVATE_KEY);
-    const publicKey = privateKey.toPublicKey();
-    const dataToSign = [
-        ...CircuitString.fromString(personalData.name).toFields(),
-        ...CircuitString.fromString(personalData.surname).toFields(),
-        ...CircuitString.fromString(personalData.country).toFields(),
-        ...CircuitString.fromString(personalData.pno).toFields(),
-        ...CircuitString.fromString(personalData.currentDate).toFields(),
-    ];
-    const signature = Signature.create(privateKey, dataToSign);
+    const personalData = new PersonalData({
+        name: CircuitString.fromString(data.name),
+        surname: CircuitString.fromString(data.surname),
+        country: CircuitString.fromString(data.country),
+        pno: CircuitString.fromString(data.pno),
+        currentDate: Field(data.currentDate),
+    });
+    const signature = Signature.create(privateKey, personalData.toFields());
     return {
-        data: personalData,
+        data: data,
         signature: signature.toJSON(),
         publicKey: publicKey.toBase58(),
     };
 };
-export { verifyOracleData, parseDateFromPNO, parseDateFromDateString, zkOracleResponseMock, };
+export { PersonalData, parseDateFromPNO, zkOracleResponseMock };
 //# sourceMappingURL=ProofOfAge.utils.js.map

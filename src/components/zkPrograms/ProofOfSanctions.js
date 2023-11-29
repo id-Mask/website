@@ -7,17 +7,23 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Field, method, Experimental, Signature, CircuitString, Bool, SmartContract, Permissions, Struct, } from 'o1js';
+import { Field, method, Signature, Bool, SmartContract, Permissions, Struct, ZkProgram, } from 'o1js';
 import { verifyOracleData } from './ProofOfSanctions.utils.js';
 export class PublicInput extends Struct({
     isMatched: Bool,
     minScore: Field,
-    currentDate: CircuitString,
+    currentDate: Field,
 }) {
 }
-export const proofOfSanctions = Experimental.ZkProgram({
+class PublicOutput extends Struct({
+    minScore: Field,
+    currentDate: Field,
+}) {
+}
+export const proofOfSanctions = ZkProgram({
+    name: 'proofOfSanctions',
     publicInput: PublicInput,
-    publicOutput: Field,
+    publicOutput: PublicOutput,
     methods: {
         proveSanctions: {
             privateInputs: [
@@ -29,7 +35,10 @@ export const proofOfSanctions = Experimental.ZkProgram({
                 verified.assertTrue();
                 // assert that search agains OFAC db yielded no results
                 publicInput.isMatched.assertFalse();
-                return publicInput.minScore;
+                return new PublicOutput({
+                    minScore: publicInput.minScore,
+                    currentDate: publicInput.currentDate,
+                });
             },
         },
     },
@@ -38,13 +47,13 @@ export const proofOfSanctions = Experimental.ZkProgram({
 Use the zkPragram defined above to create an on-chain smart contract that
 consume the proof created by the program above and thus 'put' the proof on chain
 */
-export class ProofOfSanctionsProof extends Experimental.ZkProgram.Proof(proofOfSanctions) {
+export class ProofOfSanctionsProof extends ZkProgram.Proof(proofOfSanctions) {
 }
 export class ProofOfSanctions extends SmartContract {
     constructor() {
         super(...arguments);
         this.events = {
-            'provided-valid-proof-with-sanctions-match': Field,
+            'provided-valid-proof': PublicOutput,
         };
     }
     init() {
@@ -56,13 +65,13 @@ export class ProofOfSanctions extends SmartContract {
     }
     verifyProof(proof) {
         // if the proof is invalid, this will fail
-        // its impossible to run past this withought a valid proof
+        // its impossible to run past this without a valid proof
         proof.verify();
         // the above is enough to be able to check if an address has a proof
         // but there needs to be a way to save the min score that is proved
         // emit an event with min score to be able to query it via archive nodes
         // surely events are not designed for this, but it will do the trick..?
-        this.emitEvent('provided-valid-proof-with-sanctions-match', proof.publicOutput);
+        this.emitEvent('provided-valid-proof', proof.publicOutput);
     }
 }
 __decorate([
