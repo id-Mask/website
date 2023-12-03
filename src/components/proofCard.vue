@@ -1,12 +1,12 @@
 <script setup>
 import { reactive, ref, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
-import getPersonalData from './proofOfSanctions/getPersonalData.vue'
-import getOFACData from './proofOfSanctions/getOFACData.vue'
-import compileProgram from './proofOfAge/compileProgram.vue'
-import createProofOfAge from './proofOfAge/createProofOfAge.vue'
-import createProofOfSanctions from './proofOfSanctions/createProofOfSanctions.vue'
-import saveProof from './proofOfAge/saveProof.vue'
+import getPersonalData from './proofSteps/getPersonalData.vue'
+import getOFACData from './proofSteps/getOFACData.vue'
+import compileProgram from './proofSteps/compileProgram.vue'
+import createProofOfAge from './proofSteps/createProofOfAge.vue'
+import createProofOfSanctions from './proofSteps/createProofOfSanctions.vue'
+import saveProof from './proofSteps/saveProof.vue'
 
 const store = useStore()
 const props = defineProps({
