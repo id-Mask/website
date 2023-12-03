@@ -1,12 +1,21 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useThemeVars } from 'naive-ui'
 import { useStore } from 'vuex'
 
-const themeVars = useThemeVars()
 const store = useStore()
 
 const proofs = store.getters['proofs/getData']
+
+const status = ref({
+  zkOracle: {
+    status: false,
+    isLoading: true,
+  },
+  graphQl: {
+    status: false,
+    isLoading: true,
+  }
+})
 
 const backedBy = [
   { name: 'MINA Protocol', url: 'https://minaprotocol.com/' },
@@ -21,9 +30,30 @@ const addressToUrl = (address) => {
   return store.getters['settings/getBlockExplorerEnpoint'] + 'account/' + address
 }
 
+const getEndpointStatus = async (url) => {
+  try {
+    const response = await fetch(url)
+    return response.status == 200 ? true : false
+  } catch (error) {
+    return false
+  }
+}
+
+onMounted(async () => {
+  // zkOracle
+  status.value.zkOracle.isLoading = true
+  status.value.zkOracle.status = await getEndpointStatus('https://id-mask-oracle-2qz4wkdima-uc.a.run.app/ping')
+  status.value.zkOracle.isLoading = false
+  // mina network
+  status.value.graphQl.isLoading = true
+  status.value.graphQl.status = await getEndpointStatus(store.state.settings.graphQLURL)
+  status.value.graphQl.isLoading = false
+})
+
 </script>
 
 <template>
+  <div>
     <n-space justify="center" :size="[100, 50]" style="text-align: center;">
       <div>
         <n-h4>Backed by:</n-h4>
@@ -64,12 +94,44 @@ const addressToUrl = (address) => {
           </n-button>
         </n-space>
       </div>
-
     </n-space>
+
+    <n-divider />
+
+    <n-space justify="center" style="text-align: center;" vertical>
+      <div>
+        <n-text depth="3" style="font-size: 10px;">zkOracle status </n-text>
+        <n-skeleton v-if="status.zkOracle.isLoading" circle :width="20" />
+        <template v-else>
+          <template :class="status.zkOracle.status ? 'green-dot' : 'red-dot'" />
+        </template>
+      </div>
+      <div>
+        <n-text depth="3" style="font-size: 10px;">Mina GraphQL status </n-text>
+        <n-skeleton v-if="status.graphQl.isLoading" circle :width="20" />
+        <template v-else>
+          <template :class="status.graphQl.status ? 'green-dot' : 'red-dot'" />
+        </template>
+      </div>
+    </n-space>
+  </div>
 </template>
 
 <style scoped>
-.reduce-text-size {
-  font-size: 90%;
+
+.green-dot {
+  height: 6px;
+  width: 6px;
+  background-color: rgb(8, 220, 47);
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.red-dot {
+  height: 6px;
+  width: 6px;
+  background-color: rgb(220, 8, 8);
+  border-radius: 50%;
+  display: inline-block;
 }
 </style>
