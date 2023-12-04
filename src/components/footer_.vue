@@ -1,8 +1,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useStore } from 'vuex'
+import { useThemeVars } from 'naive-ui'
 
 const store = useStore()
+const themeVars = useThemeVars()
 
 const proofs = store.getters['proofs/getData']
 
@@ -30,24 +32,36 @@ const addressToUrl = (address) => {
   return store.getters['settings/getBlockExplorerEnpoint'] + 'account/' + address
 }
 
-const getEndpointStatus = async (url) => {
+const getEndpointStatus = async (url, options = {}) => {
   try {
-    const response = await fetch(url)
+    const response = await fetch(url, options)
     return response.status == 200 ? true : false
   } catch (error) {
     return false
   }
 }
 
-onMounted(async () => {
+const updateStatus = async () => {
   // zkOracle
   status.value.zkOracle.isLoading = true
-  status.value.zkOracle.status = await getEndpointStatus('https://id-mask-oracle-2qz4wkdima-uc.a.run.app/ping')
+  status.value.zkOracle.status = await getEndpointStatus(
+    'https://id-mask-oracle-2qz4wkdima-uc.a.run.app/ping'
+  )
   status.value.zkOracle.isLoading = false
   // mina network
   status.value.graphQl.isLoading = true
-  status.value.graphQl.status = await getEndpointStatus(store.state.settings.graphQLURL)
+  status.value.graphQl.status = await getEndpointStatus(
+    store.state.settings.graphQLURL,
+    {
+      method: 'POST', 
+      body: JSON.stringify({query: 'query MyQuery {block {blockHeight}}'})
+    }
+  )
   status.value.graphQl.isLoading = false
+}
+
+onMounted(async () => {
+  await updateStatus()
 })
 
 </script>
@@ -98,17 +112,21 @@ onMounted(async () => {
 
     <n-divider />
 
-    <n-space justify="center" style="text-align: center;" vertical>
+    <n-space justify="center" style="text-align: center; cursor: pointer;" vertical @click="updateStatus()">
       <div>
         <n-text depth="3" style="font-size: 10px;">zkOracle status </n-text>
-        <n-skeleton v-if="status.zkOracle.isLoading" circle :width="20" />
+        <template v-if="status.zkOracle.isLoading">
+          <template class="gray-dot" />
+        </template>
         <template v-else>
           <template :class="status.zkOracle.status ? 'green-dot' : 'red-dot'" />
         </template>
       </div>
       <div>
         <n-text depth="3" style="font-size: 10px;">Mina GraphQL status </n-text>
-        <n-skeleton v-if="status.graphQl.isLoading" circle :width="20" />
+        <template v-if="status.graphQl.isLoading">
+          <template class="gray-dot" />
+        </template>
         <template v-else>
           <template :class="status.graphQl.status ? 'green-dot' : 'red-dot'" />
         </template>
@@ -130,7 +148,15 @@ onMounted(async () => {
 .red-dot {
   height: 6px;
   width: 6px;
-  background-color: rgb(220, 8, 8);
+  background-color: v-bind(themeVars.errorColor);
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.gray-dot {
+  height: 6px;
+  width: 6px;
+  background-color: v-bind(themeVars.iconColorDisabled);
   border-radius: 50%;
   display: inline-block;
 }
