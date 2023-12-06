@@ -7,6 +7,7 @@ import { Mina, PublicKey, fetchAccount } from 'o1js'
 
 import { proofOfAge, ProofOfAge, ProofOfAgeProof } from './../zkPrograms/ProofOfAge.js'
 import { proofOfSanctions, ProofOfSanctions, ProofOfSanctionsProof } from './../zkPrograms/ProofOfSanctions.js'
+import { proofOfUniqueHuman, ProofOfUniqueHuman, ProofOfUniqueHumanProof } from './../zkPrograms/ProofOfUniqueHuman.js'
 
 const proofs = {
   proofOfAge: {
@@ -19,6 +20,10 @@ const proofs = {
     SmartContract: ProofOfSanctions,
     ProofOfZkProgram: ProofOfSanctionsProof
   },
+  proofOfUniqueHuman: {
+    SmartContract: ProofOfUniqueHuman,
+    ProofOfZkProgram: ProofOfUniqueHumanProof
+  }
 }
 
 const notification = useNotification()

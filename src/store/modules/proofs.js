@@ -23,10 +23,10 @@ const state = () => ({
       displayName: 'Proof of Unique Human',
       emoji: '🧠',
       text: 'Generate an exclusive identifier that is uniquely yours.',
-      address: null,
+      address: 'B62qk9ydrTZwmHDVC2CNjQz7FGUkpMhaK2LMTGecX6484PakNCzegzn',
       proof: null,
       verificationKey: null,
-      url: null,
+      url: 'https://github.com/id-Mask/smart-contracts/blob/main/src/ProofOfUniqueHuman.ts',
     },
   },
 })
