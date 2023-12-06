@@ -1,15 +1,9 @@
 <script setup>
 import { ref, h, onMounted, watch } from 'vue'
-import { useThemeVars, NTag, useMessage } from 'naive-ui'
 import { useStore } from 'vuex'
-import { verify } from 'o1js';
 import { useBreakpoint } from 'vooks'
 
-import { proofOfAge } from './zkPrograms/ProofOfAge.js'
-
-const themeVars = useThemeVars()
 const store = useStore()
-const message = useMessage()
 const breakpoint = useBreakpoint()
 
 const props = defineProps({
@@ -57,7 +51,11 @@ const columns = ref([
   },
   {
     title: 'Data',
-    key: 'event'
+    key: 'event',
+    render(row) {
+      console.log(row)
+      return row.event.length == 1 ? row.event : JSON.stringify(row.event) 
+    }
   },
 ])
 
