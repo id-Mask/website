@@ -2,7 +2,6 @@
 import { ref, onMounted } from 'vue'
 import { useThemeVars } from 'naive-ui'
 import { useStore } from 'vuex'
-import { sleep } from './../../utils.js'
 import { useMessage } from 'naive-ui'
 import {
   CircuitString,
@@ -12,7 +11,6 @@ import {
 
 import { proofOfAge } from './../zkPrograms/ProofOfAge.js'
 import { PersonalData } from './../zkPrograms/ProofOfAge.utils.js'
-import { proofOfSanctions } from './../zkPrograms/ProofOfSanctions.js'
 
 import hljs from 'highlight.js/lib/core'
 import json from 'highlight.js/lib/languages/json'

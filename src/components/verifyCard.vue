@@ -43,7 +43,7 @@ const verifyJSONProof = async (proof) => {
     if (ok) {
       msg.type = 'success'
       msg.content = 'Provided proof is valid'
-      modalData.value = proof.publicInput
+      modalData.value = proof.publicOutput
       showModal.value = true
     } else {
       msg.type = 'error'
@@ -207,7 +207,7 @@ Object.keys(proofData).forEach(key => {
 
   <n-modal v-model:show="showModal">
     <n-card
-      style="max-width: 270px"
+      style="max-width: 350px"
       title="Verified proof data"
       :bordered="true"
     >
@@ -216,12 +216,12 @@ Object.keys(proofData).forEach(key => {
         Provided proof is valid, below is the data that it carries
       </n-p>
 
-      <n-scrollbar style="max-height: 100px">
-      <n-h1>
+      <n-scrollbar style="max-height: 200px">
+      <n-h2>
         <n-text type="primary">
           {{ modalData }}
         </n-text>
-      </n-h1>
+      </n-h2>
       </n-scrollbar>
     </n-space>
     </n-card>

@@ -2,7 +2,6 @@
 import { ref, onMounted } from 'vue'
 import { useThemeVars } from 'naive-ui'
 import { useStore } from 'vuex'
-import { sleep } from './../../utils.js'
 import { useMessage } from 'naive-ui'
 import {
   CircuitString,

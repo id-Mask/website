@@ -53,7 +53,6 @@ const columns = ref([
     title: 'Data',
     key: 'event',
     render(row) {
-      console.log(row)
       return row.event.length == 1 ? row.event : JSON.stringify(row.event) 
     }
   },
