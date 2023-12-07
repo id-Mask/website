@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useStore } from 'vuex'
 import getPersonalData from './proofSteps/getPersonalData.vue'
 import getOFACData from './proofSteps/getOFACData.vue'
@@ -89,10 +89,6 @@ const getCurrentStep = () => {
   return currentStep.value > maxStepLength ? maxStepLength : currentStep.value
 }
 
-onMounted( async () => {
-  console.log('proof card mounted')
-})
-
 </script>
 
 <template>
@@ -178,6 +174,9 @@ onMounted( async () => {
   color: #5F5FEAFF !important;
 }
 .hljs-string {
+  color: #5F5FEAFF !important;
+}
+.hljs-number {
   color: #5F5FEAFF !important;
 }
 
