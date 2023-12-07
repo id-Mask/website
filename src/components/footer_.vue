@@ -41,6 +41,16 @@ const getEndpointStatus = async (url, options = {}) => {
   }
 }
 
+const getGraphQLBody = () => {
+  const queries = {
+    minascan: 'query MyQuery {events(input: {address: \"\"}) {blockInfo {chainStatus}}}',
+    minaexplorer: 'query MyQuery {block {blockHeight}}'
+  }
+  const isMinascan = store.state.settings.graphQLURL.includes('minascan')
+  const query = isMinascan ? queries.minascan : queries.minaexplorer
+  return JSON.stringify({ query: query })
+}
+
 const updateStatus = async () => {
   await Promise.all([
 
@@ -48,7 +58,7 @@ const updateStatus = async () => {
     (async () => {
       status.value.zkOracle.isLoading = true
       const result = await getEndpointStatus(
-        'https://id-mask-oracle-2qz4wkdima-uc.a.run.app/ping'
+        store.state.settings.zkOracle + 'ping'
       )
       status.value.zkOracle.status = result
       status.value.zkOracle.isLoading = false
@@ -61,7 +71,8 @@ const updateStatus = async () => {
         store.state.settings.graphQLURL,
         {
           method: 'POST',
-          body: JSON.stringify({ query: 'query MyQuery {block {blockHeight}}' }),
+          headers: { 'content-type': 'application/json'},
+          body: getGraphQLBody(),
         }
       )
       status.value.graphQl.status = result
