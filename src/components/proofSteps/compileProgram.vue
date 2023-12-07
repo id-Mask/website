@@ -69,7 +69,6 @@ const compile = async () => {
 }
 
 onMounted(async () => {
-  console.log('AAAA')
   await compile()
 })
 

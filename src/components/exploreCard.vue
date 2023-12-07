@@ -108,7 +108,7 @@ const updateTable = async () => {
   isLoading.value = true
   const url = store.getters['settings/getGraphQlEnpoint']
   const zkAppKey = store.getters['proofs/getData'][props.selectedProof].address
-
+  
   const data_ = await getProofs(url, zkAppKey)
   data.value = data_.data.events.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime))
   isLoading.value = false
