@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { reactive } from 'vue'
 import { useStore } from 'vuex'
 import { useMessage } from 'naive-ui'
 import hidableDataWindow from './../componentUtils/hidableDataWindow.vue'

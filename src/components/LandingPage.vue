@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useThemeVars } from 'naive-ui'
 import { useIsMobile } from '../utils'
 import { useStore } from 'vuex'

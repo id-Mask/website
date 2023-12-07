@@ -1,6 +1,6 @@
 <script setup>
-import { reactive, ref, onMounted, watch } from 'vue'
-import { useThemeVars, useMessage } from 'naive-ui'
+import { reactive, ref, watch } from 'vue'
+import { useMessage } from 'naive-ui'
 import { useStore } from 'vuex'
 import hidableDataWindow from './../componentUtils/hidableDataWindow.vue'
 
@@ -17,7 +17,6 @@ const props = defineProps({
 
 const message = useMessage()
 const store = useStore()
-const themeVars = useThemeVars()
 const verificationCodeModal = ref({
   show: false,
   verificationCode: null,

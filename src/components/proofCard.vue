@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import getPersonalData from './proofSteps/getPersonalData.vue'
 import getOFACData from './proofSteps/getOFACData.vue'

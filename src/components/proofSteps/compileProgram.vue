@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
-import { sleep } from './../../utils.js'
 
 import { Cache } from 'o1js'
 import { proofOfAge } from './../zkPrograms/ProofOfAge.js'

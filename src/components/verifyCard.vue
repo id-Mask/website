@@ -196,7 +196,7 @@ Object.keys(proofData).forEach(key => {
             <n-button type="primary" @click="verifyOnChainProof" :loading="isLoading">
               Verify
             </n-button>
-            <n-input :style="{ width: '100%' }" v-model:value="address"/>
+            <n-input :style="{ width: '100%' }" v-model:value="address" placeholder="Mina address" />
           </n-input-group>
         </div>
       </n-text>
