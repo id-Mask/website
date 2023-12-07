@@ -64,13 +64,11 @@ const createProof = async () => {
     */
 
     try {
-
       const publicInput = new PublicInput({
         isMatched: Bool(ofacData.data.isMatched),
         minScore: Field(ofacData.data.minScore),
-        currentDate: CircuitString.fromString(ofacData.data.currentDate),
+        currentDate: Field(ofacData.data.currentDate),
       })
-
       const proof = await proofOfSanctions.proveSanctions(
         publicInput,
         Signature.fromJSON(ofacData.signature)
