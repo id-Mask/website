@@ -42,22 +42,33 @@ const getEndpointStatus = async (url, options = {}) => {
 }
 
 const updateStatus = async () => {
-  // zkOracle
-  status.value.zkOracle.isLoading = true
-  status.value.zkOracle.status = await getEndpointStatus(
-    'https://id-mask-oracle-2qz4wkdima-uc.a.run.app/ping'
-  )
-  status.value.zkOracle.isLoading = false
-  // mina network
-  status.value.graphQl.isLoading = true
-  status.value.graphQl.status = await getEndpointStatus(
-    store.state.settings.graphQLURL,
-    {
-      method: 'POST', 
-      body: JSON.stringify({query: 'query MyQuery {block {blockHeight}}'})
-    }
-  )
-  status.value.graphQl.isLoading = false
+  await Promise.all([
+
+    // zkOracle
+    (async () => {
+      status.value.zkOracle.isLoading = true
+      const result = await getEndpointStatus(
+        'https://id-mask-oracle-2qz4wkdima-uc.a.run.app/ping'
+      )
+      status.value.zkOracle.status = result
+      status.value.zkOracle.isLoading = false
+    })(),
+
+    // graphQL
+    (async () => {
+      status.value.graphQl.isLoading = true
+      const result = await getEndpointStatus(
+        store.state.settings.graphQLURL,
+        {
+          method: 'POST',
+          body: JSON.stringify({ query: 'query MyQuery {block {blockHeight}}' }),
+        }
+      )
+      status.value.graphQl.status = result
+      status.value.graphQl.isLoading = false
+    })(),
+
+  ])
 }
 
 onMounted(async () => {
