@@ -85,8 +85,12 @@ const saveProofOnChain = async (
 
   // setup Mina network
   let msgReactive = message.create('1/7 Setting up Mina network 🛰️', { type: 'loading', duration: 10e9 })
-  const networkURL = 'https://proxy.berkeley.minaexplorer.com/graphql';
-  const Network = Mina.Network(networkURL);
+  // sending transactions only work via minascan
+  // explore tab only works with minaexplorer
+  // should be taken from the store, but hardcoding here
+  // store.state.settings.graphQLURL
+  const graphQlURL = 'https://api.minascan.io/node/berkeley/v1/graphql'
+  const Network = Mina.Network(graphQlURL);
   Mina.setActiveInstance(Network);
 
   // connect wallet
