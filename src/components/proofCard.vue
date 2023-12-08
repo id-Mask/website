@@ -63,6 +63,7 @@ Object.keys(proofData).forEach(key => {
 });
 
 const currentStep = ref(0)
+const isLoading = ref(false)
 
 const setFinished = (val) => {
   proofs.value[props.selectedProof].steps[getCurrentStep()].finished = val ?? true
@@ -81,11 +82,44 @@ const setFinished = (val) => {
   }
 }
 
+const setLoading = (val) => {
+  isLoading.value = val
+}
+
 const getCurrentStep = () => {
   // whenever we switch from one proof to another, it might be the case that
   // previously selected proof had more steps that newly selected proof
   // thats why in such case we must move to maxStepLength instad of currentStep
   const maxStepLength = proofs.value[props.selectedProof].steps.length - 1
+  
+  const fixCurrentStep = () => {
+    // TODO:
+    // on proof switch must go the the last step that is finished where no 
+    // previous steps are unfinished.
+
+    // but before all this:
+    // must manually check if compileStep has a compiled the proof else, by switching
+    // in between steps, we might end up in a step ahead, withought having the program 
+    // compiled
+
+    const isCompiled = store.state.proofs.data[props.selectedProof].verificationKey != null
+    const steps = proofs.value[props.selectedProof].steps.map(step => 
+      step.component.includes('compile') ? isCompiled : step.finished
+    )
+
+    const lastTrueIndex = (arr) => {
+      const lastIndex = arr.lastIndexOf(true, arr.findIndex(value => value === false) + 1)
+      return lastIndex === -1 ? 0 : lastIndex
+    }
+    const lastFinishedStep = lastTrueIndex(steps)
+
+    const step = currentStep.value > maxStepLength ? maxStepLength : currentStep.value
+    const step_ = lastFinishedStep + 1 < currentStep.value ? lastFinishedStep : step
+
+    console.log(currentStep.value, lastFinishedStep, step, step_)
+  }
+
+
   return currentStep.value > maxStepLength ? maxStepLength : currentStep.value
 }
 
@@ -122,6 +156,7 @@ const getCurrentStep = () => {
           proofs[props.selectedProof].steps.filter(step => step.finished).length /
           proofs[props.selectedProof].steps.length
         ) * 100"
+        :processing="isLoading"
       />
     </n-space>
     </template>
@@ -131,6 +166,7 @@ const getCurrentStep = () => {
       <component
         :is="components[proofs[props.selectedProof].steps[getCurrentStep()].component]"
         @finished="(val) => setFinished(val)"
+        @isLoading="(val) => setLoading(val)"
         :selectedProof="props.selectedProof"
       />
     </KeepAlive>

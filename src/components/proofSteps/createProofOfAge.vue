@@ -29,10 +29,11 @@ const props = defineProps({
   selectedProof: String,
 })
 
-const emit = defineEmits(['finished'])
+const emit = defineEmits(['finished', 'isLoading'])
 
 const createProof = async () => {
     data.value.isLoading = true
+    emit('isLoading', true)
     emit('finished', false)
     const pid = store.getters['pid/getData']
 
@@ -72,6 +73,7 @@ const createProof = async () => {
 
       // save proof to store (to be able to access it form other components)
       store.dispatch('proofs/saveData', { proofName: props.selectedProof, proof: jsonProof })
+      emit('isLoading', false)
       emit('finished')
     } catch (error) {
       console.error(error);

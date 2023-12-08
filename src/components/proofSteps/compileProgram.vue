@@ -23,7 +23,7 @@ const props = defineProps({
   selectedProof: String,
 })
 
-const emit = defineEmits(['finished'])
+const emit = defineEmits(['finished', 'isLoading'])
 
 // const getCache = async () => {
 //  /*
@@ -54,6 +54,7 @@ const emit = defineEmits(['finished'])
 // }
 
 const compile = async () => {
+  emit('isLoading', true)
   emit('finished', false)
   data.value.isLoading = true
   await sleep(5) // must wait, else front-end lag like feeling at this step?!
@@ -65,6 +66,7 @@ const compile = async () => {
     console.timeEnd('compiling')
   }
   data.value.isLoading = false
+  emit('isLoading', false)
   emit('finished', true)
 }
 

@@ -9,7 +9,7 @@ import hljs from 'highlight.js/lib/core'
 import json from 'highlight.js/lib/languages/json'
 hljs.registerLanguage('json', json)
 
-const emit = defineEmits(['finished'])
+const emit = defineEmits(['finished', 'isLoading'])
 
 const props = defineProps({
   selectedProof: String,
@@ -79,6 +79,7 @@ const getMockPID = async () => {
 }
 
 const getPID = async () => {
+  emit('isLoading', true)
   data.isLoading = true
   let response = null
 
@@ -99,6 +100,7 @@ const getPID = async () => {
     message.error(JSON.stringify(response))
     return null
   }
+  emit('isLoading', false)
   emit('finished')
   store.dispatch('pid/saveData', response)
   data.pid = response

@@ -29,7 +29,7 @@ const props = defineProps({
   selectedProof: String,
 })
 
-const emit = defineEmits(['finished'])
+const emit = defineEmits(['finished', 'isLoading'])
 
 const getSecreteValue = async () => {
   const url = store.state.settings.zkOracle
@@ -44,6 +44,7 @@ const getSecreteValue = async () => {
 
 const createProof = async () => {
     data.value.isLoading = true
+    emit('isLoading', true)
     emit('finished', false)
 
     const secretValue = await getSecreteValue()
@@ -86,6 +87,7 @@ const createProof = async () => {
 
       // save proof to store (to be able to access it form other components)
       store.dispatch('proofs/saveData', { proofName: props.selectedProof, proof: jsonProof })
+      emit('isLoading', false)
       emit('finished')
     } catch (error) {
       console.error(error);

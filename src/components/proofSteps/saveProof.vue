@@ -39,10 +39,11 @@ const props = defineProps({
   selectedProof: String,
 })
 
-const emit = defineEmits(['finished'])
+const emit = defineEmits(['finished', 'isLoading'])
 const isLoading = ref(false)
 
 const saveProof = async () => {
+  emit('isLoading', true)
   data.value.isLoading = true
   console.log('saving')
   const proof = store.getters['proofs/getData'][props.selectedProof].proof
@@ -56,6 +57,7 @@ const saveProof = async () => {
   link.click()
 
   data.value.isLoading = false
+  emit('isLoading', false)
   emit('finished')
 }
 
@@ -81,6 +83,7 @@ const saveProofOnChain = async (
   zkAppAddress
 ) => {
 
+  emit('isLoading', true)
   isLoading.value = true
 
   // setup Mina network
@@ -156,6 +159,7 @@ const saveProofOnChain = async (
     );
   } finally {
     isLoading.value = false
+    emit('isLoading', false)
   };
 };
 

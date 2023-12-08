@@ -4,7 +4,7 @@ import { useStore } from 'vuex'
 import { useMessage } from 'naive-ui'
 import hidableDataWindow from './../componentUtils/hidableDataWindow.vue'
 
-const emit = defineEmits(['finished'])
+const emit = defineEmits(['finished', 'isLoading'])
 const store = useStore()
 const message = useMessage()
 
@@ -16,6 +16,8 @@ const data = reactive({
 const getData = async () => {
 
   data.isLoading = true
+  emit('isLoading', true)
+  emit('finished', false)
 
   const url = store.state.settings.zkOracle
   const response = await fetch(url + 'getOFACmatches', {
@@ -32,6 +34,7 @@ const getData = async () => {
   store.state.sanctions.data = response_
 
   data.isLoading = false
+  emit('isLoading', false)
   emit('finished')
 
   // trigger message
