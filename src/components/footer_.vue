@@ -132,7 +132,7 @@ onMounted(async () => {
       </div>
     </n-space>
 
-    <n-divider />
+    <n-divider style="width: 60%; margin-left: auto; margin-right: auto;"/>
 
     <n-space justify="center" style="text-align: center; cursor: pointer;" vertical @click="updateStatus()">
       <div>
@@ -154,6 +154,18 @@ onMounted(async () => {
         </template>
       </div>
     </n-space>
+
+    <n-divider style="width: 60%; margin-left: auto; margin-right: auto;"/>
+
+    <n-space justify="center" style="text-align: center;" vertical>
+      <div>
+        <n-text depth="3" style="font-size: 10px;">
+          NPM package: <br/>
+          <a href="https://www.npmjs.com/package/idmask-zk-programs" target="_blank">idmask-zk-programs</a>
+        </n-text>
+      </div>
+    </n-space>
+
   </div>
 </template>
 
