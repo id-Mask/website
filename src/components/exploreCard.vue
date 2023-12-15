@@ -2,6 +2,7 @@
 import { ref, h, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useBreakpoint } from 'vooks'
+import { NButton } from 'naive-ui'
 
 const store = useStore()
 const breakpoint = useBreakpoint()
@@ -52,9 +53,18 @@ const columns = ref([
   {
     title: 'Data',
     key: 'event',
-    render(row) {
-      return row.event.length == 1 ? row.event : JSON.stringify(row.event) 
-    }
+    render (row) {
+        return h(
+          NButton,
+          {
+            strong: true,
+            tertiary: true,
+            size: 'small',
+            onClick: () => showData(row)
+          },
+          { default: () => 'show' }
+        )
+      }
   },
 ])
 
@@ -114,6 +124,14 @@ const updateTable = async () => {
   isLoading.value = false
 }
 
+const showModal = ref(false)
+const modalData = ref(null)
+
+const showData = (row) => {
+  showModal.value = true
+  modalData.value = row.event
+}
+
 onMounted( async () => {
   await updateTable()
 })
@@ -164,6 +182,22 @@ Object.keys(proofData).forEach(key => {
     <template #action>
     </template>
   </n-card>
+
+  <n-modal v-model:show="showModal">
+    <n-card
+      title="Proof data"
+      style="max-width: 350px"
+      :bordered="false"
+      size="huge"
+    >
+      <n-h3>
+        <n-text type="primary">
+          {{ modalData }}
+        </n-text>
+      </n-h3>
+    </n-card>
+  </n-modal>
+
 </template>
 
 <style>
