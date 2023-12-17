@@ -9,6 +9,8 @@ import { proofOfAge, ProofOfAge, ProofOfAgeProof } from './../zkPrograms/ProofOf
 import { proofOfSanctions, ProofOfSanctions, ProofOfSanctionsProof } from './../zkPrograms/ProofOfSanctions.js'
 import { proofOfUniqueHuman, ProofOfUniqueHuman, ProofOfUniqueHumanProof } from './../zkPrograms/ProofOfUniqueHuman.js'
 
+import saveProofToIPFS from './saveProofToIPFS.vue'
+
 const proofs = {
   proofOfAge: {
     // ZkProgram: proofOfAge,
@@ -205,6 +207,7 @@ const saveProofOnChain = async (
         </template>
         Put on chain
       </n-button>
+      <saveProofToIPFS :selectedProof="props.selectedProof"/>
     </n-space>
 
   </n-space>
