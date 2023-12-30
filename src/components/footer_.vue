@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useThemeVars } from 'naive-ui'
+import legal from './legal.vue'
 
 const store = useStore()
 const themeVars = useThemeVars()
@@ -165,6 +166,9 @@ onMounted(async () => {
         </n-text>
       </div>
     </n-space>
+
+    <n-divider style="width: 60%; margin-left: auto; margin-right: auto;"/>
+    <legal />
 
   </div>
 </template>
