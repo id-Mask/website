@@ -1,7 +1,6 @@
 <script setup>
 import { computed } from 'vue'
 import { useStore } from 'vuex'
-import { NThemeEditor } from 'naive-ui'
 import { useBreakpoint } from 'vooks'
 
 import header_ from './components/header_.vue'
@@ -32,26 +31,24 @@ const padding = computed(() => {
 <template>
 
   <n-config-provider :theme="store.getters['theme/getTheme']" :theme-overrides="store.getters['theme/getThemeOverrides']">
-    <n-theme-editor>
-      <n-notification-provider>
-        <n-loading-bar-provider>
-          <n-message-provider>
+    <n-notification-provider>
+      <n-loading-bar-provider>
+        <n-message-provider>
 
-            <n-layout>
-              <header_ style="position: absolute; z-index: 1;"/>
-              <n-layout-content :content-style="'margin: 0 auto;' + padding">
-                <LandingPage/>
-                <ProofPage/>
-              </n-layout-content>
-            </n-layout>
-            <n-layout-footer bordered>
-              <footer_ :style="padding + 'padding-top: 5em; padding-bottom: 5em;'"/>
-            </n-layout-footer>
+          <n-layout>
+            <header_ style="position: absolute; z-index: 1;"/>
+            <n-layout-content :content-style="'margin: 0 auto;' + padding">
+              <LandingPage/>
+              <ProofPage/>
+            </n-layout-content>
+          </n-layout>
+          <n-layout-footer bordered>
+            <footer_ :style="padding + 'padding-top: 5em; padding-bottom: 5em;'"/>
+          </n-layout-footer>
 
-          </n-message-provider>
-        </n-loading-bar-provider>
-      </n-notification-provider>
-    </n-theme-editor>
+        </n-message-provider>
+      </n-loading-bar-provider>
+    </n-notification-provider>
   </n-config-provider>
 
 </template>
