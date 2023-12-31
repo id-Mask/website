@@ -10,10 +10,18 @@ const contactsModal = ref(false)
 
 <template>
   <n-space justify="center" style="text-align: center;" vertical>
-    <n-button size="tiny" quaternary @click="torModal = true">Terms of Service</n-button>
-    <n-button size="tiny" quaternary @click="ppModal = true">Privacy Policy</n-button>
-    <n-button size="tiny" quaternary @click="imprintModal = true">Imprint</n-button>
-    <n-button size="tiny" quaternary @click="contactsModal = true">Contacts</n-button>
+    <n-text style="font-size: 90%" depth="3">
+      © {{ new Date().getFullYear() }} Ethenticator, Inc.. All rights reserved.
+    </n-text>
+
+    <div>
+      <n-button size="tiny" quaternary @click="torModal = true">Terms of Service</n-button>
+      <n-button size="tiny" quaternary @click="ppModal = true">Privacy Policy</n-button>
+    </div>
+    <div>
+      <n-button size="tiny" quaternary @click="imprintModal = true">Imprint</n-button>
+      <n-button size="tiny" quaternary @click="contactsModal = true">Contacts</n-button>
+    </div>
   </n-space>
 
   <n-modal v-model:show="torModal">
@@ -504,12 +512,6 @@ const contactsModal = ref(false)
               regulatory framework governing corporations in the jurisdiction of our
               incorporation.
           </p>
-          <p>
-              Copyright Notice:
-          </p>
-          <p>
-              ©{{ new Date().getFullYear() }} Ethenticator, Inc.. All rights reserved.
-          </p>
         </n-text>
       </n-scrollbar>
     </n-card>
@@ -532,10 +534,7 @@ const contactsModal = ref(false)
     </n-card>
   </n-modal>
 
-
-
 </template>
 
 <style scoped>
-
 </style>
