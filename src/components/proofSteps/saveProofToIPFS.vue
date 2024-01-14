@@ -1,7 +1,8 @@
 <script setup>
 import { ref } from 'vue'
-import { useThemeVars } from 'naive-ui'
+import { useThemeVars, useMessage } from 'naive-ui'
 import { useStore } from 'vuex'
+import { sleep } from './../../utils.js'
 
 import * as CryptoJS from 'crypto-js'
 
@@ -20,127 +21,102 @@ import * as CryptoJS from 'crypto-js'
 
 const store = useStore()
 const themeVars = useThemeVars()
+const message = useMessage()
 
 const props = defineProps({
   selectedProof: String,
 })
 
 const isLoading = ref(false)
-const showModal = ref(false)
 
-const randomKey = ref(null)
-const encryptedProof = ref(null)
-const ipfsData = ref(null)
-const walletData = ref(null)
-
-// 1. generate random key to be used in encryption and let the user confirm it
-const generateRandomKey = (length) => {
+// generate random key to be used in encryption and let the user confirm it
+const generateSecret = (length) => {
   const chars = 
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_?'
     const charLength = chars.length
-    let randomKey = ''
+    let secret = ''
     for (let i = 0; i < length; i++) {
       const idx = Math.floor(Math.random() * charLength)
-      randomKey += chars.charAt(idx)
+      secret += chars.charAt(idx)
     }
-    return randomKey
+    return secret
 }
 
-const encryptProof = async () => {
-  const proofJson =  store.state.proofs.data[props.selectedProof].proof
-  console.log(proofJson)
+const encrypt = async (proofJson, secret) => {
 
   // encrypt
-  var encryptedData = CryptoJS.AES.encrypt(
+  var encrypted = CryptoJS.AES.encrypt(
     JSON.stringify(proofJson), 
-    randomKey.value
+    secret
   ).toString()
-  console.log('encrypted: ', encryptedData)
+  console.log('encrypted: ', encrypted)
 
   // decrypt
-  var bytes  = CryptoJS.AES.decrypt(encryptedData, randomKey.value)
-  var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8))
-  console.log('decripted: ', decryptedData)
+  var bytes  = CryptoJS.AES.decrypt(encrypted, secret)
+  var decrypted = JSON.parse(bytes.toString(CryptoJS.enc.Utf8))
+  console.log('decripted: ', decrypted)
 
-  // save
-  encryptedProof.value = encryptedData
+  return encrypted
 }
 
-const saveProofToIPFS = async () => {
-  const pinataApiKey = '46d4dc957cbe22bd9c3e'
-  const  pinataSecretApiKey = '9fdfa869319035a3682f3ca4770ebe342805f94e12329f28e5d82393a91b8d08'
-  const response = await fetch('https://api.pinata.cloud/pinning/pinJsonToIPFS', {
+const uploadToIPFS = async (data) => {
+  const url = store.state.settings.zkOracle + 'uploadToIPFS'
+  const response = await fetch(url, {
     method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      accept: 'application/json', 
-      pinata_api_key: pinataApiKey,
-      pinata_secret_api_key: pinataSecretApiKey,
-    },
-    body: JSON.stringify({pinataContent: encryptedProof.value})
+    headers: { 'Content-type': 'application/json' },
+    body: JSON.stringify({data: data})
   })
   const response_ = await response.json()
-  ipfsData.value = response_
+  return response_
 }
 
-const getWalletData = async () => {
-  const data = {
-    cid: ipfsData.value.IpfsHash,
-    secretKey: randomKey.value,
+
+const save = async () => {
+
+  isLoading.value = true
+  let msgReactive = message.create('1/3 Preparing proof 🛠️', { type: 'loading', duration: 10e9 })
+
+  const proofJson = store.state.proofs.data[props.selectedProof].proof
+  console.log('proofJson:', proofJson)
+
+  const secret = generateSecret(32)
+  console.log('secret:', secret)
+
+  const encryptedProof = encrypt(proofJson, secret)
+  console.log('encryptedProof:', encryptedProof)
+
+  msgReactive.content = "2/3 Uploading enrypted proof to IPFS ⬆️"
+  const ipfsData = await uploadToIPFS(encryptedProof)
+  console.log('ipfsData:', ipfsData)
+
+  msgReactive.content = "3/3 Saving proof to your Google wallet ⬆️"
+  // TODO: call the zkOracle  and push this to user's google wallet
+  const walletData = {
+    ipfs: ipfsData,
+    secretKey: secret,
     proof: props.selectedProof,
   }
-  console.log(data)
-  walletData.value = data
-  return data
-}
+  console.log('walletData', walletData)
 
+  msgReactive.type = 'success'
+  msgReactive.content = "You can now access your proof from within your Google wallet 👛"
+  isLoading.value = false
+  await sleep(5000)
+  message.destroyAll()
 
-const initSaveProofToIPFS = async () => {
-  randomKey.value = generateRandomKey(32)
-  console.log('secretKey', randomKey.value)
-  showModal.value = true
 }
 
 </script>
 
 <template>
-  <n-button @click="initSaveProofToIPFS()" :loading="isLoading" type="primary">
+  <n-button @click="save()" :loading="isLoading" type="primary">
     <template #icon>
       <n-icon :color="themeVars.textColor">
-        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512"><path d="M413.48 284.46c58.87 47.24 91.61 89 80.31 108.55c-17.85 30.85-138.78-5.48-270.1-81.15S.37 149.84 18.21 119c11.16-19.28 62.58-12.32 131.64 14.09" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"></path><circle cx="256" cy="256" r="160" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"></circle></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24"><path d="M10 16V8a2 2 0 0 1 2-2h9V5c0-1.1-.9-2-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2v-1h-9a2 2 0 0 1-2-2zm3-8c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h9V8h-9zm3 5.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5s1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z" fill="currentColor"></path></svg>
       </n-icon>
     </template>
-    Save to IPFS
+    Save to Google wallet
   </n-button>
-
-  <n-modal v-model:show="showModal">
-    <n-card
-      style="width: 400px"
-      title="🪐 Save to IPFS (later on to be put to google / android wallet)"
-      :bordered="false"
-      size="huge"
-      role="dialog"
-      aria-modal="true"
-    >
-      <n-h4>Secret key used to encrypt proof before storing it on IPFS</n-h4>
-      <n-input v-model:value="randomKey" type="text" placeholder="random key" />
-
-      <n-h4>Encrypted proof</n-h4>
-      <n-input v-model:value="encryptedProof" type="text" placeholder="cipher proof" disabled/>
-
-      <n-h4>IPFS data</n-h4>
-      <n-text style="font-size: 90%">{{ ipfsData }}</n-text>
-      
-      <n-h4>Data to be stored on wallet</n-h4>
-      <n-text style="font-size: 90%">{{ walletData }}</n-text>
-
-      <br><br>
-      <n-button @click="encryptProof">encrypt proof</n-button>
-      <n-button @click="saveProofToIPFS">save proof to IPFS</n-button>
-      <n-button @click="getWalletData">get wallet data</n-button>
-    </n-card>
-  </n-modal>
-
 </template>
 
 <style>
