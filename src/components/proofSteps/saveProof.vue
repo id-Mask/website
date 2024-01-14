@@ -9,7 +9,7 @@ import { proofOfAge, ProofOfAge, ProofOfAgeProof } from './../zkPrograms/ProofOf
 import { proofOfSanctions, ProofOfSanctions, ProofOfSanctionsProof } from './../zkPrograms/ProofOfSanctions.js'
 import { proofOfUniqueHuman, ProofOfUniqueHuman, ProofOfUniqueHumanProof } from './../zkPrograms/ProofOfUniqueHuman.js'
 
-import saveProofToIPFS from './saveProofToIPFS.vue'
+import saveProofToGoogleWallet from './saveProofToGoogleWallet.vue'
 
 const proofs = {
   proofOfAge: {
@@ -207,7 +207,7 @@ const saveProofOnChain = async (
         </template>
         Put on chain
       </n-button>
-      <saveProofToIPFS :selectedProof="props.selectedProof"/>
+      <saveProofToGoogleWallet :selectedProof="props.selectedProof"/>
     </n-space>
 
   </n-space>
