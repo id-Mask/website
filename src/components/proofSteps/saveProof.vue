@@ -10,6 +10,8 @@ import { proofOfSanctions, ProofOfSanctions, ProofOfSanctionsProof } from './../
 import { proofOfUniqueHuman, ProofOfUniqueHuman, ProofOfUniqueHumanProof } from './../zkPrograms/ProofOfUniqueHuman.js'
 
 import saveProofToGoogleWallet from './saveProofToGoogleWallet.vue'
+import saveProofToAppleWallet from './saveProofToAppleWallet.vue'
+
 
 const proofs = {
   proofOfAge: {
@@ -207,7 +209,11 @@ const saveProofOnChain = async (
         </template>
         Put on chain
       </n-button>
+    </n-space>
+
+    <n-space>
       <saveProofToGoogleWallet :selectedProof="props.selectedProof"/>
+      <saveProofToAppleWallet :selectedProof="props.selectedProof"/>
     </n-space>
 
   </n-space>

@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { useThemeVars, useMessage } from 'naive-ui'
+import { useMessage } from 'naive-ui'
 import { useStore } from 'vuex'
 import { sleep } from './../../utils.js'
 
@@ -20,7 +20,6 @@ import * as CryptoJS from 'crypto-js'
 */
 
 const store = useStore()
-const themeVars = useThemeVars()
 const message = useMessage()
 
 const props = defineProps({
@@ -96,7 +95,7 @@ const save = async () => {
     secretKey: secret,
     proof: props.selectedProof,
   }
-  // console.log('walletData', walletData)
+  console.log('walletData', walletData)
 
   const url = store.state.settings.zkOracle + 'createGoogeWalletPass'
   const identifier = generateSecret(12).replace(/[^a-zA-Z0-9]/g, '')
@@ -120,11 +119,11 @@ const save = async () => {
 </script>
 
 <template>
-  <n-spin :show="isLoading" size="tiny">
-    <n-thing @click="save()" style="cursor: pointer;">
-      <img width="200" src="../../assets/google-wallet-button.png" />
-    </n-thing>
-  </n-spin>
+  <!-- <n-spin :show="isLoading" size="tiny"> -->
+    <n-button text :loading="isLoading" @click="save()" style="cursor: pointer;">
+      <img width="200" src="../../assets/google-button.png" />
+    </n-button>
+  <!-- </n-spin> -->
 </template>
 
 <style>
