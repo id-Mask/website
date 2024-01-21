@@ -7,10 +7,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Field, method, Signature, Bool, SmartContract, Permissions, PublicKey, Struct, ZkProgram, } from 'o1js';
+import { Field, method, Signature, SmartContract, Permissions, PublicKey, Struct, ZkProgram, } from 'o1js';
 import { PersonalData, parseDateFromPNO } from './ProofOfAge.utils.js';
 class PublicOutput extends Struct({
-    olderThanAgeToProve: Bool,
+    ageToProveInYears: Field,
     currentDate: Field,
 }) {
 }
@@ -39,7 +39,7 @@ export const proofOfAge = ZkProgram({
                     .greaterThan(dateOfBirth);
                 olderThanAgeToProve.assertTrue();
                 return new PublicOutput({
-                    olderThanAgeToProve: olderThanAgeToProve,
+                    ageToProveInYears: ageToProveInYears,
                     currentDate: personalData.currentDate,
                 });
             },

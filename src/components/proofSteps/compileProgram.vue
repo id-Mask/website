@@ -3,6 +3,7 @@ import { ref, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
 
 // import { Cache } from 'o1js'
+// import { proofOfAge, proofOfSanctions, proofOfUniqueHuman } from 'idmask-zk-programs'
 import { proofOfAge } from './../zkPrograms/ProofOfAge.js'
 import { proofOfSanctions } from './../zkPrograms/ProofOfSanctions.js'
 import { proofOfUniqueHuman } from './../zkPrograms/ProofOfUniqueHuman.js'

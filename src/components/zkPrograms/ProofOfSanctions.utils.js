@@ -1,3 +1,4 @@
+// import 'dotenv/config';
 import { Field, PublicKey, PrivateKey, Signature, Bool } from 'o1js';
 const verifyOracleData = (isMatched, minScore, currentDate, signature) => {
     const PUBLIC_KEY = 'B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN';

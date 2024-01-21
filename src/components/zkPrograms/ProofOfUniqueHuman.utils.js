@@ -1,4 +1,4 @@
-import 'dotenv/config';
+// import 'dotenv/config';
 import { CircuitString, PrivateKey, Signature } from 'o1js';
 const getMockSecretValue = () => {
     const TESTING_PRIVATE_KEY = process.env.TESTING_PRIVATE_KEY;
