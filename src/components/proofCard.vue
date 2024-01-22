@@ -31,7 +31,7 @@ const proofs = ref({
   proofOfAge: {
     steps: [
       { component: 'getPersonalData', finished: false },
-      { component: 'compileProgram', finished: false },
+      // { component: 'compileProgram', finished: false },
       { component: 'createProofOfAge', finished: false },
       { component: 'saveProof', finished: false },
     ]

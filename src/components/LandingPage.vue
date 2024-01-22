@@ -21,7 +21,7 @@ const alphabet = '0123456789abcdefghijklmnopqrstuvwxyzM '
 // intro text taht will be 'typed'
 const texts = ref([
   {
-    'text': 'Prove statements about to third parties without revealing any personal data. Sounds',
+    'text': 'Prove statements about yourself to third parties without revealing any personal data. Sounds',
     'placeholder': ''
   },
   {

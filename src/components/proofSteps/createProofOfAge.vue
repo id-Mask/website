@@ -3,12 +3,14 @@ import { ref, onMounted } from 'vue'
 import { useThemeVars } from 'naive-ui'
 import { useStore } from 'vuex'
 import { useMessage } from 'naive-ui'
+import { sleep } from './../../utils.js'
 import {
   CircuitString,
   Field,
   Signature
 } from 'o1js'
 
+import { compile } from './compile.js'
 import { proofOfAge } from './../zkPrograms/ProofOfAge.js'
 import { PersonalData } from './../zkPrograms/ProofOfAge.utils.js'
 
@@ -37,6 +39,10 @@ const createProof = async () => {
     emit('finished', false)
     const pid = store.getters['pid/getData']
 
+    // compile
+    let msg = message.create('1/3 Compiling zkProgam 🧩🔨', { type: 'loading', duration: 10e9 })
+    await compile(store, props, proofOfAge)
+
     /* pid e.g.:
     const pid = {
       "data": {
@@ -54,6 +60,7 @@ const createProof = async () => {
     }
     */
 
+    msg.content = "2/3 Creating the proof 🌈✨"
     try {
       const personalData = new PersonalData({
         name: CircuitString.fromString(pid.data.name),
@@ -75,14 +82,19 @@ const createProof = async () => {
       store.dispatch('proofs/saveData', { proofName: props.selectedProof, proof: jsonProof })
       emit('isLoading', false)
       emit('finished')
+
+      msg.type = 'success'
+      msg.content = "3/3 Congradulations! You've sucessfully created the proof 🎉"
     } catch (error) {
       console.error(error);
-      message.error(
-        'Something is wrong. You sure you are old enough? 👵🏼',
-        { closable: true, duration: 10000 }
-      )
+      msg.type = 'error'
+      msg.content = "Something is wrong. You sure you are old enough? 👵🏼"
+    } finally {
+      data.value.isLoading = false
+      emit('isLoading', false)
+      await sleep(10000)
+      message.destroyAll()
     }
-    data.value.isLoading = false
 }
 
 onMounted(async () => {
@@ -110,7 +122,7 @@ onMounted(async () => {
     </n-text>
 
     <n-input-group>
-      <n-button type="primary" @click="createProof()">
+      <n-button type="primary" @click="createProof()" :loading="data.isLoading">
         Create proof
       </n-button>
       <n-input-number
