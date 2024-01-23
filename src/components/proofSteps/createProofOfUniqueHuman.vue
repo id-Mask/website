@@ -3,12 +3,14 @@ import { ref, onMounted } from 'vue'
 import { useThemeVars } from 'naive-ui'
 import { useStore } from 'vuex'
 import { useMessage } from 'naive-ui'
+import { sleep } from './../../utils.js'
 import {
   CircuitString,
   Field,
   Signature
 } from 'o1js'
 
+import { compile } from './compile.js'
 import { proofOfUniqueHuman } from './../zkPrograms/ProofOfUniqueHuman.js'
 import { PersonalData } from './../zkPrograms/ProofOfAge.utils.js'
 
@@ -43,60 +45,70 @@ const getSecreteValue = async () => {
 }
 
 const createProof = async () => {
-    data.value.isLoading = true
-    emit('isLoading', true)
-    emit('finished', false)
+  data.value.isLoading = true
+  emit('isLoading', true)
+  emit('finished', false)
 
-    const secretValue = await getSecreteValue()
-    const pid = store.state.pid.data
+  let msg = message.create('1/3 Crafting your secrets 🤫🔐', { type: 'loading', duration: 10e9 })
+  const secretValue = await getSecreteValue()
+  const pid = store.state.pid.data
 
-    /* pid e.g.:
-    const pid = {
-      "data": {
-        "name": "Douglas",
-        "surname": "Lyphe",
-        "country": "EE",
-        "pno": "PNOEE-67807022776",
-        "currentDate": 20231026
-      },
-      "signature": {
-        "r": "24098777140448874930684151839724232933324153889241260987160800793000424886288",
-        "s": "26350209170644202625120216193969973021906199319302861651891544714558488811023"
-      },
-      "publicKey": "B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN"
-    }
-    */
+  msg.content = "2/3 Compiling zkProgam 🧩🔨"
+  await compile(store, props, proofOfUniqueHuman)
 
-    try {
-      const personalData = new PersonalData({
-        name: CircuitString.fromString(pid.data.name),
-        surname: CircuitString.fromString(pid.data.surname),
-        country: CircuitString.fromString(pid.data.country),
-        pno: CircuitString.fromString(pid.data.pno),
-        currentDate: Field(pid.data.currentDate),
-      })
-      const proof = await proofOfUniqueHuman.proveUniqueHuman(
-        personalData,
-        Signature.fromJSON(pid.signature),
-        CircuitString.fromString(secretValue.data.secret),
-        Signature.fromJSON(secretValue.signature)
-      );
+  /* pid e.g.:
+  const pid = {
+    "data": {
+      "name": "Douglas",
+      "surname": "Lyphe",
+      "country": "EE",
+      "pno": "PNOEE-67807022776",
+      "currentDate": 20231026
+    },
+    "signature": {
+      "r": "24098777140448874930684151839724232933324153889241260987160800793000424886288",
+      "s": "26350209170644202625120216193969973021906199319302861651891544714558488811023"
+    },
+    "publicKey": "B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN"
+  }
+  */
 
-      const jsonProof = proof.toJSON()
-      data.value.proof = JSON.stringify(jsonProof, null, 2)
+  msg.content = "3/3 Creating the proof 🌈✨"
+  try {
+    const personalData = new PersonalData({
+      name: CircuitString.fromString(pid.data.name),
+      surname: CircuitString.fromString(pid.data.surname),
+      country: CircuitString.fromString(pid.data.country),
+      pno: CircuitString.fromString(pid.data.pno),
+      currentDate: Field(pid.data.currentDate),
+    })
+    const proof = await proofOfUniqueHuman.proveUniqueHuman(
+      personalData,
+      Signature.fromJSON(pid.signature),
+      CircuitString.fromString(secretValue.data.secret),
+      Signature.fromJSON(secretValue.signature)
+    );
 
-      // save proof to store (to be able to access it form other components)
-      store.dispatch('proofs/saveData', { proofName: props.selectedProof, proof: jsonProof })
-      emit('isLoading', false)
-      emit('finished')
-    } catch (error) {
-      console.error(error);
-      message.error(
-        'Something is wrong. You sure you are old enough? 👵🏼',
-        { closable: true, duration: 10000 }
-      )
-    }
+    const jsonProof = proof.toJSON()
+    data.value.proof = JSON.stringify(jsonProof, null, 2)
+
+    msg.type = 'success'
+    msg.content = "Congradulations! You've sucessfully created the proof 🎉"
+
+    // save proof to store (to be able to access it form other components)
+    store.dispatch('proofs/saveData', { proofName: props.selectedProof, proof: jsonProof })
+    emit('isLoading', false)
+    emit('finished')
+  } catch (error) {
+    console.error(error);
+    msg.type = 'error'
+    msg.content = "Something is wrong. Sorry 🤔"
+  } finally {
     data.value.isLoading = false
+    emit('isLoading', false)
+    await sleep(10000)
+    message.destroyAll()
+  }
 }
 
 onMounted(async () => {
@@ -112,7 +124,7 @@ onMounted(async () => {
     </n-text>
     <n-text :depth="3" style="font-size: 90%; text-align: justify;">
       <p>
-        The proof generation will again take some time. Once it is finished, you'll be able to pick options what you want to do with it.
+        The proof generation will take some time. Once it is finished, you'll be able to pick options what you want to do with it.
       </p>
       <p>
         Note that the generated proof does not include any of your private data. 

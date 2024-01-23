@@ -2,8 +2,6 @@
 import { ref } from 'vue'
 import { useStore } from 'vuex'
 import getPersonalData from './proofSteps/getPersonalData.vue'
-import getOFACData from './proofSteps/getOFACData.vue'
-import compileProgram from './proofSteps/compileProgram.vue'
 import createProofOfAge from './proofSteps/createProofOfAge.vue'
 import createProofOfSanctions from './proofSteps/createProofOfSanctions.vue'
 import createProofOfUniqueHuman from './proofSteps/createProofOfUniqueHuman.vue'
@@ -17,8 +15,6 @@ const props = defineProps({
 // to make sure this is not inside a ref
 const components = {
   getPersonalData: getPersonalData,
-  getOFACData: getOFACData,
-  compileProgram: compileProgram,
   createProofOfAge: createProofOfAge,
   createProofOfSanctions: createProofOfSanctions,
   createProofOfUniqueHuman: createProofOfUniqueHuman,
@@ -31,7 +27,6 @@ const proofs = ref({
   proofOfAge: {
     steps: [
       { component: 'getPersonalData', finished: false },
-      // { component: 'compileProgram', finished: false },
       { component: 'createProofOfAge', finished: false },
       { component: 'saveProof', finished: false },
     ]
@@ -39,8 +34,6 @@ const proofs = ref({
   proofOfSanctions: {
     steps: [
       { component: 'getPersonalData', finished: false },
-      { component: 'compileProgram', finished: false },
-      { component: 'getOFACData', finished: false },
       { component: 'createProofOfSanctions', finished: false },
       { component: 'saveProof', finished: false },
     ]
@@ -48,7 +41,6 @@ const proofs = ref({
   proofOfUniqueHuman: {
     steps: [
       { component: 'getPersonalData', finished: false },
-      { component: 'compileProgram', finished: false },
       { component: 'createProofOfUniqueHuman', finished: false },
       { component: 'saveProof', finished: false },
     ]

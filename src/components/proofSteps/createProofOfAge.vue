@@ -34,67 +34,67 @@ const props = defineProps({
 const emit = defineEmits(['finished', 'isLoading'])
 
 const createProof = async () => {
-    data.value.isLoading = true
-    emit('isLoading', true)
-    emit('finished', false)
-    const pid = store.getters['pid/getData']
+  data.value.isLoading = true
+  emit('isLoading', true)
+  emit('finished', false)
+  const pid = store.getters['pid/getData']
 
-    // compile
-    let msg = message.create('1/3 Compiling zkProgam 🧩🔨', { type: 'loading', duration: 10e9 })
-    await compile(store, props, proofOfAge)
+  // compile
+  let msg = message.create('1/2 Compiling zkProgam 🧩🔨', { type: 'loading', duration: 10e9 })
+  await compile(store, props, proofOfAge)
 
-    /* pid e.g.:
-    const pid = {
-      "data": {
-        "name": "Douglas",
-        "surname": "Lyphe",
-        "country": "EE",
-        "pno": "PNOEE-67807022776",
-        "currentDate": 20231026
-      },
-      "signature": {
-        "r": "24098777140448874930684151839724232933324153889241260987160800793000424886288",
-        "s": "26350209170644202625120216193969973021906199319302861651891544714558488811023"
-      },
-      "publicKey": "B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN"
-    }
-    */
+  /* pid e.g.:
+  const pid = {
+    "data": {
+      "name": "Douglas",
+      "surname": "Lyphe",
+      "country": "EE",
+      "pno": "PNOEE-67807022776",
+      "currentDate": 20231026
+    },
+    "signature": {
+      "r": "24098777140448874930684151839724232933324153889241260987160800793000424886288",
+      "s": "26350209170644202625120216193969973021906199319302861651891544714558488811023"
+    },
+    "publicKey": "B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN"
+  }
+  */
 
-    msg.content = "2/3 Creating the proof 🌈✨"
-    try {
-      const personalData = new PersonalData({
-        name: CircuitString.fromString(pid.data.name),
-        surname: CircuitString.fromString(pid.data.surname),
-        country: CircuitString.fromString(pid.data.country),
-        pno: CircuitString.fromString(pid.data.pno),
-        currentDate: Field(pid.data.currentDate),
-      })
-      const proof = await proofOfAge.proveAge(
-        Field(data.value.ageToProveInYears),
-        personalData,
-        Signature.fromJSON(pid.signature)
-      );
+  msg.content = "2/2 Creating the proof 🌈✨"
+  try {
+    const personalData = new PersonalData({
+      name: CircuitString.fromString(pid.data.name),
+      surname: CircuitString.fromString(pid.data.surname),
+      country: CircuitString.fromString(pid.data.country),
+      pno: CircuitString.fromString(pid.data.pno),
+      currentDate: Field(pid.data.currentDate),
+    })
+    const proof = await proofOfAge.proveAge(
+      Field(data.value.ageToProveInYears),
+      personalData,
+      Signature.fromJSON(pid.signature)
+    );
 
-      const jsonProof = proof.toJSON()
-      data.value.proof = JSON.stringify(jsonProof, null, 2)
+    const jsonProof = proof.toJSON()
+    data.value.proof = JSON.stringify(jsonProof, null, 2)
 
-      // save proof to store (to be able to access it form other components)
-      store.dispatch('proofs/saveData', { proofName: props.selectedProof, proof: jsonProof })
-      emit('isLoading', false)
-      emit('finished')
+    // save proof to store (to be able to access it form other components)
+    store.dispatch('proofs/saveData', { proofName: props.selectedProof, proof: jsonProof })
+    emit('isLoading', false)
+    emit('finished')
 
-      msg.type = 'success'
-      msg.content = "3/3 Congradulations! You've sucessfully created the proof 🎉"
-    } catch (error) {
-      console.error(error);
-      msg.type = 'error'
-      msg.content = "Something is wrong. You sure you are old enough? 👵🏼"
-    } finally {
-      data.value.isLoading = false
-      emit('isLoading', false)
-      await sleep(10000)
-      message.destroyAll()
-    }
+    msg.type = 'success'
+    msg.content = "Congradulations! You've sucessfully created the proof 🎉"
+  } catch (error) {
+    console.error(error);
+    msg.type = 'error'
+    msg.content = "Something is wrong. You sure you are old enough? 👵🏼"
+  } finally {
+    data.value.isLoading = false
+    emit('isLoading', false)
+    await sleep(10000)
+    message.destroyAll()
+  }
 }
 
 onMounted(async () => {
@@ -110,7 +110,7 @@ onMounted(async () => {
     </n-text>
     <n-text :depth="3" style="font-size: 90%; text-align: justify;">
       <p>
-        The proof generation will again take some time. Once it is finished, you'll be able to pick options what you want to do with it.
+        The proof generation will again some time. Once it is finished, you'll be able to pick options what you want to do with it.
       </p>
       <p>
         Note that the generated proof does not include any of your private data. It includes public inputs which in this case is the number of years you're proving you are older than,
