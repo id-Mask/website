@@ -4,6 +4,7 @@ import { useThemeVars } from 'naive-ui'
 import { useStore } from 'vuex'
 import { useMessage } from 'naive-ui'
 import { verify } from 'o1js';
+import qrcodeScanner from './qrcodeScanner.vue';
 
 import { proofOfAge } from './zkPrograms/ProofOfAge.js'
 import { proofOfSanctions } from './zkPrograms/ProofOfSanctions.js'
@@ -200,6 +201,9 @@ Object.keys(proofData).forEach(key => {
           </n-input-group>
         </div>
       </n-text>
+
+      <br/>
+      <qrcodeScanner />
 
     <template #action>
     </template>
