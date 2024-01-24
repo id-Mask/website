@@ -115,6 +115,12 @@ const getCurrentStep = () => {
   return currentStep.value > maxStepLength ? maxStepLength : currentStep.value
 }
 
+const triggerNextStep_ = () => {
+  if (currentStep.value < (proofs.value[props.selectedProof].steps.length - 1)) {
+    currentStep.value ++
+  }
+}
+
 </script>
 
 <template>
@@ -159,6 +165,7 @@ const getCurrentStep = () => {
         :is="components[proofs[props.selectedProof].steps[getCurrentStep()].component]"
         @finished="(val) => setFinished(val)"
         @isLoading="(val) => setLoading(val)"
+        @triggerNextStep="triggerNextStep_()"
         :selectedProof="props.selectedProof"
       />
     </KeepAlive>

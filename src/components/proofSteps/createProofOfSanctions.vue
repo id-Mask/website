@@ -30,7 +30,7 @@ const props = defineProps({
   selectedProof: String,
 })
 
-const emit = defineEmits(['finished', 'isLoading'])
+const emit = defineEmits(['finished', 'isLoading', 'triggerNextStep'])
 
 const getOFACData = async () => {
   const response = await fetch(store.state.settings.zkOracle + 'getOFACmatches', {
@@ -116,12 +116,13 @@ const createProof = async () => {
     data.value.proof = JSON.stringify(jsonProof, null, 2)
 
     msg.type = 'success'
-    msg.content = "Congradulations! You've sucessfully created the proof 🎉"
+    msg.content = "Congratulation! You've sucessfully created the proof 🎉"
 
     // save proof to store (to be able to access it form other components)
     store.dispatch('proofs/saveData', { proofName: props.selectedProof, proof: jsonProof })
     emit('isLoading', false)
     emit('finished')
+    emit('triggerNextStep')
   } catch (error) {
     console.error(error);
     msg.type = 'error'
@@ -150,16 +151,12 @@ onMounted(async () => {
         The proof generation will take some time. Once it is finished, you'll be able to pick options what you want to do with it.
       </p>
       <p>
-        Note that the generated proof does not include any of your private data. It includes public inputs which in this case is the number of years you're proving you are older than,
-        public outputs, which is always 1 and shows that your age is more than the number of years, and the proof itself which is cryptographic jumble of letters and numbers.
-      </p>
-      <p>
-        Below, input the number of years you wish to prove you're older than.
+        Note that the generated proof does not include any of your private data. All it says, is that you, the person that generated the proof, is not part of the OFAC database and so is not sanctioned.
       </p>
     </n-text>
 
     <n-input-group>
-      <n-button type="primary" @click="createProof()">
+      <n-button type="primary" @click="createProof()" :loading="data.isLoading">
         Create proof
       </n-button>
     </n-input-group>

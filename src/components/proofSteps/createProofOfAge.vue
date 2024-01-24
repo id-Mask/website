@@ -31,7 +31,7 @@ const props = defineProps({
   selectedProof: String,
 })
 
-const emit = defineEmits(['finished', 'isLoading'])
+const emit = defineEmits(['finished', 'isLoading', 'triggerNextStep'])
 
 const createProof = async () => {
   data.value.isLoading = true
@@ -84,7 +84,8 @@ const createProof = async () => {
     emit('finished')
 
     msg.type = 'success'
-    msg.content = "Congradulations! You've sucessfully created the proof 🎉"
+    msg.content = "Congratulation! You've sucessfully created the proof 🎉"
+    emit('triggerNextStep')
   } catch (error) {
     console.error(error);
     msg.type = 'error'

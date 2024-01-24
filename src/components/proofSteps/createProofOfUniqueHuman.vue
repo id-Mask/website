@@ -31,7 +31,7 @@ const props = defineProps({
   selectedProof: String,
 })
 
-const emit = defineEmits(['finished', 'isLoading'])
+const emit = defineEmits(['finished', 'isLoading', 'triggerNextStep'])
 
 const getSecreteValue = async () => {
   const url = store.state.settings.zkOracle
@@ -93,12 +93,13 @@ const createProof = async () => {
     data.value.proof = JSON.stringify(jsonProof, null, 2)
 
     msg.type = 'success'
-    msg.content = "Congradulations! You've sucessfully created the proof 🎉"
+    msg.content = "Congratulation! You've sucessfully created the proof 🎉"
 
     // save proof to store (to be able to access it form other components)
     store.dispatch('proofs/saveData', { proofName: props.selectedProof, proof: jsonProof })
     emit('isLoading', false)
     emit('finished')
+    emit('triggerNextStep')
   } catch (error) {
     console.error(error);
     msg.type = 'error'
@@ -133,7 +134,7 @@ onMounted(async () => {
       </p>
     </n-text>
 
-    <n-button type="primary" @click="createProof()">
+    <n-button type="primary" @click="createProof()" :loading="data.isLoading">
       Create proof
     </n-button>
 
