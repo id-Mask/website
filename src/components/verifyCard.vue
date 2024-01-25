@@ -8,9 +8,12 @@ import qrcodeScanner from './qrcodeScanner.vue';
 
 import { proofOfAge } from './zkPrograms/ProofOfAge.js'
 import { proofOfSanctions } from './zkPrograms/ProofOfSanctions.js'
+import { proofOfUniqueHuman } from './zkPrograms/ProofOfUniqueHuman.js'
+
 const proofs = {
   proofOfAge: proofOfAge,
-  proofOfSanctions: proofOfSanctions
+  proofOfSanctions: proofOfSanctions,
+  proofOfUniqueHuman: proofOfUniqueHuman,
 }
 
 const themeVars = useThemeVars()
