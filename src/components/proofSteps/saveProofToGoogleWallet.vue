@@ -81,7 +81,7 @@ const save = async () => {
   const secret = generateSecret(32)
   // console.log('secret:', secret)
 
-  const encryptedProof = encrypt(proofJson, secret)
+  const encryptedProof = await encrypt(proofJson, secret)
   // console.log('encryptedProof:', encryptedProof)
 
   msgReactive.content = "2/3 Uploading enrypted proof to IPFS ⬆️"
