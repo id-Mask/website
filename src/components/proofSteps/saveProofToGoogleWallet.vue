@@ -121,7 +121,7 @@ const save = async () => {
 <template>
   <!-- <n-spin :show="isLoading" size="tiny"> -->
     <n-button text :loading="isLoading" @click="save()" style="cursor: pointer;">
-      <img width="200" src="../../assets/google-button.png" />
+      <img src="../../assets/google-wallet-badge.png" />
     </n-button>
   <!-- </n-spin> -->
 </template>
