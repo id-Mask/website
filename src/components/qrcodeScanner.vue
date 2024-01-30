@@ -100,9 +100,9 @@ const paintOutline = (detectedCodes, ctx) => {
 </script>
 
 <template>
-  <n-button type="primary" @click="isOpen = !isOpen">scan QR code</n-button>
+  <n-button type="primary" @click="isOpen = !isOpen">Scan QR code</n-button>
   <div v-if="isOpen">
-    <n-modal style="width: 90%" :mask-closable="true" v-model:show="isOpen">
+    <n-modal style="width: 90%; max-width: 50em;" :mask-closable="true" v-model:show="isOpen">
       <n-card>
         <n-spin :show="isLoading">
           <qrcode-stream @detect="onDetect" :track="paintOutline" @errors="console.error" />
@@ -124,7 +124,7 @@ const paintOutline = (detectedCodes, ctx) => {
                   Created at: {{ proofData[1] }}
                 </div>
 
-                <div v-if="decodedValue[0].proof == 'proofOfNonSanctions'">
+                <div v-if="decodedValue[0].proof == 'proofOfSanctions'">
                   OFAC reliability score: {{ proofData[0] }}
                   <br/>
                   Created at: {{ proofData[1] }}

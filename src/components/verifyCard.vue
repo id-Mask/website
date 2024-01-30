@@ -203,11 +203,11 @@ Object.keys(proofData).forEach(key => {
             <n-input :style="{ width: '100%' }" v-model:value="address" placeholder="Mina address" />
           </n-input-group>
         </div>
+        <p>
+          3. If user saved their proof to google or apple wallet, scan the QR code using your camera and verify the proof.
+        </p>
+        <qrcodeScanner />
       </n-text>
-
-      <br/>
-      <qrcodeScanner />
-
     <template #action>
     </template>
   </n-card>
