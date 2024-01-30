@@ -216,7 +216,7 @@ const saveProofOnChain = async (
     </n-space>
 
     <n-space>
-      <saveProofToGoogleWallet :selectedProof="props.selectedProof"/>
+      <saveProofToGoogleWallet @finished="emit('finished')" :selectedProof="props.selectedProof"/>
       <saveProofToAppleWallet :selectedProof="props.selectedProof"/>
     </n-space>
 

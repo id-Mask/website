@@ -19,6 +19,8 @@ import * as CryptoJS from 'crypto-js'
   4. store this JSON on apple / andoid wallet 
 */
 
+const emit = defineEmits(['finished'])
+
 const store = useStore()
 const message = useMessage()
 
@@ -110,7 +112,10 @@ const save = async () => {
 
   msgReactive.type = 'success'
   msgReactive.content = "You can now access your proof from within your Google wallet 👛"
+
   isLoading.value = false
+  emit('finished')
+
   await sleep(5000)
   message.destroyAll()
 
