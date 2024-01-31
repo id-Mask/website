@@ -8,6 +8,8 @@ import LandingPage from './components/LandingPage.vue'
 import ProofPage from './components/ProofPage.vue'
 import footer_ from './components/footer_.vue'
 
+import tempCard from './components/tempCard.vue'
+
 const store = useStore()
 const breakpoint = useBreakpoint()
 
@@ -39,6 +41,8 @@ const padding = computed(() => {
             <header_ style="position: absolute; z-index: 1;"/>
             <n-layout-content :content-style="'margin: 0 auto;' + padding">
               <LandingPage/>
+              <!-- quick prototype of complation with cache -->
+              <!-- <tempCard /> -->
               <ProofPage/>
             </n-layout-content>
           </n-layout>
