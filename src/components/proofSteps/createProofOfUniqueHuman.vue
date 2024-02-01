@@ -54,7 +54,7 @@ const createProof = async () => {
   const pid = store.state.pid.data
 
   msg.content = "2/3 Compiling zkProgam 🧩🔨"
-  await compile(store, props, proofOfUniqueHuman)
+  await compile(store, props.selectedProof, proofOfUniqueHuman)
 
   /* pid e.g.:
   const pid = {

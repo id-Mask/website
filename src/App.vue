@@ -41,8 +41,6 @@ const padding = computed(() => {
             <header_ style="position: absolute; z-index: 1;"/>
             <n-layout-content :content-style="'margin: 0 auto;' + padding">
               <LandingPage/>
-              <!-- quick prototype of complation with cache -->
-              <!-- <tempCard /> -->
               <ProofPage/>
             </n-layout-content>
           </n-layout>

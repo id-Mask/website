@@ -12,6 +12,7 @@ import { proofOfAge } from './zkPrograms/ProofOfAge.js'
 import { proofOfSanctions } from './zkPrograms/ProofOfSanctions.js'
 import { proofOfUniqueHuman } from './zkPrograms/ProofOfUniqueHuman.js'
 
+import { compile } from './proofSteps/compile.js'
 import { sleep } from './../utils.js'
 
 const proofs = {
@@ -29,7 +30,6 @@ const proofData = ref(null)
 const isOpen = ref(false)
 
 const isLoading = ref(false)
-const progressBarWidth = ref(0)
 
 const verifyProof = async (data) => {
 
@@ -47,10 +47,7 @@ const verifyProof = async (data) => {
   // check if the proof is compiled and vk saved
   // if not compile and save verificationKey to store
   msg.content = "Compiling zk program 🛠️"
-  if (!store.state.proofs.data[data.proof].verificationKey) {
-    const { verificationKey } = await proofs[data.proof].compile()
-    store.state.proofs.data[data.proof].verificationKey = verificationKey
-  }
+  await compile(store, data.proof, proofs[data.proof])
 
   // verify if the provided proof is correct
   msg.content = "Verifying the proof 🧐"

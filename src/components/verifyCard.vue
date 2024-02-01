@@ -10,6 +10,8 @@ import { proofOfAge } from './zkPrograms/ProofOfAge.js'
 import { proofOfSanctions } from './zkPrograms/ProofOfSanctions.js'
 import { proofOfUniqueHuman } from './zkPrograms/ProofOfUniqueHuman.js'
 
+import { compile } from './proofSteps/compile.js'
+
 const proofs = {
   proofOfAge: proofOfAge,
   proofOfSanctions: proofOfSanctions,
@@ -32,13 +34,8 @@ const modalData = ref({})
 
 const verifyJSONProof = async (proof) => {
 
-  // check if the proof is compiled and vk saved
-  // if not compile and save verificationKey to store
-  if (!store.state.proofs.data[props.selectedProof].verificationKey) {
-    message.loading('Please be patient. Before verification the program must be compiled.')
-    const { verificationKey } = await proofs[props.selectedProof].compile()
-    store.state.proofs.data[props.selectedProof].verificationKey = verificationKey
-  }
+  // compile
+  await compile(store, props.selectedProof, proofs[props.selectedProof])
 
   // verify if the provided proof is correct
   let msg = message.loading('verifying', { closable: true, duration: 10000 })
