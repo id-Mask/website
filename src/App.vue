@@ -8,8 +8,6 @@ import LandingPage from './components/LandingPage.vue'
 import ProofPage from './components/ProofPage.vue'
 import footer_ from './components/footer_.vue'
 
-import tempCard from './components/tempCard.vue'
-
 const store = useStore()
 const breakpoint = useBreakpoint()
 
