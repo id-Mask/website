@@ -28,6 +28,7 @@ const message = useMessage()
 const decodedValue = ref(null)
 const proofData = ref(null)
 const isOpen = ref(false)
+const useCache = ref(false)
 
 const isLoading = ref(false)
 
@@ -47,7 +48,15 @@ const verifyProof = async (data) => {
   // check if the proof is compiled and vk saved
   // if not compile and save verificationKey to store
   msg.content = "Compiling zk program 🛠️"
-  await compile(store, data.proof, proofs[data.proof])
+
+
+  /*
+    Here, we should be using the compile fn just as everywhere else.
+    But if useCache is set to true, verify fn fails.
+
+    So useCache is set to false, it takes longer but no error ¯\_(ツ)_/¯
+  */
+  await compile(store, data.proof, proofs[data.proof], { useCache: useCache.value })
 
   // verify if the provided proof is correct
   msg.content = "Verifying the proof 🧐"
@@ -98,6 +107,15 @@ const paintOutline = (detectedCodes, ctx) => {
 
 <template>
   <n-button type="primary" @click="isOpen = !isOpen">Scan QR code</n-button>
+  <n-divider vertical/>
+  <n-switch v-model:value="useCache">
+    <template #checked>
+      Use cache
+    </template>
+    <template #unchecked>
+      No cache
+    </template>
+  </n-switch>
   <div v-if="isOpen">
     <n-modal style="width: 90%; max-width: 50em;" :mask-closable="true" v-model:show="isOpen">
       <n-card>
