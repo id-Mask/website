@@ -13,7 +13,7 @@
     "@vercel/analytics": "^1.1.1",
     "crypto-js": "^4.2.0",
     "highlight.js": "^11.8.0",
-    "o1js": "0.14.*",
+    "o1js": "^0.16.0",
     "vhook": "^1.0.0",
     "vue": "^3.3.4",
     "vue-qrcode-reader": "^5.5.1",
