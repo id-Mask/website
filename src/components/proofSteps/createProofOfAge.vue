@@ -121,8 +121,8 @@ onMounted(async () => {
       </n-button>
       <n-input-number
         v-model:value="data.ageToProveInYears"
-        placeholder="the number of years"
-        style="width: 100%;"
+        placeholder="number of years"
+        style="max-width: 14em;"
         min="1"
       />
     </n-input-group>
