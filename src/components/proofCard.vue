@@ -141,8 +141,8 @@ const triggerNextStep_ = () => {
               </n-icon>
             </n-icon-wrapper>
             </n-collapse-transition>
-            {{ currentStep + 1 }} /
-            {{ proofs[props.selectedProof].steps.length }}
+            <n-spin :size="15" v-if="isLoading" style="padding-top: 4px;"/>
+            <span v-else>{{ currentStep + 1 }}</span> / {{ proofs[props.selectedProof].steps.length }}
           </n-space>
         </n-space>
       <n-progress

@@ -171,28 +171,14 @@ const saveProofOnChain = async (
 
 <template>
 
-  <n-space vertical>
+  <n-space vertical :size="8" align="center" justify="center" style="min-height: 20em;">
     <n-text type="default">
       Save the proof
     </n-text>
 
     <n-text :depth="3" style="font-size: 90%; text-align: justify;">
       <p>
-        You have multiple options how you can save the proof you've just created.
-        Choose one depending on your use case.
-      </p>
-      <p>
-        If you save it as as JSON to your device, you can later share it with
-        third parties and they will consume it and verify it themselves.
-      </p>
-      <p>
-        If you save it to the Mina blockchain, the network will verify it and
-        you will be able to share your proof by simply referencing your
-        Mina blockchain public address.
-      </p>
-      <p>
-        If you save it to your google or apple wallet, you can share it with your
-        phone using the QR code and the thrid party will consume and verify it themselves.
+        There's multiple ways to save it, pick the one you like.
       </p>
     </n-text>
 

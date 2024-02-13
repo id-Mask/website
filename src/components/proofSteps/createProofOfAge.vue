@@ -105,20 +105,13 @@ onMounted(async () => {
 
 <template>
 
-  <n-space vertical>
+  <n-space vertical :size="8" align="center" justify="center" style="min-height: 20em;">
     <n-text type="default">
       Create the proof
     </n-text>
     <n-text :depth="3" style="font-size: 90%; text-align: justify;">
       <p>
-        The proof generation will again some time. Once it is finished, you'll be able to pick options what you want to do with it.
-      </p>
-      <p>
-        Note that the generated proof does not include any of your private data. It includes public inputs which in this case is the number of years you're proving you are older than,
-        public outputs, which is always 1 and shows that your age is more than the number of years, and the proof itself which is cryptographic jumble of letters and numbers.
-      </p>
-      <p>
-        Below, input the number of years you wish to prove you're older than.
+        Input the number of years you wish to prove you're older than.
       </p>
     </n-text>
 
@@ -133,24 +126,6 @@ onMounted(async () => {
         min="1"
       />
     </n-input-group>
-
-    <n-spin :show="data.isLoading" style="padding-top: 1.3em;">
-      <n-card v-if="data.proof || data.isLoading">
-        <template #action>
-          Created proof:
-          <br><br>
-          <n-scrollbar x-scrollable>
-            <n-code
-              :code="data.proof ? data.proof : '{}'"
-              :hljs="hljs"
-              language="json"
-              class="code"
-              style="white-space: nowrap;"
-            />
-          </n-scrollbar>
-        </template>
-      </n-card>
-    </n-spin>
 
   </n-space>
 

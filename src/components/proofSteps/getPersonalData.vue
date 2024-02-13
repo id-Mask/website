@@ -2,7 +2,6 @@
 import { reactive, ref, watch } from 'vue'
 import { useMessage } from 'naive-ui'
 import { useStore } from 'vuex'
-import hidableDataWindow from './../componentUtils/hidableDataWindow.vue'
 
 // hljs stuff
 import hljs from 'highlight.js/lib/core'
@@ -27,7 +26,7 @@ const data = reactive({
     { name: 'Smart-ID' },
     { name: 'Mock-ID' }
   ],
-  selectedSource: null,
+  selectedSource: 'Mock-ID',
   selectedCountry: 'EE',
   personalIdentificationNumber: null,
   isLoading: false,
@@ -109,13 +108,6 @@ const getPID = async () => {
   data.pid = response
 }
 
-watch(() => data.selectedSource, async (_selectedSource) => {
-  // trigger on click (needed because it'r radio, not a button)
-  if (_selectedSource == 'Mock-ID') {
-    await getPID()
-  }
-})
-
 // this is a hack to make sure the input is not regarded as password
 // and explorers do not suggest to save it. This works because on load
 // input type is text, and then once the user starts typing it's set to password
@@ -128,68 +120,72 @@ watch(() => data.personalIdentificationNumber, (_personalIdentificationNumber) =
 </script>
 
 <template>
-    <n-space vertical :size="8">
+    <n-space vertical :size="8" align="center" justify="center" style="min-height: 20em;">
       <n-text type="default">
         Gather your personal identification data
       </n-text>
-      <n-text :depth="3" style="font-size: 90%; text-align: justify;">
-        <p>
-          The data will include your name, surname and personal identification number which also includes your birthdate.
-          In the next steps, you will use this data to create proofs asociated with it.
-          Pick your personal identification data streamline service below.
-        </p>
-      </n-text>
-      <n-radio-group v-model:value="data.selectedSource" :disabled="data.isLoading">
-        <n-radio-button
-          v-for="source in data.sources"
-          :value="source.name"
-          :label="source.name"
-        />
-      </n-radio-group>
-      <n-collapse-transition :show="data.selectedSource == 'Smart-ID'">
-        <n-input-group>
-          <n-button type="primary" @click="getPID()">
-            Get data
-          </n-button>
-          <n-select
-            placeholder=""
-            :options="[
-              {
-                label: 'EE',
-                value: 'EE',
-              },
-              {
-                label: 'LV',
-                value: 'LV',
-              },
-              {
-                label: 'LT',
-                value: 'LT',
-              }
-            ]"
-            v-model:value="data.selectedCountry"
-            style="width: 80px;"
-          />
-          <n-input
-            style="width: 100%"
-            :type="data.inputType"
-            show-password-on="mousedown"
-            v-model:value="data.personalIdentificationNumber"
-            placeholder="Personal Identification Number"
-            :show-button="false"
-          />
-        </n-input-group>
-      </n-collapse-transition>
-      <n-spin :show="data.isLoading" style="padding-top: 1em;">
-        <n-card v-if="data.pid || data.isLoading">
-          <template #action>
-            <hidableDataWindow
-              text="Your personal identification data:"
-              :data="JSON.stringify(data.pid, null, 2)"
+      <br/>
+      <n-tabs 
+        justify-content="space-evenly" 
+        type="segment" 
+        v-model:value="data.selectedSource" 
+        animated
+        size="medium"
+        style="min-width: 40em;;"
+      >
+        <n-tab-pane name="Mock-ID" tab="Mock-ID">
+          <n-input-group>
+            <n-button type="primary" @click="getPID()" :loading="data.isLoading">
+              Gather data
+            </n-button>
+            <n-select
+              v-model:value="data.selectedCountry"
+              style="width: 100px;"
+              disabled
             />
-          </template>
-        </n-card>
-      </n-spin>
+            <n-input
+              style="width: 100%"
+              placeholder="Personal Identification Number"
+              disabled
+            />
+          </n-input-group>
+        </n-tab-pane>
+        <n-tab-pane name="Smart-ID" tab="Smart-ID">
+          <n-input-group>
+            <n-button type="primary" @click="getPID()" :loading="data.isLoading">
+              Gather data
+            </n-button>
+            <n-select
+              :options="[
+                {
+                  label: 'EE',
+                  value: 'EE',
+                },
+                {
+                  label: 'LV',
+                  value: 'LV',
+                },
+                {
+                  label: 'LT',
+                  value: 'LT',
+                }
+              ]"
+              v-model:value="data.selectedCountry"
+              style="width: 100px;"
+            />
+            <n-input
+              style="width: 100%"
+              :type="data.inputType"
+              show-password-on="mousedown"
+              v-model:value="data.personalIdentificationNumber"
+              placeholder="Personal Identification Number"
+              :show-button="false"
+            />
+          </n-input-group>
+        </n-tab-pane>
+        <n-tab-pane name="Ausweisapp" tab="Ausweis-app" disabled></n-tab-pane>
+        <n-tab-pane name="Ausweisapp" tab="zk-Passport" disabled></n-tab-pane>
+      </n-tabs>
     </n-space>
 
     <n-modal v-model:show="verificationCodeModal.show" :mask-closable="false">
