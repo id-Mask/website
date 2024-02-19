@@ -14,10 +14,6 @@ import { compile } from './compile.js'
 import { proofOfAge } from './../zkPrograms/ProofOfAge.js'
 import { PersonalData } from './../zkPrograms/ProofOfAge.utils.js'
 
-import hljs from 'highlight.js/lib/core'
-import json from 'highlight.js/lib/languages/json'
-hljs.registerLanguage('json', json)
-
 const message = useMessage()
 const store = useStore()
 const themeVars = useThemeVars()
@@ -132,26 +128,5 @@ onMounted(async () => {
 </template>
 
 <style>
-
-.code {
-  font-family: "JetBrains Mono";
-  font-size: 90%;
-}
-
-.hljs-punctuation {
-  color: v-bind(themeVars.textColor1) !important;
-}
-
-.hljs-attr {
-  color: v-bind(themeVars.textColor3) !important;
-}
-
-.hljs-number {
-  color: v-bind(themeVars.primaryColor) !important;
-}
-
-.hljs-string {
-  color: v-bind(themeVars.primaryColor) !important;
-}
 
 </style>

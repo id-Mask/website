@@ -14,10 +14,6 @@ import { compile } from './compile.js'
 import { proofOfUniqueHuman } from './../zkPrograms/ProofOfUniqueHuman.js'
 import { PersonalData } from './../zkPrograms/ProofOfAge.utils.js'
 
-import hljs from 'highlight.js/lib/core'
-import json from 'highlight.js/lib/languages/json'
-hljs.registerLanguage('json', json)
-
 const message = useMessage()
 const store = useStore()
 const themeVars = useThemeVars()
@@ -119,68 +115,23 @@ onMounted(async () => {
 
 <template>
 
-  <n-space vertical>
+  <n-space vertical :size="8" align="center" justify="center" style="min-height: 20em;">  
     <n-text type="default">
       Create the proof
     </n-text>
     <n-text :depth="3" style="font-size: 90%; text-align: justify;">
       <p>
-        The proof generation will take some time. Once it is finished, you'll be able to pick options what you want to do with it.
-      </p>
-      <p>
-        Note that the generated proof does not include any of your private data. 
-        It includes public outputs which in this case is the unique identifier tied to your identity, the date the proof was created on
-        and the proof itself which is cryptographic jumble of letters and numbers.
+        You'll transform your personal data into a special key, confirming you're truly one of a kind.
       </p>
     </n-text>
 
     <n-button type="primary" @click="createProof()" :loading="data.isLoading">
       Create proof
     </n-button>
-
-    <n-spin :show="data.isLoading" style="padding-top: 1.3em;">
-      <n-card v-if="data.proof || data.isLoading">
-        <template #action>
-          Created proof:
-          <br><br>
-          <n-scrollbar x-scrollable>
-            <n-code
-              :code="data.proof ? data.proof : '{}'"
-              :hljs="hljs"
-              language="json"
-              class="code"
-              style="white-space: nowrap;"
-            />
-          </n-scrollbar>
-        </template>
-      </n-card>
-    </n-spin>
-
   </n-space>
 
 </template>
 
 <style>
-
-.code {
-  font-family: "JetBrains Mono";
-  font-size: 90%;
-}
-
-.hljs-punctuation {
-  color: v-bind(themeVars.textColor1) !important;
-}
-
-.hljs-attr {
-  color: v-bind(themeVars.textColor3) !important;
-}
-
-.hljs-number {
-  color: v-bind(themeVars.primaryColor) !important;
-}
-
-.hljs-string {
-  color: v-bind(themeVars.primaryColor) !important;
-}
 
 </style>

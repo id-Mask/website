@@ -3,11 +3,6 @@ import { reactive, ref, watch } from 'vue'
 import { useMessage } from 'naive-ui'
 import { useStore } from 'vuex'
 
-// hljs stuff
-import hljs from 'highlight.js/lib/core'
-import json from 'highlight.js/lib/languages/json'
-hljs.registerLanguage('json', json)
-
 const emit = defineEmits(['finished', 'isLoading', 'triggerNextStep'])
 
 const props = defineProps({
@@ -121,17 +116,17 @@ watch(() => data.personalIdentificationNumber, (_personalIdentificationNumber) =
 
 <template>
     <n-space vertical :size="8" align="center" justify="center" style="min-height: 20em;">
+      <div>
       <n-text type="default">
         Gather your personal identification data
       </n-text>
+      </div>
       <br/>
       <n-tabs 
-        justify-content="space-evenly" 
         type="segment" 
         v-model:value="data.selectedSource" 
         animated
         size="medium"
-        style="min-width: 40em;;"
       >
         <n-tab-pane name="Mock-ID" tab="Mock-ID">
           <n-input-group>
