@@ -11,6 +11,7 @@ import { proofOfSanctions } from './zkPrograms/ProofOfSanctions.js'
 import { proofOfUniqueHuman } from './zkPrograms/ProofOfUniqueHuman.js'
 
 import { compile } from './proofSteps/compile.js'
+import { useIsMobile } from '../utils.js'
 
 const proofs = {
   proofOfAge: proofOfAge,
@@ -18,7 +19,7 @@ const proofs = {
   proofOfUniqueHuman: proofOfUniqueHuman,
 }
 
-const themeVars = useThemeVars()
+const isMobile = useIsMobile()
 const store = useStore()
 const message = useMessage()
 
@@ -166,47 +167,44 @@ Object.keys(proofData).forEach(key => {
         <div>Verify {{ mapping[props.selectedProof] }}</div>
       </n-space>
     </template>
-      Verifying a proof requires you to perform one of the following:
 
-      <n-text :depth="3" style="font-size: 90%; text-align: justify;">
-        <p>
-          1. If user saved their proof to their local device and shared a JSON file with you,
-          drop it below and you'll verify if the proof is valid.
-        </p>
-        <n-upload @change="handleUpload" v-model:file-list="fileList" :show-file-list="false">
-          <n-upload-dragger>
-            <div>
-              <n-icon size="28" :depth="3">
-                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512"><path d="M64 164v244a56 56 0 0 0 56 56h272a56 56 0 0 0 56-56V164a4 4 0 0 0-4-4H68a4 4 0 0 0-4 4zm267 151.63l-63.69 63.68a16 16 0 0 1-22.62 0L181 315.63c-6.09-6.09-6.65-16-.85-22.38a16 16 0 0 1 23.16-.56L240 329.37V224.45c0-8.61 6.62-16 15.23-16.43A16 16 0 0 1 272 224v105.37l36.69-36.68a16 16 0 0 1 23.16.56c5.8 6.37 5.24 16.29-.85 22.38z" fill="currentColor"></path><rect x="32" y="48" width="448" height="80" rx="32" ry="32" fill="currentColor"></rect></svg>
-              </n-icon>
-            </div>
-            <n-text>
-              Click or drag a file to this area
-            </n-text>
-            <n-p depth="3" style="font-size: 95%;">
-              User submitted proof in the form of JSON
-            </n-p>
-          </n-upload-dragger>
-        </n-upload>
-        <p>
-          2. If user saved their proof to Mina blockchain and shared their public address with you,
-          then you can verify if by inputting user's public address.
-        </p>
-        <div>
+    <n-space vertical :size="28" align="center" justify="center" style="min-height: 20em;">
+
+      <n-text type="default">
+        Pick a method
+      </n-text>
+
+      <n-tabs type="segment" animated size="medium" :style="!isMobile ? 'min-width: 35em;' : ''">
+        <n-tab-pane tab="JSON" name="JSON">
+          <n-upload @change="handleUpload" v-model:file-list="fileList" :show-file-list="false">
+            <n-upload-dragger>
+              <div>
+                <n-icon size="28" :depth="3">
+                  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512"><path d="M64 164v244a56 56 0 0 0 56 56h272a56 56 0 0 0 56-56V164a4 4 0 0 0-4-4H68a4 4 0 0 0-4 4zm267 151.63l-63.69 63.68a16 16 0 0 1-22.62 0L181 315.63c-6.09-6.09-6.65-16-.85-22.38a16 16 0 0 1 23.16-.56L240 329.37V224.45c0-8.61 6.62-16 15.23-16.43A16 16 0 0 1 272 224v105.37l36.69-36.68a16 16 0 0 1 23.16.56c5.8 6.37 5.24 16.29-.85 22.38z" fill="currentColor"></path><rect x="32" y="48" width="448" height="80" rx="32" ry="32" fill="currentColor"></rect></svg>
+                </n-icon>
+              </div>
+              <n-text>
+                Click or drag a file to this area
+              </n-text>
+              <n-p depth="3" style="font-size: 95%;">
+                User submitted proof in the form of JSON
+              </n-p>
+            </n-upload-dragger>
+          </n-upload>
+        </n-tab-pane>
+        <n-tab-pane tab="QR code" name="QR code">
+          <qrcodeScanner />
+        </n-tab-pane>
+        <n-tab-pane tab="Mina address" name="Mina address">
           <n-input-group>
             <n-button type="primary" @click="verifyOnChainProof" :loading="isLoading">
               Verify
             </n-button>
             <n-input :style="{ width: '100%' }" v-model:value="address" placeholder="Mina address" />
           </n-input-group>
-        </div>
-        <p>
-          3. If user saved their proof to google or apple wallet, scan the QR code using your camera and verify the proof.
-        </p>
-        <qrcodeScanner />
-      </n-text>
-    <template #action>
-    </template>
+        </n-tab-pane>
+      </n-tabs>
+    </n-space>
   </n-card>
 
   <n-modal v-model:show="showModal">

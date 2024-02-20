@@ -115,13 +115,10 @@ watch(() => data.personalIdentificationNumber, (_personalIdentificationNumber) =
 </script>
 
 <template>
-    <n-space vertical :size="8" align="center" justify="center" style="min-height: 20em;">
-      <div>
+    <n-space vertical :size="28" align="center" justify="center" style="min-height: 20em;">
       <n-text type="default">
         Gather your personal identification data
       </n-text>
-      </div>
-      <br/>
       <n-tabs 
         type="segment" 
         v-model:value="data.selectedSource" 

@@ -27,7 +27,6 @@ const message = useMessage()
 
 const decodedValue = ref(null)
 const proofData = ref(null)
-const isOpen = ref(false)
 const useCache = ref(false)
 
 const isLoading = ref(false)
@@ -106,52 +105,46 @@ const paintOutline = (detectedCodes, ctx) => {
 </script>
 
 <template>
-  <n-button type="primary" @click="isOpen = !isOpen">Scan QR code</n-button>
-  <n-divider vertical/>
-  <n-switch v-model:value="useCache">
-    <template #checked>
-      Use cache
-    </template>
-    <template #unchecked>
-      No cache
-    </template>
-  </n-switch>
-  <div v-if="isOpen">
-    <n-modal style="width: 90%; max-width: 50em;" :mask-closable="true" v-model:show="isOpen">
-      <n-card>
-        <n-spin :show="isLoading">
-          <qrcode-stream @detect="onDetect" :track="paintOutline" @errors="console.error" />
-        </n-spin>
-        <template #footer>
-          <n-space align="center" vertical>
-            <n-card v-if="decodedValue && proofData" size="large" :hoverable="true"> 
-              <n-text type="success" tag="h4">
-
-                <div v-if="decodedValue[0].proof == 'proofOfAge'">
-                  Older than: {{ proofData[0] }}
-                  <br/>
-                  Created at: {{ proofData[1] }}
-                </div>
-
-                <div v-if="decodedValue[0].proof == 'proofOfUniqueHuman'">
-                  Unique Identifier: {{ proofData[0] }}
-                  <br/>
-                  Created at: {{ proofData[1] }}
-                </div>
-
-                <div v-if="decodedValue[0].proof == 'proofOfSanctions'">
-                  OFAC reliability score: {{ proofData[0] }}
-                  <br/>
-                  Created at: {{ proofData[1] }}
-                </div>
-
-              </n-text>
-            </n-card>
-          </n-space>
+  <n-card>
+    <n-space align="center" justify="center" vertical>
+      <n-switch v-model:value="useCache">
+        <template #checked>
+          Use cache
         </template>
-      </n-card>
-    </n-modal>
-  </div>
+        <template #unchecked>
+          No cache
+        </template>
+      </n-switch>
+      <n-spin :show="isLoading">
+        <qrcode-stream @detect="onDetect" :track="paintOutline" @errors="console.error" style="max-width: 30em;"/>
+      </n-spin>
+      <n-space align="center" vertical>
+        <n-card v-if="decodedValue && proofData" size="large" :hoverable="true"> 
+          <n-text type="success" tag="h4">
+
+            <div v-if="decodedValue[0].proof == 'proofOfAge'">
+              Older than: {{ proofData[0] }}
+              <br/>
+              Created at: {{ proofData[1] }}
+            </div>
+
+            <div v-if="decodedValue[0].proof == 'proofOfUniqueHuman'">
+              Unique Identifier: {{ proofData[0] }}
+              <br/>
+              Created at: {{ proofData[1] }}
+            </div>
+
+            <div v-if="decodedValue[0].proof == 'proofOfSanctions'">
+              OFAC reliability score: {{ proofData[0] }}
+              <br/>
+              Created at: {{ proofData[1] }}
+            </div>
+
+          </n-text>
+        </n-card>
+      </n-space>
+    </n-space>
+  </n-card>
 </template>
 
 <style>
