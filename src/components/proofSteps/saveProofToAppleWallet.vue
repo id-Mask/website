@@ -23,7 +23,7 @@ const save = async () => {
 <template>
   <!-- <n-spin :show="isLoading" size="tiny"> -->
     <n-button text disabled>
-      <img width="180" src="../../assets/apple-wallet-badge.svg" />
+      <img width="180" src="../../assets/apple-wallet-badge.svg" height="40"/>
     </n-button>
   <!-- </n-spin> -->
 </template>

@@ -115,9 +115,14 @@ watch(() => data.personalIdentificationNumber, (_personalIdentificationNumber) =
 </script>
 
 <template>
-    <n-space vertical :size="28" align="center" justify="center" style="min-height: 20em;">
+    <n-space vertical :size="8" align="center" justify="center" style="min-height: 20em;">
       <n-text type="default">
-        Gather your personal identification data
+        Get your identity data
+      </n-text>
+      <n-text :depth="3" style="font-size: 90%; text-align: justify;">
+        <p>
+          The data will stay and won't leave your device
+        </p>
       </n-text>
       <n-tabs 
         type="segment" 
@@ -128,7 +133,7 @@ watch(() => data.personalIdentificationNumber, (_personalIdentificationNumber) =
         <n-tab-pane name="Mock-ID" tab="Mock-ID">
           <n-input-group>
             <n-button type="primary" @click="getPID()" :loading="data.isLoading">
-              Gather data
+              Get data
             </n-button>
             <n-select
               v-model:value="data.selectedCountry"
@@ -145,7 +150,7 @@ watch(() => data.personalIdentificationNumber, (_personalIdentificationNumber) =
         <n-tab-pane name="Smart-ID" tab="Smart-ID">
           <n-input-group>
             <n-button type="primary" @click="getPID()" :loading="data.isLoading">
-              Gather data
+              Get data
             </n-button>
             <n-select
               :options="[
