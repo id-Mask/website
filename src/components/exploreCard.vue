@@ -1,11 +1,20 @@
 <script setup>
 import { ref, h, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
-import { useBreakpoint } from 'vooks'
 import { NButton } from 'naive-ui'
+import { useIsMobile } from '../utils.js'
 
+import { Mina, fetchEvents } from 'o1js'
+
+const isMobile = useIsMobile()
 const store = useStore()
-const breakpoint = useBreakpoint()
+
+// setup Mina Network object (used to make event requests)
+const Network = Mina.Network({
+  mina: store.state.settings.blockExplorer,
+  archive: store.state.settings.graphQLURL,
+})
+Mina.setActiveInstance(Network)
 
 const props = defineProps({
   selectedProof: String,
@@ -13,18 +22,21 @@ const props = defineProps({
 
 const columns = ref([
   {
-    title: 'Date',
-    key: 'dateTime'
-  },
-  {
     title: 'Block',
-    key: 'blockHeight'
+    render(row) {
+      let url = store.getters['settings/getBlockExplorerEnpoint']
+      return h(
+        'a', {
+          href: `${url}block/${row.blockHash}`,
+          target: '_blank'
+        }, row.blockHeight
+      )
+    }
   },
   {
     title: 'Transaction',
-    key: 'zkAppCommandHash.hash',
     render(row) {
-      let txHash = row.zkAppCommandHash.hash
+      let txHash = row.events[0].transactionInfo.hash
       let txHash_ = txHash.slice(0, 5) + ' ... ' + txHash.slice(-5)
       let url = store.getters['settings/getBlockExplorerEnpoint']
       return h(
@@ -36,100 +48,49 @@ const columns = ref([
     }
   },
   {
-    title: 'Address',
-    key: 'zkAppCommandHash.zkappCommand.feePayer.body.publicKey',
-    render(row) {
-      let address = row.zkAppCommandHash.zkappCommand.feePayer.body.publicKey
-      let publicKey_ = address.slice(0, 5) + ' ... ' + address.slice(-5)
-      let url = store.getters['settings/getBlockExplorerEnpoint']
-      return h(
-        'a', {
-          href: `${url}account/${address}`,
-          target: '_blank'
-        }, publicKey_
-      )
-    }
+    title: 'Status',
+    key: 'events[0].transactionInfo.status'
   },
   {
-    title: 'Data',
-    key: 'event',
+    title: 'Chain',
+    key: 'chainStatus'
+  },
+  {
+    title: 'Proof data',
+    key: 'events',
     render (row) {
-        return h(
-          NButton,
-          {
-            strong: true,
-            tertiary: true,
-            size: 'small',
-            onClick: () => showData(row)
-          },
-          { default: () => 'show' }
-        )
-      }
+      return h(
+        NButton,
+        {
+          strong: true,
+          tertiary: true,
+          size: 'small',
+          onClick: () => showData(row.events[0].data)
+        },
+        { default: () => 'show' }
+      )
+    }
   },
 ])
 
 const isLoading = ref(false)
 const data = ref([])
 
-const getProofs = async (url, zkAppKey) => {
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      query: `
-        query MyQuery {
-          events(query: {
-            zkAppCommandHash: {
-              zkappCommand: {
-                accountUpdates: {
-                  body: {publicKey: "${zkAppKey}"}
-                },
-                feePayer: {}
-              }
-            },
-            canonical: true
-          }) {
-            blockHeight
-            canonical
-            dateTime
-            event
-            zkAppCommandHash {
-              zkappCommand {
-                feePayer {
-                  body {
-                    publicKey
-                  }
-                }
-              }
-              hash
-            }
-          }
-        }
-      `,
-    }),
-  });
-  const response_ = await response.json()
-  return response_
-};
-
 const updateTable = async () => {
   isLoading.value = true
-  const url = store.getters['settings/getGraphQlEnpoint']
   const zkAppKey = store.getters['proofs/getData'][props.selectedProof].address
-  
-  const data_ = await getProofs(url, zkAppKey)
-  data.value = data_.data.events.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime))
+  const events = await fetchEvents({ publicKey: zkAppKey })
+  const events_ = JSON.parse(JSON.stringify(events)) // to get rid of weird objects inside ?!
+  data.value = events_.sort((a, b) => b.blockHeight - a.blockHeight)
   isLoading.value = false
 }
 
 const showModal = ref(false)
 const modalData = ref(null)
 
-const showData = (row) => {
+const showData = (event) => {
   showModal.value = true
-  modalData.value = row.event
+  modalData.value = event
 }
 
 onMounted( async () => {
@@ -158,7 +119,7 @@ Object.keys(proofData).forEach(key => {
     :header-extra-style="{'align-items': 'start'}"
   >
     <template #header>
-      <n-space vertical :size="20">
+      <n-space :justify="isMobile ? 'center' : 'space-between'">
         <div>Explore {{ mapping[props.selectedProof] }}</div>
       </n-space>
     </template>
@@ -176,7 +137,7 @@ Object.keys(proofData).forEach(key => {
         :data="data"
         :pagination="{ pageSize: 5 }"
         :loading="isLoading"
-        :style="breakpoint == 'xs' ? 'font-size: 80%' : ''"
+        style="font-size: 90%;"
       />
 
     <template #action>

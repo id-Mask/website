@@ -163,7 +163,7 @@ Object.keys(proofData).forEach(key => {
     :header-extra-style="{'align-items': 'start'}"
   >
     <template #header>
-      <n-space vertical :size="20">
+      <n-space :justify="isMobile ? 'center' : 'space-between'">
         <div>Verify {{ mapping[props.selectedProof] }}</div>
       </n-space>
     </template>
