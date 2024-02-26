@@ -21,6 +21,24 @@ const proofs = {
   proofOfUniqueHuman: proofOfUniqueHuman,
 }
 
+const dataShownAftervalidation = {
+  proofOfAge: {
+    header: ['Person is older than', 'Proof created at'],
+    emojis: ['👵', '📅'],
+    suffix: ['years', '']
+  },
+  proofOfSanctions: {
+    header: ['OFAC reliability score', 'Proof created at'],
+    emojis: ['🏛️', '📅'],
+    suffix: ['%', '']
+  },
+  proofOfUniqueHuman: {
+    header: ['Unique Identifier', 'Proof created at'],
+    emojis: ['🧠', '📅'],
+    suffix: ['', '']
+  },
+}
+
 const store = useStore()
 const themeVars = useThemeVars()
 const message = useMessage()
@@ -28,12 +46,14 @@ const message = useMessage()
 const decodedValue = ref(null)
 const proofData = ref(null)
 const useCache = ref(false)
+const isProofValid = ref(null)
 
 const isLoading = ref(false)
 
 const verifyProof = async (data) => {
 
   // fetch data from IPFS
+  isProofValid.value = null
   let msg = message.create('Fetching a proof from IPFS 📡', { type: 'loading', duration: 10e9 })
   const ipfsUrl = 'https://ipfs.io/ipfs/'
   const response = await fetch(ipfsUrl + data.ipfs.IpfsHash)
@@ -65,8 +85,10 @@ const verifyProof = async (data) => {
       msg.type = 'success'
       msg.content = "The proof is valid!"
       proofData.value = proof.publicOutput
+      isProofValid.value = true
     } else {
       console.log('error')
+      isProofValid.value = false
     }
   } catch (error) {
     console.error(error)
@@ -121,25 +143,31 @@ const paintOutline = (detectedCodes, ctx) => {
       <n-space align="center" vertical>
         <n-card v-if="decodedValue && proofData" size="large" :hoverable="true"> 
           <n-text type="success" tag="h4">
-
-            <div v-if="decodedValue[0].proof == 'proofOfAge'">
-              Older than: {{ proofData[0] }}
+            <n-space vertical>
+              <n-statistic :label="dataShownAftervalidation[decodedValue[0].proof].header[0]" :value="proofData[0]">
+                <template #prefix>
+                    {{ dataShownAftervalidation[decodedValue[0].proof].emojis[0] }}
+                </template>
+                <template #suffix>
+                  {{ dataShownAftervalidation[decodedValue[0].proof].suffix[0] }}
+                </template>
+              </n-statistic>
               <br/>
-              Created at: {{ proofData[1] }}
-            </div>
-
-            <div v-if="decodedValue[0].proof == 'proofOfUniqueHuman'">
-              Unique Identifier: {{ proofData[0] }}
+              <n-statistic :label="dataShownAftervalidation[decodedValue[0].proof].header[1]" :value="proofData[1]">
+                <template #prefix>
+                  {{ dataShownAftervalidation[decodedValue[0].proof].emojis[1] }}
+                </template>
+                <template #suffix>
+                  {{ dataShownAftervalidation[decodedValue[0].proof].suffix[1] }}
+                </template>
+              </n-statistic>
               <br/>
-              Created at: {{ proofData[1] }}
-            </div>
-
-            <div v-if="decodedValue[0].proof == 'proofOfSanctions'">
-              OFAC reliability score: {{ proofData[0] }}
-              <br/>
-              Created at: {{ proofData[1] }}
-            </div>
-
+              <n-statistic label="Proof validity" :value="isProofValid.toString()">
+                <template #prefix>
+                 {{ isProofValid ? '✅' : '❌' }}
+                </template>
+              </n-statistic>
+            </n-space>
           </n-text>
         </n-card>
       </n-space>
