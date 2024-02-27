@@ -46,14 +46,14 @@ const message = useMessage()
 const decodedValue = ref(null)
 const proofData = ref(null)
 const useCache = ref(false)
-const isProofValid = ref(null)
-
+const isProofValid = ref(false)
 const isLoading = ref(false)
 
 const verifyProof = async (data) => {
 
   // fetch data from IPFS
-  isProofValid.value = null
+  isLoading.value = true
+  isProofValid.value = false
   let msg = message.create('Fetching a proof from IPFS 📡', { type: 'loading', duration: 10e9 })
   const ipfsUrl = 'https://ipfs.io/ipfs/'
   const response = await fetch(ipfsUrl + data.ipfs.IpfsHash)
@@ -101,7 +101,6 @@ const verifyProof = async (data) => {
 
 const onDetect = async (value) => {
   console.log('DETECTED')
-  isLoading.value = true
   decodedValue.value = value.map((code) => JSON.parse(code.rawValue))
   await verifyProof(decodedValue.value[0])
 };
@@ -142,9 +141,9 @@ const paintOutline = (detectedCodes, ctx) => {
       </n-spin>
       <n-space align="center" vertical>
         <n-card v-if="decodedValue && proofData" size="large" :hoverable="true"> 
-          <n-text type="success" tag="h4">
-            <n-space vertical>
-              <n-statistic :label="dataShownAftervalidation[decodedValue[0].proof].header[0]" :value="proofData[0]">
+          <n-spin :show="isLoading">
+            <n-space :size="[0.2, 0.2]" vertical style="scale: 0.8">
+              <n-statistic :label="dataShownAftervalidation[decodedValue[0].proof].header[0]" :value="isLoading ? '' : proofData[0]">
                 <template #prefix>
                     {{ dataShownAftervalidation[decodedValue[0].proof].emojis[0] }}
                 </template>
@@ -153,7 +152,7 @@ const paintOutline = (detectedCodes, ctx) => {
                 </template>
               </n-statistic>
               <br/>
-              <n-statistic :label="dataShownAftervalidation[decodedValue[0].proof].header[1]" :value="proofData[1]">
+              <n-statistic :label="dataShownAftervalidation[decodedValue[0].proof].header[1]" :value="isLoading ? '' : proofData[1]">
                 <template #prefix>
                   {{ dataShownAftervalidation[decodedValue[0].proof].emojis[1] }}
                 </template>
@@ -163,12 +162,12 @@ const paintOutline = (detectedCodes, ctx) => {
               </n-statistic>
               <br/>
               <n-statistic label="Proof validity" :value="isProofValid.toString()">
-                <template #prefix>
-                 {{ isProofValid ? '✅' : '❌' }}
+                <template #prefix v-if="!isLoading">
+                {{ isProofValid ? '✅' : '❌' }}
                 </template>
               </n-statistic>
             </n-space>
-          </n-text>
+          </n-spin>
         </n-card>
       </n-space>
     </n-space>
