@@ -99,41 +99,46 @@ onMounted(() => {
             <div>
               <n-space vertical>
                 <n-h4 type="primary">Enpoint Settings</n-h4>
-                <n-text depth="3" style="font-size: 90%">graphQL</n-text>
-                <n-input-group>
-                  <n-input :value="store.state.settings.graphQLURL" type="text" placeholder="graphQLURL" />
-                  <n-button secondary type="primary">
-                    <template #icon>
+
+                <n-input-group >
+                  <n-input-group-label>
+                    <n-text depth="3" style="font-size: 80%">Archive graphQL</n-text>
+                  </n-input-group-label>
+                  <n-input v-model:value="store.state.settings.graphQLURL" type="text" placeholder="Archive graphQLURL" style="font-size: 80%">
+                    <template #prefix>
                       <n-icon :color="themeVars.primaryColor">
-                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24"><g fill="none"><path d="M6.75 3h-1A2.75 2.75 0 0 0 3 5.75v12.5A2.75 2.75 0 0 0 5.75 21H6v-6a2.25 2.25 0 0 1 2.25-2.25h7.5A2.25 2.25 0 0 1 18 15v6h.25A2.75 2.75 0 0 0 21 18.25V8.286a3.25 3.25 0 0 0-.952-2.299l-2.035-2.035A3.25 3.25 0 0 0 15.75 3v4.5a2.25 2.25 0 0 1-2.25 2.25H9A2.25 2.25 0 0 1 6.75 7.5V3zm7.5 0v4.5a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75V3h6zm2.25 18v-6a.75.75 0 0 0-.75-.75h-7.5a.75.75 0 0 0-.75.75v6h9z" fill="currentColor"></path></g></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24"><path opacity=".3" d="M5 19h14V8H5v11zm7-9l4 4h-2.55v3h-2.91v-3H8l4-4z" fill="currentColor"></path><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM6.24 5h11.52l.83 1H5.42l.82-1zM19 19H5V8h14v11zm-8.45-2h2.9v-3H16l-4-4l-4 4h2.55z" fill="currentColor"></path></svg>
                       </n-icon>
                     </template>
-                  </n-button>
+                  </n-input>
+                </n-input-group>
+                
+                <n-input-group>
+                  <n-input-group-label>
+                    <n-text depth="3" style="font-size: 80%">Block explorer</n-text>
+                  </n-input-group-label>
+                  <n-input v-model:value="store.state.settings.blockExplorer" type="text" placeholder="Block explorer" style="font-size: 80%">
+                    <template #prefix>
+                      <n-icon :color="themeVars.primaryColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 20 20"><g fill="none"><path d="M10 7.96l3.029-1.21l-7.5-3l-2.586 1.034a1.499 1.499 0 0 0-.364.208L10 7.961zM2.035 5.853A1.5 1.5 0 0 0 2 6.176v7.646a1.5 1.5 0 0 0 .943 1.393L8.7 17.518c.26.104.528.175.8.214V8.838L2.035 5.852zm8.465 11.88a3.5 3.5 0 0 0 .8-.214l5.757-2.303A1.5 1.5 0 0 0 18 13.822V6.176c0-.11-.012-.219-.035-.324L10.5 8.838v8.894zm6.921-12.74l-3.046 1.219l-7.5-3L8.7 2.48a3.5 3.5 0 0 1 2.6 0l5.757 2.303a1.5 1.5 0 0 1 .364.208z" fill="currentColor"></path></g></svg>
+                      </n-icon>
+                    </template>
+                  </n-input>
                 </n-input-group>
 
-                <n-text depth="3" style="font-size: 90%">Block explorer</n-text>
                 <n-input-group>
-                  <n-input :value="store.state.settings.blockExplorer" type="text" placeholder="graphQLURL" />
-                  <n-button secondary type="primary">
-                    <template #icon>
+                  <n-input-group-label>
+                    <n-text depth="3" style="font-size: 80%">zk-Oracle</n-text>
+                  </n-input-group-label>
+                  <n-input v-model:value="store.state.settings.zkOracle" placeholder="graphQLURL" style="font-size: 80%">
+                    <template #prefix>
                       <n-icon :color="themeVars.primaryColor">
-                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24"><g fill="none"><path d="M6.75 3h-1A2.75 2.75 0 0 0 3 5.75v12.5A2.75 2.75 0 0 0 5.75 21H6v-6a2.25 2.25 0 0 1 2.25-2.25h7.5A2.25 2.25 0 0 1 18 15v6h.25A2.75 2.75 0 0 0 21 18.25V8.286a3.25 3.25 0 0 0-.952-2.299l-2.035-2.035A3.25 3.25 0 0 0 15.75 3v4.5a2.25 2.25 0 0 1-2.25 2.25H9A2.25 2.25 0 0 1 6.75 7.5V3zm7.5 0v4.5a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75V3h6zm2.25 18v-6a.75.75 0 0 0-.75-.75h-7.5a.75.75 0 0 0-.75.75v6h9z" fill="currentColor"></path></g></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32"><circle cx="21" cy="26" r="2" fill="currentColor"></circle><circle cx="21" cy="6" r="2" fill="currentColor"></circle><circle cx="4" cy="16" r="2" fill="currentColor"></circle><path d="M28 12a3.996 3.996 0 0 0-3.858 3h-4.284a3.966 3.966 0 0 0-5.491-2.643l-3.177-3.97A3.963 3.963 0 0 0 12 6a4 4 0 1 0-4 4a3.96 3.96 0 0 0 1.634-.357l3.176 3.97a3.924 3.924 0 0 0 0 4.774l-3.176 3.97A3.96 3.96 0 0 0 8 22a4 4 0 1 0 4 4a3.962 3.962 0 0 0-.81-2.387l3.176-3.97A3.966 3.966 0 0 0 19.858 17h4.284A3.993 3.993 0 1 0 28 12zM6 6a2 2 0 1 1 2 2a2.002 2.002 0 0 1-2-2zm2 22a2 2 0 1 1 2-2a2.002 2.002 0 0 1-2 2zm8-10a2 2 0 1 1 2-2a2.002 2.002 0 0 1-2 2zm12 0a2 2 0 1 1 2-2a2.002 2.002 0 0 1-2 2z" fill="currentColor"></path></svg>
                       </n-icon>
                     </template>
-                  </n-button>
+                  </n-input>
                 </n-input-group>
 
-                <n-text depth="3" style="font-size: 90%">zkOracle</n-text>
-                <n-input-group>
-                  <n-input :value="store.state.settings.zkOracle" type="text" placeholder="graphQLURL" />
-                  <n-button secondary type="primary">
-                    <template #icon>
-                      <n-icon :color="themeVars.primaryColor">
-                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24"><g fill="none"><path d="M6.75 3h-1A2.75 2.75 0 0 0 3 5.75v12.5A2.75 2.75 0 0 0 5.75 21H6v-6a2.25 2.25 0 0 1 2.25-2.25h7.5A2.25 2.25 0 0 1 18 15v6h.25A2.75 2.75 0 0 0 21 18.25V8.286a3.25 3.25 0 0 0-.952-2.299l-2.035-2.035A3.25 3.25 0 0 0 15.75 3v4.5a2.25 2.25 0 0 1-2.25 2.25H9A2.25 2.25 0 0 1 6.75 7.5V3zm7.5 0v4.5a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75V3h6zm2.25 18v-6a.75.75 0 0 0-.75-.75h-7.5a.75.75 0 0 0-.75.75v6h9z" fill="currentColor"></path></g></svg>
-                      </n-icon>
-                    </template>
-                  </n-button>
-                </n-input-group>
               </n-space>
             </div>
           </n-popover>
