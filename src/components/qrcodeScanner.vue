@@ -83,7 +83,7 @@ const verifyProof = async (data) => {
     let ok = await verify(proof, store.state.proofs.data[data.proof].verificationKey)
     if (ok) {
       msg.type = 'success'
-      msg.content = "The proof is valid!"
+      msg.content = 'The proof is valid!'
       proofData.value = proof.publicOutput
       isProofValid.value = true
     } else {

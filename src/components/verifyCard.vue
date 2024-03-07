@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from 'vue'
-import { useThemeVars } from 'naive-ui'
 import { useStore } from 'vuex'
 import { useMessage } from 'naive-ui'
 import { verify } from 'o1js';
@@ -12,6 +11,7 @@ import { proofOfUniqueHuman } from './zkPrograms/ProofOfUniqueHuman.js'
 
 import { compile } from './proofSteps/compile.js'
 import { useIsMobile } from '../utils.js'
+import { sleep } from './../utils.js'
 
 const proofs = {
   proofOfAge: proofOfAge,
@@ -35,16 +35,18 @@ const modalData = ref({})
 
 const verifyJSONProof = async (proof) => {
 
+  let msg = message.loading('Compiling zk program 🛠️', { closable: true, duration: 10e9 })
+
   // compile
-  await compile(store, props.selectedProof, proofs[props.selectedProof])
+  await compile(store, props.selectedProof, proofs[props.selectedProof], { useCache: false })
 
   // verify if the provided proof is correct
-  let msg = message.loading('verifying', { closable: true, duration: 10000 })
+  msg.content = 'Verifying the proof 🧐'
   try {
     let ok = await verify(proof, store.state.proofs.data[props.selectedProof].verificationKey);
     if (ok) {
       msg.type = 'success'
-      msg.content = 'Provided proof is valid'
+      msg.content = 'The proof is valid!'
       modalData.value = proof.publicOutput
       showModal.value = true
     } else {
@@ -54,6 +56,10 @@ const verifyJSONProof = async (proof) => {
   } catch (error) {
     msg.type = 'error'
     msg.content = 'Something is wrong.'
+  } finally {
+    isLoading.value = false
+    await sleep(4000)
+    msg.destroy()
   }
 
 }
@@ -67,7 +73,6 @@ const handleUpload = async ({file, event}) => {
       console.error(error)
     }
     await verifyJSONProof(json)
-    // fileList.value = []
   }
   reader.readAsText(file.file)
 }
@@ -197,7 +202,7 @@ Object.keys(proofData).forEach(key => {
         </n-tab-pane>
         <n-tab-pane tab="Mina address" name="Mina address">
           <n-input-group>
-            <n-button type="primary" @click="verifyOnChainProof" :loading="isLoading">
+            <n-button type="primary" @click="verifyOnChainProof" :loading="isLoading" disabled>
               Verify
             </n-button>
             <n-input :style="{ width: '100%' }" v-model:value="address" placeholder="Mina address" />
