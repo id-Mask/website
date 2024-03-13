@@ -121,7 +121,7 @@ watch(() => data.personalIdentificationNumber, (_personalIdentificationNumber) =
       </n-text>
       <n-text :depth="3" style="font-size: 90%; text-align: justify;">
         <p>
-          The data will stay and won't leave your device
+          Your data will remain securely within your browser, safeguarding your privacy.
         </p>
       </n-text>
       <n-tabs 

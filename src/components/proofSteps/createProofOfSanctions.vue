@@ -144,7 +144,7 @@ onMounted(async () => {
     </n-text>
     <n-text :depth="3" style="font-size: 90%; text-align: justify;">
       <p>
-        Before starting, you'll check if your name is on the OFAC list.
+        Before starting, you will be checking if your name is on the OFAC list.
       </p>
     </n-text>
 

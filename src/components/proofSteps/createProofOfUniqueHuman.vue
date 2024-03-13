@@ -121,7 +121,7 @@ onMounted(async () => {
     </n-text>
     <n-text :depth="3" style="font-size: 90%; text-align: justify;">
       <p>
-        You'll transform your personal data into a special key, confirming you're truly one of a kind.
+        You will transform your personal data into a special key, confirming you're truly one of a kind.
       </p>
     </n-text>
 

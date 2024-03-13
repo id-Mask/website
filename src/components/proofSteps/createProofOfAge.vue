@@ -107,7 +107,7 @@ onMounted(async () => {
     </n-text>
     <n-text :depth="3" style="font-size: 90%; text-align: justify;">
       <p>
-        Input the number of years you wish to prove you're older than.
+        Input the number of years you wish to prove you are older than.
       </p>
     </n-text>
 
