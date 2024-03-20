@@ -28,6 +28,15 @@ const state = () => ({
       verificationKey: null,
       url: 'https://github.com/id-Mask/smart-contracts/blob/main/src/ProofOfUniqueHuman.ts',
     },
+    proofOfNationality: {
+      displayName: 'Proof of Nationality',
+      emoji: '🏴',
+      text: 'Prove and demonstrate your nationality status',
+      address: null,
+      proof: null,
+      verificationKey: null,
+      url: 'https://github.com/id-Mask/smart-contracts/blob/main/src/ProofOfNationality.ts',
+    },
   },
 })
 

@@ -5,6 +5,7 @@ import getPersonalData from './proofSteps/getPersonalData.vue'
 import createProofOfAge from './proofSteps/createProofOfAge.vue'
 import createProofOfSanctions from './proofSteps/createProofOfSanctions.vue'
 import createProofOfUniqueHuman from './proofSteps/createProofOfUniqueHuman.vue'
+import createProofOfNationality from './proofSteps/createProofOfNationality.vue'
 import saveProof from './proofSteps/saveProof.vue'
 import { useIsMobile } from '../utils.js'
 
@@ -20,6 +21,7 @@ const components = {
   createProofOfAge: createProofOfAge,
   createProofOfSanctions: createProofOfSanctions,
   createProofOfUniqueHuman: createProofOfUniqueHuman,
+  createProofOfNationality: createProofOfNationality,
   saveProof: saveProof,
 }
 
@@ -44,6 +46,13 @@ const proofs = ref({
     steps: [
       { component: 'getPersonalData', finished: false },
       { component: 'createProofOfUniqueHuman', finished: false },
+      { component: 'saveProof', finished: false },
+    ]
+  },
+  proofOfNationality: {
+    steps: [
+      { component: 'getPersonalData', finished: false },
+      { component: 'createProofOfNationality', finished: false },
       { component: 'saveProof', finished: false },
     ]
   }
