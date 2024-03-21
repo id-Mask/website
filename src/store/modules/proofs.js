@@ -12,8 +12,8 @@ const state = () => ({
     },
     proofOfSanctions: {
       displayName: 'Proof of Non-Sanctions',
-      emoji: '🏛️',
-      text: 'Prove that your name is not included in the OFAC sanctions list.',
+      emoji: '📜',
+      text: 'Prove your name is not included in the OFAC sanctions list.',
       address: 'B62qqhjvvE3dwiX2hF2cZRfmHA7euo8MrzvZhPHgXJNb57vuiWePAWC',
       proof: null,
       verificationKey: null,
@@ -30,7 +30,7 @@ const state = () => ({
     },
     proofOfNationality: {
       displayName: 'Proof of Nationality',
-      emoji: '🏴',
+      emoji: '🏛️',
       text: 'Prove your nationality status and country that issued the ID.',
       address: null,
       proof: null,

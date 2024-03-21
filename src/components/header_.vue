@@ -98,7 +98,7 @@ onMounted(() => {
             </template>
             <div>
               <n-space vertical>
-                <n-h4 type="primary">Enpoint Settings</n-h4>
+                <n-h4 type="primary">API Settings</n-h4>
 
                 <n-input-group >
                   <n-input-group-label>
