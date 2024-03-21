@@ -17,6 +17,10 @@ const state = () => ({
     },
     Message: {
       padding: '20px 40px'
+    },
+    Carousel: {
+      dotColorActive: '#5F5FEAFF',
+      dotColor: '#cacad1',
     }
   },
 

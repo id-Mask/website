@@ -5,9 +5,11 @@ import { useStore } from 'vuex'
 import proofCard from './proofCard.vue'
 import verifyCard from './verifyCard.vue'
 import exploreCard from './exploreCard.vue'
+import { useBreakpoint } from 'vooks'
 
 const themeVars = useThemeVars()
 const store = useStore()
+const breakpoint = useBreakpoint()
 
 const tabValue = ref('Create')
 const proofs = ref([])
@@ -19,6 +21,19 @@ const selectProof = (proofName) => {
       isSelected: (proof.name == proofName) ? true : false
     })
   )
+}
+
+/*
+  on the proof selection carousel how many 
+  items are present at a time
+*/
+const screenSizeToNoOfItemsMap = {
+  xxl: 4,
+  xl: 4,
+  l: 3,
+  m: 3,
+  s: 2,
+  xs: 1,
 }
 
 onBeforeMount( async () => {
@@ -68,8 +83,9 @@ onBeforeMount( async () => {
       </n-space>
 
       <n-space horizontal justify="center">
-        <n-grid x-gap="12" y-gap="12" cols="xs:1 s:2 m:3 l:3 xl:3 2xl:3" responsive="screen">
-          <n-gi v-for="proof in proofs">
+        <!-- <n-grid x-gap="12" y-gap="12" cols="xs:1 s:2 m:3 l:3 xl:3 2xl:3" responsive="screen"> -->
+          <n-carousel :slides-per-view="screenSizeToNoOfItemsMap[breakpoint]" :space-between="20" :loop="false" dot-type="dot" draggable>
+          <div v-for="proof in proofs">
             <n-card
               @click="selectProof(proof.name)"
               style="cursor: pointer;"
@@ -95,8 +111,9 @@ onBeforeMount( async () => {
                 </n-space>
               </template>
             </n-card>
-          </n-gi>
-        </n-grid>
+          </div>
+        </n-carousel>
+        <!-- </n-grid> -->
       </n-space>
 
       <n-tabs type="segment" v-model="tabValue" animated>
