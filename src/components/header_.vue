@@ -139,6 +139,35 @@ onMounted(() => {
                   </n-input>
                 </n-input-group>
 
+                <br/>
+                <n-h4 type="primary">App Settings</n-h4>
+
+                <n-flex align="center" justify="space-between">
+                  <n-popover trigger="hover">
+                    <template #trigger>
+                      <n-text depth="3" style="font-size: 80%">Console debug mode</n-text>
+                    </template>
+                    <n-text depth="3" style="font-size: 80%">
+                      Log intermediate app steps to console. This will include personal data, proofs, etc.
+                    </n-text>
+                    </n-popover>
+                  <n-switch v-model:value="store.state.settings.consoleDebugMode" />
+                </n-flex>
+
+                <n-flex align="center" justify="space-between">
+                  <n-popover trigger="hover">
+                    <template #trigger>
+                      <n-text depth="3" style="font-size: 80%">Request user signature on proof creation</n-text>
+                    </template>
+                    <n-text depth="3" style="font-size: 80%">
+                      Make the user sign a message and embed it into the proof. This will allow proof consumer to verify if
+                      the proof was created using the same wallet at a cost of additional inconveniance to the user by
+                      requiring to owm a Mina account (public private key pair) and use it together with a wallet to sign a piece of data.
+                    </n-text>
+                    </n-popover>
+                  <n-switch v-model:value="store.state.settings.requestUserWalletSignature" />
+                </n-flex>
+
               </n-space>
             </div>
           </n-popover>

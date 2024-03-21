@@ -53,6 +53,10 @@ const createProof = async () => {
   const ofacData = await getOFACData()
   store.state.sanctions.data = ofacData
 
+  if (store.state.settings.consoleDebugMode) {
+    console.log('OFAC search results:', ofacData)
+  }
+
   if (ofacData.data.isMatched == 0) {
     message.create(
       'Success: Your data does not match any of the OFAC entries',
@@ -119,6 +123,11 @@ const createProof = async () => {
     emit('isLoading', false)
     emit('finished')
     emit('triggerNextStep')
+
+    if (store.state.settings.consoleDebugMode) {
+      console.log('Created proof:', jsonProof)
+    }
+
   } catch (error) {
     console.error(error);
     msg.type = 'error'

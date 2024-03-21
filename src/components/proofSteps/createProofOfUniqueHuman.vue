@@ -49,6 +49,10 @@ const createProof = async () => {
   const secretValue = await getSecreteValue()
   const pid = store.state.pid.data
 
+  if (store.state.settings.consoleDebugMode) {
+    console.log('Your secrets:', secretValue)
+  }
+
   msg.content = "2/3 Compiling zkProgam 🧩🔨"
   await compile(store, props.selectedProof, proofOfUniqueHuman)
 
@@ -96,6 +100,11 @@ const createProof = async () => {
     emit('isLoading', false)
     emit('finished')
     emit('triggerNextStep')
+
+    if (store.state.settings.consoleDebugMode) {
+      console.log('Created proof:', jsonProof)
+    }
+
   } catch (error) {
     console.error(error);
     msg.type = 'error'

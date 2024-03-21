@@ -8,6 +8,8 @@ const state = () => ({
   graphQLURL: 'https://archive.berkeley.minaexplorer.com/',
   blockExplorer: 'https://minascan.io/berkeley/',
   zkOracle: 'https://id-mask-oracle-e6ngsd55oa-uc.a.run.app/',
+  consoleDebugMode: false,
+  requestUserWalletSignature: false,
 })
 
 const getters = {

@@ -82,6 +82,11 @@ const createProof = async () => {
     msg.type = 'success'
     msg.content = "Congratulation! You've sucessfully created the proof 🎉"
     emit('triggerNextStep')
+
+    if (store.state.settings.consoleDebugMode) {
+      console.log('Created proof:', jsonProof)
+    }
+
   } catch (error) {
     console.error(error);
     msg.type = 'error'

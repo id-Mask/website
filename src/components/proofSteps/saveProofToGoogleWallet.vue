@@ -44,18 +44,18 @@ const generateSecret = (length) => {
 }
 
 const encrypt = async (proofJson, secret) => {
-
-  // encrypt
   var encrypted = CryptoJS.AES.encrypt(
     JSON.stringify(proofJson), 
     secret
   ).toString()
-  console.log('encrypted: ', encrypted)
 
-  // decrypt
-  var bytes  = CryptoJS.AES.decrypt(encrypted, secret)
-  var decrypted = JSON.parse(bytes.toString(CryptoJS.enc.Utf8))
-  console.log('decripted: ', decrypted)
+  /*
+    How to decrypt and use this data? To go from `encrypted`
+    to `decrypted` do the following:
+
+    var bytes  = CryptoJS.AES.decrypt(encrypted, secret)
+    var decrypted = JSON.parse(bytes.toString(CryptoJS.enc.Utf8))
+  */
 
   return encrypted
 }
@@ -78,17 +78,18 @@ const save = async () => {
   let msgReactive = message.create('1/3 Preparing proof 🛠️', { type: 'loading', duration: 10e9 })
 
   const proofJson = store.state.proofs.data[props.selectedProof].proof
-  // console.log('proofJson:', proofJson)
+  store.state.settings.consoleDebugMode && console.log('Proof:', proofJson)
 
   const secret = generateSecret(32)
-  // console.log('secret:', secret)
+  store.state.settings.consoleDebugMode && console.log('Encryption secret:', secret)
+
 
   const encryptedProof = await encrypt(proofJson, secret)
-  // console.log('encryptedProof:', encryptedProof)
+  store.state.settings.consoleDebugMode && console.log('Encrypted proof:', encryptedProof)
 
   msgReactive.content = "2/3 Uploading enrypted proof to IPFS ⬆️"
   const ipfsData = await uploadToIPFS(encryptedProof)
-  // console.log('ipfsData:', ipfsData)
+  store.state.settings.consoleDebugMode && console.log('IPFS:', ipfsData)
 
   msgReactive.content = "3/3 Saving proof to your Google wallet ⬆️"
 
@@ -97,7 +98,7 @@ const save = async () => {
     secretKey: secret,
     proof: props.selectedProof,
   }
-  console.log('walletData', walletData)
+  store.state.settings.consoleDebugMode && console.log('Wallet data:', walletData)
 
   const url = store.state.settings.zkOracle + 'createGoogeWalletPass'
   const identifier = generateSecret(12).replace(/[^a-zA-Z0-9]/g, '')

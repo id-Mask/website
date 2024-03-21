@@ -101,6 +101,10 @@ const getPID = async () => {
   emit('triggerNextStep')
   store.dispatch('pid/saveData', response)
   data.pid = response
+
+  if (store.state.settings.consoleDebugMode) {
+    console.log('Personal data:', response)
+  }
 }
 
 // this is a hack to make sure the input is not regarded as password
