@@ -6,7 +6,9 @@ import { sleep } from './../../utils.js'
 import {
   CircuitString,
   Field,
-  Signature
+  Signature,
+  PrivateKey,
+  PublicKey,
 } from 'o1js'
 
 import { compile } from './compile.js'
@@ -26,14 +28,32 @@ const props = defineProps({
 
 const emit = defineEmits(['finished', 'isLoading', 'triggerNextStep'])
 
+const generateSignature = (pid) => {
+  const creatorPrivateKey = PrivateKey.random();
+  const creatorPublicKey = creatorPrivateKey.toPublicKey();
+  const creatorDataSignature = Signature.create(
+    creatorPrivateKey,
+    [
+      ...CircuitString.fromString(pid.data.name).toFields(),
+      ...CircuitString.fromString(pid.data.surname).toFields(),
+      ...CircuitString.fromString(pid.data.country).toFields(),
+      ...CircuitString.fromString(pid.data.pno).toFields(),
+      Field(pid.data.currentDate),
+    ]
+  )
+  return [creatorPublicKey, creatorDataSignature]
+}
+
+
 const createProof = async () => {
   data.value.isLoading = true
   emit('isLoading', true)
   emit('finished', false)
 
   // TODO: create a signature, for a start go on with mock account
-  let msg = message.create('1/3 Crafting your secrets 🤫🔐', { type: 'loading', duration: 10e9 })
+  let msg = message.create('1/3 Crafting your signature 🤫🔐', { type: 'loading', duration: 10e9 })
   const pid = store.state.pid.data
+  const [creatorPublicKey, creatorDataSignature] = generateSignature(pid)
 
   msg.content = "2/3 Compiling zkProgam 🧩🔨"
   await compile(store, props.selectedProof, proofOfNationality)
@@ -67,8 +87,8 @@ const createProof = async () => {
     const proof = await proofOfNationality.proveNationality(
       personalData,
       Signature.fromJSON(pid.signature),
-      CircuitString.fromString(secretValue.data.secret),
-      Signature.fromJSON(secretValue.signature)
+      creatorDataSignature,
+      creatorPublicKey,
     );
 
     const jsonProof = proof.toJSON()
@@ -112,7 +132,7 @@ const createProof = async () => {
         You will generate a proof confirming your nationality and possession of an ID issued by your respective nation.
       </p>
     </n-text>
-    <n-button type="primary" @click="createProof()" :loading="data.isLoading" disabled>
+    <n-button type="primary" @click="createProof()" :loading="data.isLoading">
       Create proof
     </n-button>
   </n-space>

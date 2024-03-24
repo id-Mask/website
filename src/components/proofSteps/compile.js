@@ -49,7 +49,7 @@ const getCacheFiles = async (proofName) => {
       { name:'lagrange-basis-fp-16384', type: 'string' },
       { name:'lagrange-basis-fq-8192', type: 'string' },
       { name:'step-pk-zkproofofnationality-provenationality', type: 'string' },
-      { name:'step-vk-zkproofofuniquehuman-provenationality', type: 'string' },
+      { name:'step-vk-zkproofofnationality-provenationality', type: 'string' },
       { name:'wrap-pk-zkproofofnationality', type: 'string' },
       { name:'wrap-vk-zkproofofnationality', type: 'string' },
     ],

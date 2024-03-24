@@ -29,12 +29,18 @@ const dataShownAftervalidation = {
   },
   proofOfSanctions: {
     header: ['OFAC reliability score', 'Proof created at'],
-    emojis: ['🏛️', '📅'],
+    emojis: ['📜', '📅'],
     suffix: ['%', '']
   },
   proofOfUniqueHuman: {
     header: ['Unique Identifier', 'Proof created at'],
     emojis: ['🧠', '📅'],
+    suffix: ['', '']
+  },
+  // This together with the card has to be updated
+  proofOfNationality: {
+    header: ['Country (unicode)', 'Proof created at', 'Creators public key Field 0', 'Creators public key Field 1'],
+    emojis: ['🏛️', '📅', '🔑', '🔑'],
     suffix: ['', '']
   },
 }
@@ -143,23 +149,16 @@ const paintOutline = (detectedCodes, ctx) => {
         <n-card v-if="decodedValue && proofData" size="large" :hoverable="true"> 
           <n-spin :show="isLoading">
             <n-space :size="[0.2, 0.2]" vertical style="scale: 0.8">
-              <n-statistic :label="dataShownAftervalidation[decodedValue[0].proof].header[0]" :value="isLoading ? '' : proofData[0]">
-                <template #prefix>
-                    {{ dataShownAftervalidation[decodedValue[0].proof].emojis[0] }}
-                </template>
-                <template #suffix>
-                  {{ dataShownAftervalidation[decodedValue[0].proof].suffix[0] }}
-                </template>
-              </n-statistic>
-              <br/>
-              <n-statistic :label="dataShownAftervalidation[decodedValue[0].proof].header[1]" :value="isLoading ? '' : proofData[1]">
-                <template #prefix>
-                  {{ dataShownAftervalidation[decodedValue[0].proof].emojis[1] }}
-                </template>
-                <template #suffix>
-                  {{ dataShownAftervalidation[decodedValue[0].proof].suffix[1] }}
-                </template>
-              </n-statistic>
+              <div v-for="(_, index) in proofData">
+                <n-statistic :label="dataShownAftervalidation[decodedValue[0].proof].header[index]" :value="isLoading ? '' : proofData[index]">
+                  <template #prefix>
+                    {{ dataShownAftervalidation[decodedValue[0].proof].emojis[index] }}
+                  </template>
+                  <template #suffix>
+                    {{ dataShownAftervalidation[decodedValue[0].proof].suffix[index] }}
+                  </template>
+                </n-statistic>
+              </div>
               <br/>
               <n-statistic label="Proof validity" :value="isProofValid.toString()">
                 <template #prefix v-if="!isLoading">

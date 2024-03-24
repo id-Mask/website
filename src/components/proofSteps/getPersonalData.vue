@@ -172,7 +172,7 @@ watch(() => data.personalIdentificationNumber, (_personalIdentificationNumber) =
                 }
               ]"
               v-model:value="data.selectedCountry"
-              style="width: 100px;"
+              style="width: 120px;"
             />
             <n-input
               style="width: 100%"
