@@ -3,12 +3,11 @@ import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { useMessage } from 'naive-ui'
 import { sleep } from './../../utils.js'
+import { generateSignatureUsingDefaultKeys } from './utils.js'
 import {
   CircuitString,
   Field,
   Signature,
-  PrivateKey,
-  PublicKey,
 } from 'o1js'
 
 import { compile } from './compile.js'
@@ -28,32 +27,24 @@ const props = defineProps({
 
 const emit = defineEmits(['finished', 'isLoading', 'triggerNextStep'])
 
-const generateSignature = (pid) => {
-  const creatorPrivateKey = PrivateKey.random();
-  const creatorPublicKey = creatorPrivateKey.toPublicKey();
-  const creatorDataSignature = Signature.create(
-    creatorPrivateKey,
-    [
-      ...CircuitString.fromString(pid.data.name).toFields(),
-      ...CircuitString.fromString(pid.data.surname).toFields(),
-      ...CircuitString.fromString(pid.data.country).toFields(),
-      ...CircuitString.fromString(pid.data.pno).toFields(),
-      Field(pid.data.currentDate),
-    ]
-  )
-  return [creatorPublicKey, creatorDataSignature]
-}
-
-
 const createProof = async () => {
   data.value.isLoading = true
   emit('isLoading', true)
   emit('finished', false)
 
-  // TODO: create a signature, for a start go on with mock account
-  let msg = message.create('1/3 Crafting your signature 🤫🔐', { type: 'loading', duration: 10e9 })
+  // prepare personal data
   const pid = store.state.pid.data
-  const [creatorPublicKey, creatorDataSignature] = generateSignature(pid)
+  const personalData = new PersonalData({
+    name: CircuitString.fromString(pid.data.name),
+    surname: CircuitString.fromString(pid.data.surname),
+    country: CircuitString.fromString(pid.data.country),
+    pno: CircuitString.fromString(pid.data.pno),
+    currentDate: Field(pid.data.currentDate),
+  })
+
+  // Craft the signature of the data using wallet or default creds
+  let msg = message.create('1/3 Crafting your signature 🤫🔐', { type: 'loading', duration: 10e9 })
+  const [creatorPublicKey, creatorDataSignature] = generateSignatureUsingDefaultKeys(personalData.toFields())
 
   msg.content = "2/3 Compiling zkProgam 🧩🔨"
   await compile(store, props.selectedProof, proofOfNationality)
@@ -77,13 +68,6 @@ const createProof = async () => {
 
   msg.content = "3/3 Creating the proof 🌈✨"
   try {
-    const personalData = new PersonalData({
-      name: CircuitString.fromString(pid.data.name),
-      surname: CircuitString.fromString(pid.data.surname),
-      country: CircuitString.fromString(pid.data.country),
-      pno: CircuitString.fromString(pid.data.pno),
-      currentDate: Field(pid.data.currentDate),
-    })
     const proof = await proofOfNationality.proveNationality(
       personalData,
       Signature.fromJSON(pid.signature),

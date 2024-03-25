@@ -4,6 +4,7 @@ import { useThemeVars } from 'naive-ui'
 import { useStore } from 'vuex'
 import { useMessage } from 'naive-ui'
 import { sleep } from './../../utils.js'
+import { generateSignatureUsingDefaultKeys } from './utils.js'
 import {
   CircuitString,
   Field,
@@ -33,11 +34,21 @@ const createProof = async () => {
   data.value.isLoading = true
   emit('isLoading', true)
   emit('finished', false)
-  const pid = store.getters['pid/getData']
+
+  // praparations
+  const pid = store.state.pid.data
+  const personalData = new PersonalData({
+    name: CircuitString.fromString(pid.data.name),
+    surname: CircuitString.fromString(pid.data.surname),
+    country: CircuitString.fromString(pid.data.country),
+    pno: CircuitString.fromString(pid.data.pno),
+    currentDate: Field(pid.data.currentDate),
+  })
+  const [creatorPublicKey, creatorDataSignature] = generateSignatureUsingDefaultKeys(personalData.toFields())
 
   // compile
   let msg = message.create('1/2 Compiling zkProgam 🧩🔨', { type: 'loading', duration: 10e9 })
-  await compile(store, props.selectedProof, proofOfAge)
+  await compile(store, props.selectedProof, proofOfAge, { useCache: false })
 
   /* pid e.g.:
   const pid = {
@@ -58,17 +69,12 @@ const createProof = async () => {
 
   msg.content = "2/2 Creating the proof 🌈✨"
   try {
-    const personalData = new PersonalData({
-      name: CircuitString.fromString(pid.data.name),
-      surname: CircuitString.fromString(pid.data.surname),
-      country: CircuitString.fromString(pid.data.country),
-      pno: CircuitString.fromString(pid.data.pno),
-      currentDate: Field(pid.data.currentDate),
-    })
     const proof = await proofOfAge.proveAge(
       Field(data.value.ageToProveInYears),
       personalData,
-      Signature.fromJSON(pid.signature)
+      Signature.fromJSON(pid.signature),
+      creatorDataSignature,
+      creatorPublicKey,
     );
 
     const jsonProof = proof.toJSON()
