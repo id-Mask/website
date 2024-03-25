@@ -8,6 +8,7 @@ import qrcodeScanner from './qrcodeScanner.vue';
 import { proofOfAge } from './zkPrograms/ProofOfAge.js'
 import { proofOfSanctions } from './zkPrograms/ProofOfSanctions.js'
 import { proofOfUniqueHuman } from './zkPrograms/ProofOfUniqueHuman.js'
+import { proofOfNationality } from './zkPrograms/ProofOfNationality.js'
 
 import { compile } from './proofSteps/compile.js'
 import { useIsMobile } from '../utils.js'
@@ -17,6 +18,7 @@ const proofs = {
   proofOfAge: proofOfAge,
   proofOfSanctions: proofOfSanctions,
   proofOfUniqueHuman: proofOfUniqueHuman,
+  proofOfNationality: proofOfNationality,
 }
 
 const isMobile = useIsMobile()
