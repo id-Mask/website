@@ -15,7 +15,7 @@ const getCacheFiles = async (proofName) => {
     proofOfAge: [
       { name:'srs-fp-65536', type: 'string' },
       { name:'srs-fq-32768', type: 'string' },
-      { name:'lagrange-basis-fp-8192', type: 'string' },
+      { name:'lagrange-basis-fp-16384', type: 'string' },
       { name:'lagrange-basis-fq-8192', type: 'string' },
       { name:'step-pk-zkproofofage-proveage', type: 'string' },
       { name:'step-vk-zkproofofage-proveage', type: 'string' },
