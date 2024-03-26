@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import * as CryptoJS from 'crypto-js'
 import { QrcodeStream } from 'vue-qrcode-reader'
-import { verify } from 'o1js'
+import { verify, PublicKey, Field } from 'o1js'
 
 import { useStore } from 'vuex'
 import { useThemeVars } from 'naive-ui'
@@ -11,6 +11,7 @@ import { useMessage } from 'naive-ui'
 import { proofOfAge } from './zkPrograms/ProofOfAge.js'
 import { proofOfSanctions } from './zkPrograms/ProofOfSanctions.js'
 import { proofOfUniqueHuman } from './zkPrograms/ProofOfUniqueHuman.js'
+import { proofOfNationality } from './zkPrograms/ProofOfNationality.js'
 
 import { compile } from './proofSteps/compile.js'
 import { sleep } from './../utils.js'
@@ -19,31 +20,135 @@ const proofs = {
   proofOfAge: proofOfAge,
   proofOfSanctions: proofOfSanctions,
   proofOfUniqueHuman: proofOfUniqueHuman,
+  proofOfNationality: proofOfNationality,
 }
 
-const dataShownAftervalidation = {
-  proofOfAge: {
-    header: ['Person is older than', 'Proof created at'],
-    emojis: ['👵', '📅'],
-    suffix: ['years', '']
-  },
-  proofOfSanctions: {
-    header: ['OFAC reliability score', 'Proof created at'],
-    emojis: ['📜', '📅'],
-    suffix: ['%', '']
-  },
-  proofOfUniqueHuman: {
-    header: ['Unique Identifier', 'Proof created at'],
-    emojis: ['🧠', '📅'],
-    suffix: ['', '']
-  },
-  // This together with the card has to be updated
-  proofOfNationality: {
-    header: ['Country (unicode)', 'Proof created at', 'Creators public key Field 0', 'Creators public key Field 1'],
-    emojis: ['🏛️', '📅', '🔑', '🔑'],
-    suffix: ['', '']
-  },
+const trimString = (string) => {
+  if (string.length <= 10) {
+    return string
+  } else {
+    const firstPart = string.substring(0, 5)
+    const lastPart = string.substring(string.length - 5)
+    return `${firstPart} ... ${lastPart}`
+  }
 }
+
+const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
+
+  // convert public key encoded as an array of Fields to a string
+  const getPublicKeyFromProofsOutput = (proofsPublicOutput) => {
+    return PublicKey.fromFields([
+      Field(proofsPublicOutput[2]),
+      Field(proofsPublicOutput[3]),
+    ]).toBase58()
+  }
+
+  // convert country encoded as an int into a string
+  const getCountryFromUnicode = (countryUnicode) => {
+    const firstTwoDigits = parseInt(countryUnicode.substring(0, 2))
+    const nextTwoDigits = parseInt(countryUnicode.substring(2, 4))
+    const char1 = String.fromCharCode(firstTwoDigits)
+    const char2 = String.fromCharCode(nextTwoDigits)
+    return char1 + char2
+  }
+
+  const formatDate = (dateString) => {
+    const year = dateString.substring(0, 4)
+    const month = dateString.substring(4, 6)
+    const day = dateString.substring(6, 8)  
+    return `${year}-${month}-${day}`
+  }
+
+  const proofs = {
+
+    proofOfAge: {
+      data: {
+        data: proofsPublicOutput[0],
+        header: 'Person is older than',
+        emoji: '👵',
+        suffix: null,
+      },
+      date: {
+        data: formatDate(proofsPublicOutput[1]),
+        header: 'Proof created at',
+        emoji: '📅',
+        suffix: null,
+      },
+      piublicKey: {
+        data: getPublicKeyFromProofsOutput(proofsPublicOutput),
+        header: 'Creators public key',
+        emoji: '🔑',
+        suffix: null,
+      }
+    },
+
+    proofOfSanctions: {
+      data: {
+        data: proofsPublicOutput[0],
+        header: 'OFAC reliability score',
+        emoji: '📜',
+        suffix: '%',
+      },
+      date: {
+        data: formatDate(proofsPublicOutput[1]),
+        header: 'Proof created at',
+        emoji: '📅',
+        suffix: null,
+      },
+      piublicKey: {
+        data: getPublicKeyFromProofsOutput(proofsPublicOutput),
+        header: 'Creators public key',
+        emoji: '🔑',
+        suffix: null,
+      }
+    },
+
+    proofOfUniqueHuman: {
+      data: {
+        data: proofsPublicOutput[0],
+        header: 'Unique Identifier',
+        emoji: '🧠',
+        suffix: null,
+      },
+      date: {
+        data: formatDate(proofsPublicOutput[1]),
+        header: 'Proof created at',
+        emoji: '📅',
+        suffix: null,
+      },
+      piublicKey: {
+        data: getPublicKeyFromProofsOutput(proofsPublicOutput),
+        header: 'Creators public key',
+        emoji: '🔑',
+        suffix: null,
+      }
+    },
+
+    proofOfNationality: {
+      data: {
+        data: getCountryFromUnicode(proofsPublicOutput[0]),
+        header: 'Nationality',
+        emoji: '🏛️',
+        suffix: null,
+      },
+      date: {
+        data: formatDate(proofsPublicOutput[1]),
+        header: 'Proof created at',
+        emoji: '📅',
+        suffix: null,
+      },
+      piublicKey: {
+        data: getPublicKeyFromProofsOutput(proofsPublicOutput),
+        header: 'Creators public key',
+        emoji: '🔑',
+        suffix: null,
+      }
+    },
+
+  }
+  return proofs[proofName]
+}
+
 
 const store = useStore()
 const themeVars = useThemeVars()
@@ -90,11 +195,13 @@ const verifyProof = async (data) => {
     if (ok) {
       msg.type = 'success'
       msg.content = 'The proof is valid!'
-      proofData.value = proof.publicOutput
+      proofData.value = getProcessedPublicDataOfTheProof(proof.publicOutput, data.proof)
       isProofValid.value = true
     } else {
       console.log('error')
       isProofValid.value = false
+      msg.type = 'error'
+      msg.content = 'The proof is not valid!'
     }
   } catch (error) {
     console.error(error)
@@ -146,26 +253,29 @@ const paintOutline = (detectedCodes, ctx) => {
         <qrcode-stream @detect="onDetect" :track="paintOutline" @errors="console.error" style="max-width: 30em;"/>
       </n-spin>
       <n-space align="center" vertical>
-        <n-card v-if="decodedValue && proofData" size="large" :hoverable="true"> 
+        <n-card v-if="decodedValue && proofData" size="large" style="scale: 0.8" :hoverable="true"> 
           <n-spin :show="isLoading">
-            <n-space :size="[0.2, 0.2]" vertical style="scale: 0.8">
-              <div v-for="(_, index) in proofData">
-                <n-statistic :label="dataShownAftervalidation[decodedValue[0].proof].header[index]" :value="isLoading ? '' : proofData[index]">
-                  <template #prefix>
-                    {{ dataShownAftervalidation[decodedValue[0].proof].emojis[index] }}
-                  </template>
-                  <template #suffix>
-                    {{ dataShownAftervalidation[decodedValue[0].proof].suffix[index] }}
-                  </template>
-                </n-statistic>
-              </div>
-              <br/>
-              <n-statistic label="Proof validity" :value="isProofValid.toString()">
-                <template #prefix v-if="!isLoading">
-                {{ isProofValid ? '✅' : '❌' }}
+            <n-space :size="[2, 2]" vertical v-for="(value, _) in proofData">
+              <n-statistic :label="value.header">
+                <template #default>
+                  <span v-if="!isLoading">
+                    {{ trimString(value.data) }}
+                  </span>
+                </template>
+                <template #prefix>
+                  {{ value.emoji }}
+                </template>
+                <template #suffix>
+                  {{ value.suffix }}
                 </template>
               </n-statistic>
+              <br/>
             </n-space>
+            <n-statistic label="Proof validity" :value="isProofValid.toString()">
+              <template #prefix v-if="!isLoading">
+              {{ isProofValid ? '✅' : '❌' }}
+              </template>
+            </n-statistic>
           </n-spin>
         </n-card>
       </n-space>
