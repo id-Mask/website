@@ -31,7 +31,7 @@ const state = () => ({
     proofOfNationality: {
       displayName: 'Proof of Nationality',
       emoji: '🏛️',
-      text: 'Prove your nationality status and country that issued the ID.',
+      text: 'Prove your nationality status and country that issued your ID.',
       address: null,
       proof: null,
       verificationKey: null,

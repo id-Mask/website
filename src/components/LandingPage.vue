@@ -137,7 +137,7 @@ defineExpose({
       <div class="shine1">
         <n-space vertical align="center" class="prevent-select shine1">
           <n-text style="font-size: 300%" class="shine2 shine3" :class="[blurEmoji ? 'blur' : '']">{{ emoji }}</n-text>
-          <n-text style="font-size: 300%" class="shine2 shine3" id="text1">Id-{{ word }}</n-text>
+          <n-text style="font-size: 300%" class="shine2 shine3" id="text1">ID-{{ word }}</n-text>
           <n-text style="font-size: 130%" depth="3" class="shine2 shine3">
             zk-powered-<n-gradient-text
                 type="primary"
