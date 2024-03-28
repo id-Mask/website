@@ -72,11 +72,8 @@ const verifyProof = async (data) => {
     if (ok) {
       msg.type = 'success'
       msg.content = 'The proof is valid!'
-      proofPublicOutput.value = proof.publicOutput
-      proofName.value = data.proof
       isProofValid.value = true
     } else {
-      console.log('error')
       isProofValid.value = false
       msg.type = 'error'
       msg.content = 'The proof is not valid!'
@@ -84,6 +81,8 @@ const verifyProof = async (data) => {
   } catch (error) {
     console.error(error)
   } finally {
+    proofPublicOutput.value = proof.publicOutput
+    proofName.value = data.proof
     showModal.value = true
     isLoading.value = false
     await sleep(4000)

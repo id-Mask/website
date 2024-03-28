@@ -1,6 +1,8 @@
 <script setup>
-import { ref } from 'vue'
+import { useMessage } from 'naive-ui'
 import { PublicKey, Field } from 'o1js'
+
+const message = useMessage()
 
 const props = defineProps({
   proofPublicOutput: Object,
@@ -20,6 +22,7 @@ const trimString = (string) => {
 }
 
 const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
+
   // convert public key encoded as an array of Fields to a string
   const getPublicKeyFromProofsOutput = (proofsPublicOutput) => {
     return PublicKey.fromFields([
@@ -44,130 +47,143 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
     return `${year}-${month}-${day}`
   }
 
-  const proofs = {
+  try {
+    const proofs = {
 
-    proofOfAge: {
-      data: {
-        data: proofsPublicOutput[0],
-        header: 'Person is older than',
-        emoji: '👵',
-        suffix: null,
+      proofOfAge: {
+        data: {
+          data: proofsPublicOutput[0],
+          header: 'Person is older than',
+          emoji: '👵',
+          suffix: null,
+        },
+        date: {
+          data: formatDate(proofsPublicOutput[1]),
+          header: 'Proof created at',
+          emoji: '📅',
+          suffix: null,
+        },
+        publicKey: {
+          data: getPublicKeyFromProofsOutput(proofsPublicOutput),
+          header: 'Creators public key',
+          emoji: '🔑',
+          suffix: null,
+        }
       },
-      date: {
-        data: formatDate(proofsPublicOutput[1]),
-        header: 'Proof created at',
-        emoji: '📅',
-        suffix: null,
-      },
-      piublicKey: {
-        data: getPublicKeyFromProofsOutput(proofsPublicOutput),
-        header: 'Creators public key',
-        emoji: '🔑',
-        suffix: null,
-      }
-    },
 
-    proofOfSanctions: {
-      data: {
-        data: proofsPublicOutput[0],
-        header: 'OFAC reliability score',
-        emoji: '📜',
-        suffix: '%',
+      proofOfSanctions: {
+        data: {
+          data: proofsPublicOutput[0],
+          header: 'OFAC reliability score',
+          emoji: '📜',
+          suffix: '%',
+        },
+        date: {
+          data: formatDate(proofsPublicOutput[1]),
+          header: 'Proof created at',
+          emoji: '📅',
+          suffix: null,
+        },
+        publicKey: {
+          data: getPublicKeyFromProofsOutput(proofsPublicOutput),
+          header: 'Creators public key',
+          emoji: '🔑',
+          suffix: null,
+        }
       },
-      date: {
-        data: formatDate(proofsPublicOutput[1]),
-        header: 'Proof created at',
-        emoji: '📅',
-        suffix: null,
-      },
-      piublicKey: {
-        data: getPublicKeyFromProofsOutput(proofsPublicOutput),
-        header: 'Creators public key',
-        emoji: '🔑',
-        suffix: null,
-      }
-    },
 
-    proofOfUniqueHuman: {
-      data: {
-        data: proofsPublicOutput[0],
-        header: 'Unique Identifier',
-        emoji: '🧠',
-        suffix: null,
+      proofOfUniqueHuman: {
+        data: {
+          data: proofsPublicOutput[0],
+          header: 'Unique Identifier',
+          emoji: '🧠',
+          suffix: null,
+        },
+        date: {
+          data: formatDate(proofsPublicOutput[1]),
+          header: 'Proof created at',
+          emoji: '📅',
+          suffix: null,
+        },
+        publicKey: {
+          data: getPublicKeyFromProofsOutput(proofsPublicOutput),
+          header: 'Creators public key',
+          emoji: '🔑',
+          suffix: null,
+        }
       },
-      date: {
-        data: formatDate(proofsPublicOutput[1]),
-        header: 'Proof created at',
-        emoji: '📅',
-        suffix: null,
-      },
-      piublicKey: {
-        data: getPublicKeyFromProofsOutput(proofsPublicOutput),
-        header: 'Creators public key',
-        emoji: '🔑',
-        suffix: null,
-      }
-    },
 
-    proofOfNationality: {
-      data: {
-        data: getCountryFromUnicode(proofsPublicOutput[0]),
-        header: 'Nationality',
-        emoji: '🏛️',
-        suffix: null,
+      proofOfNationality: {
+        data: {
+          data: getCountryFromUnicode(proofsPublicOutput[0]),
+          header: 'Nationality',
+          emoji: '🏛️',
+          suffix: null,
+        },
+        date: {
+          data: formatDate(proofsPublicOutput[1]),
+          header: 'Proof created at',
+          emoji: '📅',
+          suffix: null,
+        },
+        publicKey: {
+          data: getPublicKeyFromProofsOutput(proofsPublicOutput),
+          header: 'Creators public key',
+          emoji: '🔑',
+          suffix: null,
+        }
       },
-      date: {
-        data: formatDate(proofsPublicOutput[1]),
-        header: 'Proof created at',
-        emoji: '📅',
-        suffix: null,
-      },
-      piublicKey: {
-        data: getPublicKeyFromProofsOutput(proofsPublicOutput),
-        header: 'Creators public key',
-        emoji: '🔑',
-        suffix: null,
-      }
-    },
+    }
+    return proofs[proofName]
 
+  /*
+    what if failed to parse the proofs public output or some other part?
+    for example if an old proof with different structure is provided
+    the above fns will fail.
+  */
+  } catch {
+    return {}
   }
-  return proofs[proofName]
+
+  
 }
 
 const copyToClipboard = (text) => {
   navigator.clipboard.writeText(text)
+  message.success('Copied!')
 }
 </script>
 
 <template>
-  <n-space :size="[2, 2]" vertical v-for="(value, _) in getProcessedPublicDataOfTheProof(props.proofPublicOutput, props.proofName)">
-    <n-statistic :label="value.header">
-      <template #default>
-        <span v-if="!isLoading">
-          <n-popover trigger="click">
-            <template #trigger>
-              <span @click="copyToClipboard(value.data)" style="cursor: pointer;">
-                {{ trimString(value.data) }}
-              </span>
-            </template>
-            <span>Copied</span>
-          </n-popover>
-        </span>
-      </template>
-      <template #prefix>
-        {{ value.emoji }}
-      </template>
-      <template #suffix>
-        {{ value.suffix }}
+  <n-spin :show="props.isLoading">
+  <div v-if="!props.isLoading">
+    <n-space 
+      :size="[2, 2]" 
+      vertical 
+      v-for="(value, _) in getProcessedPublicDataOfTheProof(props.proofPublicOutput, props.proofName)"
+    >
+      <n-statistic :label="value.header">
+        <template #default>
+          <n-text @click="copyToClipboard(value.data)" style="cursor: pointer;">
+            {{ trimString(value.data) }}
+          </n-text>
+        </template>
+        <template #prefix>
+          {{ value.emoji }}
+        </template>
+        <template #suffix>
+          {{ value.suffix }}
+        </template>
+      </n-statistic>
+      <br/>
+    </n-space>
+    <n-statistic label="Proof validity" :value="props.isProofValid.toString()">
+      <template #prefix v-if="!props.isLoading">
+        {{ isProofValid ? '✅' : '❌' }}
       </template>
     </n-statistic>
-    <br/>
-  </n-space>
-  <n-statistic label="Proof validity" :value="props.isProofValid.toString()">
-    <template #prefix v-if="!props.isLoading">
-      {{ isProofValid ? '✅' : '❌' }}
-    </template>
-  </n-statistic>
+    </div>
+  </n-spin>
 </template>
 
 <style>
