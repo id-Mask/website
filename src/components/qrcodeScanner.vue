@@ -16,6 +16,16 @@ import { proofOfNationality } from './zkPrograms/ProofOfNationality.js'
 import { compile } from './proofSteps/compile.js'
 import { sleep } from './../utils.js'
 
+const store = useStore()
+const themeVars = useThemeVars()
+const message = useMessage()
+
+const decodedValue = ref(null)
+const proofData = ref(null)
+const useCache = ref(false)
+const isProofValid = ref(false)
+const isLoading = ref(false)
+
 const proofs = {
   proofOfAge: proofOfAge,
   proofOfSanctions: proofOfSanctions,
@@ -34,7 +44,6 @@ const trimString = (string) => {
 }
 
 const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
-
   // convert public key encoded as an array of Fields to a string
   const getPublicKeyFromProofsOutput = (proofsPublicOutput) => {
     return PublicKey.fromFields([
@@ -149,16 +158,9 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
   return proofs[proofName]
 }
 
-
-const store = useStore()
-const themeVars = useThemeVars()
-const message = useMessage()
-
-const decodedValue = ref(null)
-const proofData = ref(null)
-const useCache = ref(false)
-const isProofValid = ref(false)
-const isLoading = ref(false)
+const copyToClipboard = (text) => {
+  navigator.clipboard.writeText(text)
+}
 
 const verifyProof = async (data) => {
 
@@ -216,7 +218,7 @@ const onDetect = async (value) => {
   console.log('DETECTED')
   decodedValue.value = value.map((code) => JSON.parse(code.rawValue))
   await verifyProof(decodedValue.value[0])
-};
+}
 
 const paintOutline = (detectedCodes, ctx) => {
   for (const detectedCode of detectedCodes) {
@@ -234,7 +236,7 @@ const paintOutline = (detectedCodes, ctx) => {
     ctx.closePath()
     ctx.stroke()
   }
-};
+}
 
 </script>
 
@@ -259,7 +261,14 @@ const paintOutline = (detectedCodes, ctx) => {
               <n-statistic :label="value.header">
                 <template #default>
                   <span v-if="!isLoading">
-                    {{ trimString(value.data) }}
+                    <n-popover trigger="click">
+                      <template #trigger>
+                        <span @click="copyToClipboard(value.data)" style="cursor: pointer;">
+                          {{ trimString(value.data) }}
+                        </span>
+                      </template>
+                      <span>Copied</span>
+                    </n-popover>
                   </span>
                 </template>
                 <template #prefix>
@@ -273,7 +282,7 @@ const paintOutline = (detectedCodes, ctx) => {
             </n-space>
             <n-statistic label="Proof validity" :value="isProofValid.toString()">
               <template #prefix v-if="!isLoading">
-              {{ isProofValid ? '✅' : '❌' }}
+                {{ isProofValid ? '✅' : '❌' }}
               </template>
             </n-statistic>
           </n-spin>

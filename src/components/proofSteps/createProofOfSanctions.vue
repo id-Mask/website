@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useThemeVars } from 'naive-ui'
 import { useStore } from 'vuex'
 import { useMessage } from 'naive-ui'
 import { sleep } from './../../utils.js'
@@ -12,14 +11,13 @@ import {
 
 import { compile } from './compile.js'
 import { proofOfSanctions, PublicInput } from './../zkPrograms/ProofOfSanctions.js'
+import { generateSignatureUsingDefaultKeys } from './utils.js'
 
 const message = useMessage()
 const store = useStore()
-const themeVars = useThemeVars()
 const data = ref({
   proof: null,
   isLoading: false,
-  ageToProveInYears: null,
 })
 
 const props = defineProps({
@@ -107,9 +105,13 @@ const createProof = async () => {
       minScore: Field(ofacData.data.minScore),
       currentDate: Field(ofacData.data.currentDate),
     })
+    const [creatorPublicKey, creatorDataSignature] = generateSignatureUsingDefaultKeys(publicInput.toFields())
+
     const proof = await proofOfSanctions.proveSanctions(
       publicInput,
-      Signature.fromJSON(ofacData.signature)
+      Signature.fromJSON(ofacData.signature),
+      creatorDataSignature,
+      creatorPublicKey,
     )
 
     const jsonProof = proof.toJSON()

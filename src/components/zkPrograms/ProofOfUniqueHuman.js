@@ -12,6 +12,7 @@ import { PersonalData } from './ProofOfAge.utils.js';
 class PublicOutput extends Struct({
     hash: Field,
     currentDate: Field,
+    creatorPublicKey: PublicKey,
 }) {
 }
 export const proofOfUniqueHuman = ZkProgram({
@@ -20,8 +21,15 @@ export const proofOfUniqueHuman = ZkProgram({
     publicOutput: PublicOutput,
     methods: {
         proveUniqueHuman: {
-            privateInputs: [PersonalData, Signature, CircuitString, Signature],
-            method(personalData, personalDataSignature, secretValue, secretValueSignature) {
+            privateInputs: [
+                PersonalData,
+                Signature,
+                CircuitString,
+                Signature,
+                Signature,
+                PublicKey, // creator wallet public key
+            ],
+            method(personalData, personalDataSignature, secretValue, secretValueSignature, creatorSignature, creatorPublicKey) {
                 const oraclePuclicKey = PublicKey.fromBase58('B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN');
                 // verify data inputs
                 const verified = personalDataSignature.verify(oraclePuclicKey, personalData.toFields());
@@ -39,6 +47,9 @@ export const proofOfUniqueHuman = ZkProgram({
                 */
                 const verified_ = secretValueSignature.verify(oraclePuclicKey, secretValue.toFields());
                 verified_.assertTrue();
+                // verify creator signature
+                const validSignature_ = creatorSignature.verify(creatorPublicKey, personalData.toFields());
+                validSignature_.assertTrue();
                 // create hash unique to this person
                 const hash = Poseidon.hash([
                     ...personalData.name.toFields(),
@@ -49,6 +60,7 @@ export const proofOfUniqueHuman = ZkProgram({
                 return new PublicOutput({
                     hash: hash,
                     currentDate: personalData.currentDate,
+                    creatorPublicKey: creatorPublicKey,
                 });
             },
         },

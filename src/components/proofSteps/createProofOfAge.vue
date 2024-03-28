@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useThemeVars } from 'naive-ui'
 import { useStore } from 'vuex'
 import { useMessage } from 'naive-ui'
 import { sleep } from './../../utils.js'
@@ -17,7 +16,6 @@ import { PersonalData } from './../zkPrograms/ProofOfAge.utils.js'
 
 const message = useMessage()
 const store = useStore()
-const themeVars = useThemeVars()
 const data = ref({
   proof: null,
   isLoading: false,

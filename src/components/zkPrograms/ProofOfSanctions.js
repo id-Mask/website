@@ -7,17 +7,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Field, method, Signature, Bool, SmartContract, Permissions, Struct, ZkProgram, } from 'o1js';
+import { Field, method, Signature, Bool, SmartContract, Permissions, Struct, ZkProgram, PublicKey, } from 'o1js';
 import { verifyOracleData } from './ProofOfSanctions.utils.js';
 export class PublicInput extends Struct({
     isMatched: Bool,
     minScore: Field,
     currentDate: Field,
 }) {
+    toFields() {
+        return [this.isMatched.toField(), this.minScore, this.currentDate];
+    }
 }
 class PublicOutput extends Struct({
     minScore: Field,
     currentDate: Field,
+    creatorPublicKey: PublicKey,
 }) {
 }
 export const proofOfSanctions = ZkProgram({
@@ -27,17 +31,23 @@ export const proofOfSanctions = ZkProgram({
     methods: {
         proveSanctions: {
             privateInputs: [
-                Signature, // zkOracle data signature
+                Signature,
+                Signature,
+                PublicKey, // creator wallet public key
             ],
-            method(publicInput, signature) {
+            method(publicInput, signature, creatorSignature, creatorPublicKey) {
                 // verity zkOracle data
                 const verified = verifyOracleData(publicInput.isMatched, publicInput.minScore, publicInput.currentDate, signature);
                 verified.assertTrue();
+                // verify creator signature
+                const validSignature_ = creatorSignature.verify(creatorPublicKey, publicInput.toFields());
+                validSignature_.assertTrue();
                 // assert that search agains OFAC db yielded no results
                 publicInput.isMatched.assertFalse();
                 return new PublicOutput({
                     minScore: publicInput.minScore,
                     currentDate: publicInput.currentDate,
+                    creatorPublicKey: creatorPublicKey,
                 });
             },
         },

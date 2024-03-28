@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useThemeVars } from 'naive-ui'
 import { useStore } from 'vuex'
 import { useMessage } from 'naive-ui'
 import { sleep } from './../../utils.js'
@@ -13,14 +12,13 @@ import {
 import { compile } from './compile.js'
 import { proofOfUniqueHuman } from './../zkPrograms/ProofOfUniqueHuman.js'
 import { PersonalData } from './../zkPrograms/ProofOfAge.utils.js'
+import { generateSignatureUsingDefaultKeys } from './utils.js'
 
 const message = useMessage()
 const store = useStore()
-const themeVars = useThemeVars()
 const data = ref({
   proof: null,
   isLoading: false,
-  ageToProveInYears: null,
 })
 
 const props = defineProps({
@@ -45,9 +43,19 @@ const createProof = async () => {
   emit('isLoading', true)
   emit('finished', false)
 
+  // preparations
+  const pid = store.state.pid.data
+  const personalData = new PersonalData({
+    name: CircuitString.fromString(pid.data.name),
+    surname: CircuitString.fromString(pid.data.surname),
+    country: CircuitString.fromString(pid.data.country),
+    pno: CircuitString.fromString(pid.data.pno),
+    currentDate: Field(pid.data.currentDate),
+  })
+  const [creatorPublicKey, creatorDataSignature] = generateSignatureUsingDefaultKeys(personalData.toFields())
+
   let msg = message.create('1/3 Crafting your secrets 🤫🔐', { type: 'loading', duration: 10e9 })
   const secretValue = await getSecreteValue()
-  const pid = store.state.pid.data
 
   if (store.state.settings.consoleDebugMode) {
     console.log('Your secrets:', secretValue)
@@ -75,18 +83,13 @@ const createProof = async () => {
 
   msg.content = "3/3 Creating the proof 🌈✨"
   try {
-    const personalData = new PersonalData({
-      name: CircuitString.fromString(pid.data.name),
-      surname: CircuitString.fromString(pid.data.surname),
-      country: CircuitString.fromString(pid.data.country),
-      pno: CircuitString.fromString(pid.data.pno),
-      currentDate: Field(pid.data.currentDate),
-    })
     const proof = await proofOfUniqueHuman.proveUniqueHuman(
       personalData,
       Signature.fromJSON(pid.signature),
       CircuitString.fromString(secretValue.data.secret),
-      Signature.fromJSON(secretValue.signature)
+      Signature.fromJSON(secretValue.signature),
+      creatorDataSignature,
+      creatorPublicKey,
     );
 
     const jsonProof = proof.toJSON()
