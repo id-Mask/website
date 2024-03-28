@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import * as CryptoJS from 'crypto-js'
 import { QrcodeStream } from 'vue-qrcode-reader'
-import { verify, PublicKey, Field } from 'o1js'
+import { verify } from 'o1js'
 
 import { useStore } from 'vuex'
 import { useThemeVars } from 'naive-ui'
@@ -13,6 +13,8 @@ import { proofOfSanctions } from './zkPrograms/ProofOfSanctions.js'
 import { proofOfUniqueHuman } from './zkPrograms/ProofOfUniqueHuman.js'
 import { proofOfNationality } from './zkPrograms/ProofOfNationality.js'
 
+import proofsPublicOutputDataCard from './componentUtils/proofsPublicOutputDataCard.vue'
+
 import { compile } from './proofSteps/compile.js'
 import { sleep } from './../utils.js'
 
@@ -21,145 +23,18 @@ const themeVars = useThemeVars()
 const message = useMessage()
 
 const decodedValue = ref(null)
-const proofData = ref(null)
+const proofPublicOutput = ref(null)
+const proofName = ref(null)
 const useCache = ref(false)
 const isProofValid = ref(false)
 const isLoading = ref(false)
+const showModal = ref(false)
 
 const proofs = {
   proofOfAge: proofOfAge,
   proofOfSanctions: proofOfSanctions,
   proofOfUniqueHuman: proofOfUniqueHuman,
   proofOfNationality: proofOfNationality,
-}
-
-const trimString = (string) => {
-  if (string.length <= 10) {
-    return string
-  } else {
-    const firstPart = string.substring(0, 5)
-    const lastPart = string.substring(string.length - 5)
-    return `${firstPart} ... ${lastPart}`
-  }
-}
-
-const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
-  // convert public key encoded as an array of Fields to a string
-  const getPublicKeyFromProofsOutput = (proofsPublicOutput) => {
-    return PublicKey.fromFields([
-      Field(proofsPublicOutput[2]),
-      Field(proofsPublicOutput[3]),
-    ]).toBase58()
-  }
-
-  // convert country encoded as an int into a string
-  const getCountryFromUnicode = (countryUnicode) => {
-    const firstTwoDigits = parseInt(countryUnicode.substring(0, 2))
-    const nextTwoDigits = parseInt(countryUnicode.substring(2, 4))
-    const char1 = String.fromCharCode(firstTwoDigits)
-    const char2 = String.fromCharCode(nextTwoDigits)
-    return char1 + char2
-  }
-
-  const formatDate = (dateString) => {
-    const year = dateString.substring(0, 4)
-    const month = dateString.substring(4, 6)
-    const day = dateString.substring(6, 8)  
-    return `${year}-${month}-${day}`
-  }
-
-  const proofs = {
-
-    proofOfAge: {
-      data: {
-        data: proofsPublicOutput[0],
-        header: 'Person is older than',
-        emoji: '👵',
-        suffix: null,
-      },
-      date: {
-        data: formatDate(proofsPublicOutput[1]),
-        header: 'Proof created at',
-        emoji: '📅',
-        suffix: null,
-      },
-      piublicKey: {
-        data: getPublicKeyFromProofsOutput(proofsPublicOutput),
-        header: 'Creators public key',
-        emoji: '🔑',
-        suffix: null,
-      }
-    },
-
-    proofOfSanctions: {
-      data: {
-        data: proofsPublicOutput[0],
-        header: 'OFAC reliability score',
-        emoji: '📜',
-        suffix: '%',
-      },
-      date: {
-        data: formatDate(proofsPublicOutput[1]),
-        header: 'Proof created at',
-        emoji: '📅',
-        suffix: null,
-      },
-      piublicKey: {
-        data: getPublicKeyFromProofsOutput(proofsPublicOutput),
-        header: 'Creators public key',
-        emoji: '🔑',
-        suffix: null,
-      }
-    },
-
-    proofOfUniqueHuman: {
-      data: {
-        data: proofsPublicOutput[0],
-        header: 'Unique Identifier',
-        emoji: '🧠',
-        suffix: null,
-      },
-      date: {
-        data: formatDate(proofsPublicOutput[1]),
-        header: 'Proof created at',
-        emoji: '📅',
-        suffix: null,
-      },
-      piublicKey: {
-        data: getPublicKeyFromProofsOutput(proofsPublicOutput),
-        header: 'Creators public key',
-        emoji: '🔑',
-        suffix: null,
-      }
-    },
-
-    proofOfNationality: {
-      data: {
-        data: getCountryFromUnicode(proofsPublicOutput[0]),
-        header: 'Nationality',
-        emoji: '🏛️',
-        suffix: null,
-      },
-      date: {
-        data: formatDate(proofsPublicOutput[1]),
-        header: 'Proof created at',
-        emoji: '📅',
-        suffix: null,
-      },
-      piublicKey: {
-        data: getPublicKeyFromProofsOutput(proofsPublicOutput),
-        header: 'Creators public key',
-        emoji: '🔑',
-        suffix: null,
-      }
-    },
-
-  }
-  return proofs[proofName]
-}
-
-const copyToClipboard = (text) => {
-  navigator.clipboard.writeText(text)
 }
 
 const verifyProof = async (data) => {
@@ -197,7 +72,8 @@ const verifyProof = async (data) => {
     if (ok) {
       msg.type = 'success'
       msg.content = 'The proof is valid!'
-      proofData.value = getProcessedPublicDataOfTheProof(proof.publicOutput, data.proof)
+      proofPublicOutput.value = proof.publicOutput
+      proofName.value = data.proof
       isProofValid.value = true
     } else {
       console.log('error')
@@ -208,6 +84,7 @@ const verifyProof = async (data) => {
   } catch (error) {
     console.error(error)
   } finally {
+    showModal.value = true
     isLoading.value = false
     await sleep(4000)
     msg.destroy()
@@ -252,42 +129,22 @@ const paintOutline = (detectedCodes, ctx) => {
         </template>
       </n-switch>
       <n-spin :show="isLoading">
-        <qrcode-stream @detect="onDetect" :track="paintOutline" @errors="console.error" style="max-width: 30em;"/>
+        <qrcode-stream @detect="onDetect" :track="paintOutline" @errors="console.error" :paused="isLoading" style="max-width: 30em;"/>
       </n-spin>
-      <n-space align="center" vertical>
-        <n-card v-if="decodedValue && proofData" size="large" style="scale: 0.8" :hoverable="true"> 
-          <n-spin :show="isLoading">
-            <n-space :size="[2, 2]" vertical v-for="(value, _) in proofData">
-              <n-statistic :label="value.header">
-                <template #default>
-                  <span v-if="!isLoading">
-                    <n-popover trigger="click">
-                      <template #trigger>
-                        <span @click="copyToClipboard(value.data)" style="cursor: pointer;">
-                          {{ trimString(value.data) }}
-                        </span>
-                      </template>
-                      <span>Copied</span>
-                    </n-popover>
-                  </span>
-                </template>
-                <template #prefix>
-                  {{ value.emoji }}
-                </template>
-                <template #suffix>
-                  {{ value.suffix }}
-                </template>
-              </n-statistic>
-              <br/>
-            </n-space>
-            <n-statistic label="Proof validity" :value="isProofValid.toString()">
-              <template #prefix v-if="!isLoading">
-                {{ isProofValid ? '✅' : '❌' }}
-              </template>
-            </n-statistic>
-          </n-spin>
+
+      <n-modal v-model:show="showModal">
+        <n-card
+          style="scale: 0.8; max-width: 340px"
+          size="huge"
+        >
+          <proofsPublicOutputDataCard 
+            :proofName="proofName" 
+            :proofPublicOutput="proofPublicOutput" 
+            :isProofValid="isProofValid" 
+            :isLoading="isLoading" 
+          />
         </n-card>
-      </n-space>
+      </n-modal>
     </n-space>
   </n-card>
 </template>
