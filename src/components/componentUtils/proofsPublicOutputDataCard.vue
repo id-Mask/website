@@ -144,8 +144,6 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
   } catch {
     return {}
   }
-
-  
 }
 
 const copyToClipboard = (text) => {

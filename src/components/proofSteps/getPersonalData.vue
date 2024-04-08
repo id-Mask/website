@@ -139,11 +139,18 @@ watch(() => data.personalIdentificationNumber, (_personalIdentificationNumber) =
             <n-button type="primary" @click="getPID()" :loading="data.isLoading">
               Get data
             </n-button>
-            <n-select
-              v-model:value="data.selectedCountry"
-              style="width: 100px;"
-              disabled
-            />
+            <n-popover trigger="hover">
+              <template #trigger>
+                <n-select
+                  value="🏴"
+                  style="width: 100px;"
+                  disabled
+                />
+              </template>
+              <span style="font-size: 90%; text-align: justify;">
+                Disabled, this will return a mock random personal identity data
+              </span>
+            </n-popover>
             <n-input
               style="width: 100%"
               placeholder="Personal Identification Number"
@@ -159,20 +166,20 @@ watch(() => data.personalIdentificationNumber, (_personalIdentificationNumber) =
             <n-select
               :options="[
                 {
-                  label: 'EE',
+                  label: '🇪🇪',
                   value: 'EE',
                 },
                 {
-                  label: 'LV',
+                  label: '🇱🇻',
                   value: 'LV',
                 },
                 {
-                  label: 'LT',
+                  label: '🇱🇹',
                   value: 'LT',
                 }
               ]"
               v-model:value="data.selectedCountry"
-              style="width: 120px;"
+              style="width: 100px;"
             />
             <n-input
               style="width: 100%"
