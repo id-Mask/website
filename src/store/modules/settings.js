@@ -9,7 +9,13 @@ const state = () => ({
   blockExplorer: 'https://minascan.io/berkeley/',
   zkOracle: 'https://id-mask-oracle-e6ngsd55oa-uc.a.run.app/',
   consoleDebugMode: false,
-  requestUserWalletSignature: false,
+  userSignatureOptions: {
+    requestUserWalletSignature: false,
+    defaultKeyPair: {
+      publickKey: 'B62qqFJyFDcPNuuoV2Af8nWGib7tE9MjBCJ2MEPDVMVM71iwGcjR6RH',
+      privateKey: 'EKFFPMTjJivav7xxEdXyCVKs5KedZsZaQWSWXkXdM4UjeH54rJV4'
+    }
+  },
 })
 
 const getters = {

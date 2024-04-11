@@ -165,7 +165,7 @@ onMounted(() => {
                       requiring to owm a Mina account (public private key pair) and use it together with a wallet to sign a piece of data.
                     </n-text>
                     </n-popover>
-                  <n-switch v-model:value="store.state.settings.requestUserWalletSignature" />
+                  <n-switch v-model:value="store.state.settings.userSignatureOptions.requestUserWalletSignature" />
                 </n-flex>
 
               </n-space>

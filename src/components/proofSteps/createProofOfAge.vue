@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useMessage } from 'naive-ui'
 import { sleep } from './../../utils.js'
-import { generateSignatureUsingDefaultKeys } from './utils.js'
+import { generateSignature } from './utils.js'
 import {
   CircuitString,
   Field,
@@ -42,7 +42,10 @@ const createProof = async () => {
     pno: CircuitString.fromString(pid.data.pno),
     currentDate: Field(pid.data.currentDate),
   })
-  const [creatorPublicKey, creatorDataSignature] = generateSignatureUsingDefaultKeys(personalData.toFields())
+  const [creatorPublicKey, creatorDataSignature] = await generateSignature(
+    personalData.toFields(), 
+    store.state.settings.userSignatureOptions
+  )
 
   // compile
   let msg = message.create('1/2 Compiling zkProgam 🧩🔨', { type: 'loading', duration: 10e9 })
