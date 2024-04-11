@@ -10,6 +10,8 @@ import { proofOfSanctions } from './zkPrograms/ProofOfSanctions.js'
 import { proofOfUniqueHuman } from './zkPrograms/ProofOfUniqueHuman.js'
 import { proofOfNationality } from './zkPrograms/ProofOfNationality.js'
 
+import proofsPublicOutputDataCard from './componentUtils/proofsPublicOutputDataCard.vue'
+
 import { compile } from './proofSteps/compile.js'
 import { useIsMobile } from '../utils.js'
 import { sleep } from './../utils.js'
@@ -216,23 +218,15 @@ Object.keys(proofData).forEach(key => {
 
   <n-modal v-model:show="showModal">
     <n-card
-      style="max-width: 350px"
-      title="Verified proof data"
-      :bordered="true"
+      style="scale: 0.8; max-width: 340px"
+      size="huge"
     >
-      <n-space justify="center">
-      <n-p :depth="3">
-        Provided proof is valid, below is the data that it carries
-      </n-p>
-
-      <n-scrollbar style="max-height: 200px">
-      <n-h2>
-        <n-text type="primary">
-          {{ modalData }}
-        </n-text>
-      </n-h2>
-      </n-scrollbar>
-    </n-space>
+      <proofsPublicOutputDataCard 
+        :proofName="props.selectedProof" 
+        :proofPublicOutput="modalData" 
+        :isProofValid="true" 
+        :isLoading="false" 
+      />
     </n-card>
   </n-modal>
 
