@@ -1,8 +1,10 @@
 <script setup>
 import { useMessage } from 'naive-ui'
 import { PublicKey, Field } from 'o1js'
+import { useStore } from 'vuex'
 
 const message = useMessage()
+const store = useStore()
 
 const props = defineProps({
   proofPublicOutput: Object,
@@ -134,6 +136,17 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
         }
       },
     }
+
+    /*
+      check if the proof is signed using the default key pair and remove it
+      from the object if that is the case. If not, keep it and it will show on the UI.
+    */
+    const defaultPublicKey = store.state.settings.userSignatureOptions.defaultKeyPair.publicKey
+    const isSignedWithDefaultKeys = proofs[proofName].publicKey.data == defaultPublicKey
+    if (isSignedWithDefaultKeys) {
+      delete proofs[proofName].publicKey
+    }
+
     return proofs[proofName]
 
   /*

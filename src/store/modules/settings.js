@@ -12,7 +12,7 @@ const state = () => ({
   userSignatureOptions: {
     requestUserWalletSignature: false,
     defaultKeyPair: {
-      publickKey: 'B62qqFJyFDcPNuuoV2Af8nWGib7tE9MjBCJ2MEPDVMVM71iwGcjR6RH',
+      publicKey: 'B62qqFJyFDcPNuuoV2Af8nWGib7tE9MjBCJ2MEPDVMVM71iwGcjR6RH',
       privateKey: 'EKFFPMTjJivav7xxEdXyCVKs5KedZsZaQWSWXkXdM4UjeH54rJV4'
     }
   },
