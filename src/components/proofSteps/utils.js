@@ -15,9 +15,10 @@ import {
   Ideally, we'd include a way to verify the identity of the person who created
   the proof, but it's really difficult to do that anonymously and reliably ATM. 
   The method described above is a simpler version of achieving that.
-
 */
-export const generateSignatureUsingDefaultKeys = (fieldsArray, privateKey) => {
+
+
+const generateSignatureUsingDefaultKeys = (fieldsArray, privateKey) => {
   /*
     Default private and public keys that users can use to skip this step
     and not sign the data themselves - proof consumer will see that the

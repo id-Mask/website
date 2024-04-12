@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { useMessage } from 'naive-ui'
 import { sleep } from './../../utils.js'
-import { generateSignatureUsingDefaultKeys } from './utils.js'
+import { generateSignature } from './utils.js'
 import {
   CircuitString,
   Field,
@@ -44,7 +44,10 @@ const createProof = async () => {
 
   // Craft the signature of the data using wallet or default creds
   let msg = message.create('1/3 Crafting your signature 🤫🔐', { type: 'loading', duration: 10e9 })
-  const [creatorPublicKey, creatorDataSignature] = generateSignatureUsingDefaultKeys(personalData.toFields())
+  const [creatorPublicKey, creatorDataSignature] = await generateSignature(
+    personalData.toFields(), 
+    store.state.settings.userSignatureOptions
+  )
 
   msg.content = "2/3 Compiling zkProgam 🧩🔨"
   await compile(store, props.selectedProof, proofOfNationality)

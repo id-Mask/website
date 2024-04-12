@@ -12,7 +12,7 @@ import {
 import { compile } from './compile.js'
 import { proofOfUniqueHuman } from './../zkPrograms/ProofOfUniqueHuman.js'
 import { PersonalData } from './../zkPrograms/ProofOfAge.utils.js'
-import { generateSignatureUsingDefaultKeys } from './utils.js'
+import { generateSignature } from './utils.js'
 
 const message = useMessage()
 const store = useStore()
@@ -52,7 +52,10 @@ const createProof = async () => {
     pno: CircuitString.fromString(pid.data.pno),
     currentDate: Field(pid.data.currentDate),
   })
-  const [creatorPublicKey, creatorDataSignature] = generateSignatureUsingDefaultKeys(personalData.toFields())
+  const [creatorPublicKey, creatorDataSignature] = await generateSignature(
+    personalData.toFields(), 
+    store.state.settings.userSignatureOptions
+  )
 
   let msg = message.create('1/3 Crafting your secrets 🤫🔐', { type: 'loading', duration: 10e9 })
   const secretValue = await getSecreteValue()

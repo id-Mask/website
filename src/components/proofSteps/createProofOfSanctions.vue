@@ -11,7 +11,7 @@ import {
 
 import { compile } from './compile.js'
 import { proofOfSanctions, PublicInput } from './../zkPrograms/ProofOfSanctions.js'
-import { generateSignatureUsingDefaultKeys } from './utils.js'
+import { generateSignature } from './utils.js'
 
 const message = useMessage()
 const store = useStore()
@@ -105,7 +105,10 @@ const createProof = async () => {
       minScore: Field(ofacData.data.minScore),
       currentDate: Field(ofacData.data.currentDate),
     })
-    const [creatorPublicKey, creatorDataSignature] = generateSignatureUsingDefaultKeys(publicInput.toFields())
+    const [creatorPublicKey, creatorDataSignature] = await generateSignature(
+      publicInput.toFields(), 
+      store.state.settings.userSignatureOptions
+    )
 
     const proof = await proofOfSanctions.proveSanctions(
       publicInput,
@@ -133,7 +136,7 @@ const createProof = async () => {
   } catch (error) {
     console.error(error);
     msg.type = 'error'
-    msg.content = "Something is wrong. You sure you are old enough? 👵🏼"
+    msg.content = "Something is wrong. You sure you are not sanctioned? 💀"
   } finally {
     data.value.isLoading = false
     emit('isLoading', false)
