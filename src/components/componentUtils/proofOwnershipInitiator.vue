@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { Signature, PublicKey, Field } from 'o1js'
 
@@ -18,8 +18,8 @@ const verifyPublicKeyOwnership = async (publicKey) => {
     headers: {'Content-Type': 'application/json'},
   })
   const initSessionResponse_ = await initSessionResponse.json()
-  qrCodeUrl.value = 'https://idmask.xyz/verifyPublicKeyOwnership/' + initSessionResponse_.sessionId
-  console.log(initSessionResponse_.sessionId)
+  qrCodeUrl.value = `http://localhost:5173/proofOwnershipValidation?sessionId=${initSessionResponse_.sessionId}`
+  console.log(qrCodeUrl.value, initSessionResponse_.sessionId)
 
   const getSignatureFromSession = async (session) => {
     const response = await fetch(url + 'getSignatureFromOwnershipSession', {
@@ -47,7 +47,6 @@ const verifyPublicKeyOwnership = async (publicKey) => {
   await getSignatureFromSession(initSessionResponse_)
   const interval = setInterval(() => getSignatureFromSession(initSessionResponse_), INTERVAL)
 
-
 }
 
 const signMessage = async () => {
@@ -59,6 +58,10 @@ const signMessage = async () => {
   })
   console.log(Signature.fromBase58(signature.signature).toJSON())
 }
+
+onMounted(() => {
+  console.log('MOUNTED')
+})
 
 </script>
 

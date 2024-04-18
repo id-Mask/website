@@ -7,7 +7,8 @@ import header_ from './components/header_.vue'
 import LandingPage from './components/LandingPage.vue'
 import ProofPage from './components/ProofPage.vue'
 import footer_ from './components/footer_.vue'
-// import ProofOwnershipVerificationPOC from './components/proofOwnershipVerificationPOC.vue'
+import ProofOwnershipValidation from './components/componentUtils/proofOwnershipValidation.vue'
+// import ProofOwnershipInitiator from './components/componentUtils/proofOwnershipInitiator.vue'
 
 const store = useStore()
 const breakpoint = useBreakpoint()
@@ -27,6 +28,10 @@ const padding = computed(() => {
     : '';
 })
 
+const route = computed(() => {
+  return window.location.pathname
+})
+
 </script>
 
 <template>
@@ -36,17 +41,28 @@ const padding = computed(() => {
       <n-loading-bar-provider>
         <n-message-provider>
 
-          <n-layout>
-            <header_ style="position: absolute; z-index: 1;"/>
-            <n-layout-content :content-style="'margin: 0 auto;' + padding">
-              <LandingPage/>
-              <!-- <ProofOwnershipVerificationPOC/> -->
-              <ProofPage/>
-            </n-layout-content>
-          </n-layout>
-          <n-layout-footer bordered>
-            <footer_ :style="padding + 'padding-top: 5em; padding-bottom: 5em;'"/>
-          </n-layout-footer>
+          <!-- 
+            Instead of using vue router which is I think overly complicated for this single use case,
+            lets create a single route manually. By default, there are no routes, but if the route is
+            equal to /proofOwnershipValidation, then it will render one specific component and nothing else. 
+          -->
+
+          <span v-if="route == '/proofOwnershipValidation'">
+            <ProofOwnershipValidation/>
+          </span>
+          <span v-else>
+            <n-layout>
+              <header_ style="position: absolute; z-index: 1;"/>
+              <n-layout-content :content-style="'margin: 0 auto;' + padding">
+                <LandingPage/>
+                <!-- <ProofOwnershipInitiator /> -->
+                <ProofPage/>
+              </n-layout-content>
+            </n-layout>
+            <n-layout-footer bordered>
+              <footer_ :style="padding + 'padding-top: 5em; padding-bottom: 5em;'"/>
+            </n-layout-footer>
+          </span>
 
         </n-message-provider>
       </n-loading-bar-provider>
