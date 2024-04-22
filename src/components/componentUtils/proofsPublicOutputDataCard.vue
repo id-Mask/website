@@ -1,7 +1,10 @@
 <script setup>
+import { onMounted, ref } from 'vue'
 import { useMessage } from 'naive-ui'
 import { PublicKey, Field } from 'o1js'
 import { useStore } from 'vuex'
+// import ProofOwnersipInitiator from './components/componentUtils/proofOwnershipInitiator.vue'
+import ProofOwnershipInitiator from './proofOwnershipInitiator.vue'
 
 const message = useMessage()
 const store = useStore()
@@ -11,6 +14,11 @@ const props = defineProps({
   isProofValid: Boolean,
   isLoading: Boolean,
   proofName: String,
+})
+
+const processedProofData = ref(null)
+const proofOwnershipVerification = ref({
+  showQRCodeModal: false,
 })
 
 const trimString = (string) => {
@@ -163,38 +171,60 @@ const copyToClipboard = (text) => {
   navigator.clipboard.writeText(text)
   message.success('Copied!')
 }
+
+const initProofOwnershipVerification = () => {
+  proofOwnershipVerification.value.showQRCodeModal = true
+}
+
+onMounted(() => {
+  processedProofData.value = getProcessedPublicDataOfTheProof(props.proofPublicOutput, props.proofName)
+})
+
 </script>
 
 <template>
   <n-spin :show="props.isLoading">
-  <div v-if="!props.isLoading">
-    <n-space 
-      :size="[2, 2]" 
-      vertical 
-      v-for="(value, _) in getProcessedPublicDataOfTheProof(props.proofPublicOutput, props.proofName)"
-    >
-      <n-statistic :label="value.header">
-        <template #default>
-          <n-text @click="copyToClipboard(value.data)" style="cursor: pointer;">
-            {{ trimString(value.data) }}
-          </n-text>
-        </template>
-        <template #prefix>
-          {{ value.emoji }}
-        </template>
-        <template #suffix>
-          {{ value.suffix }}
+    <div v-if="!props.isLoading">
+      <n-space 
+        :size="[2, 2]" 
+        vertical 
+        v-for="(value, _) in processedProofData"
+      >
+        <n-statistic>
+          <template #label>
+            {{ value.header }}
+            <n-button v-if="value.data.startsWith('B62')" quaternary @click="initProofOwnershipVerification()">🎒</n-button>
+          </template>
+          <template #default>
+            <n-text @click="copyToClipboard(value.data)" style="cursor: pointer;">
+              {{ trimString(value.data) }}
+            </n-text>
+          </template>
+          <template #prefix>
+            {{ value.emoji }}
+          </template>
+          <template #suffix>
+            {{ value.suffix }}
+          </template>
+        </n-statistic>
+        <br/>
+      </n-space>
+      <n-statistic label="Proof validity" :value="props.isProofValid.toString()">
+        <template #prefix v-if="!props.isLoading">
+          {{ isProofValid ? '✅' : '❌' }}
         </template>
       </n-statistic>
-      <br/>
-    </n-space>
-    <n-statistic label="Proof validity" :value="props.isProofValid.toString()">
-      <template #prefix v-if="!props.isLoading">
-        {{ isProofValid ? '✅' : '❌' }}
-      </template>
-    </n-statistic>
     </div>
   </n-spin>
+
+  <n-modal v-model:show="proofOwnershipVerification.showQRCodeModal">
+    <n-card style="max-width: 30em;">
+      <n-flex justify="center">
+        <ProofOwnershipInitiator :publicKey="processedProofData.publicKey.data"/>
+      </n-flex>
+    </n-card>
+  </n-modal>
+
 </template>
 
 <style>
