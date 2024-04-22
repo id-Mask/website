@@ -24,7 +24,7 @@ const initSession = async (publicKey) => {
     headers: {'Content-Type': 'application/json'},
   })
   const initSessionResponse_ = await initSessionResponse.json()
-  qrCodeUrl.value = `https://www.idmask.xyz/proofOwnershipValidation?sessionId=${initSessionResponse_.sessionId}`
+  qrCodeUrl.value = `https://idmask.xyz/proofOwnershipValidation?sessionId=${initSessionResponse_.sessionId}`
   text.value = 'waiting for user to verify ownership'
 
   const getSignatureFromSession = async (session) => {
