@@ -11,6 +11,7 @@
   "dependencies": {
     "@fontsource/jetbrains-mono": "^5.0.12",
     "@vercel/analytics": "^1.1.1",
+    "@vueuse/core": "^10.9.0",
     "crypto-js": "^4.2.0",
     "highlight.js": "^11.8.0",
     "o1js": "^0.16.0",
