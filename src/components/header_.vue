@@ -4,6 +4,7 @@ import { useThemeVars } from 'naive-ui'
 import { useIsMobile } from '../utils'
 import { useStore } from 'vuex'
 import { sleep } from './../utils.js'
+import PrecompileButtons from './componentUtils/precompileButtons.vue'
 
 import { QrcodeStream } from 'vue-qrcode-reader'
 
@@ -186,6 +187,10 @@ onMounted(() => {
                     </n-popover>
                   <n-switch v-model:value="store.state.settings.userSignatureOptions.requestUserWalletSignature" />
                 </n-flex>
+
+                <br/>
+                <n-h4 type="primary">Precompile proofs</n-h4>
+                <PrecompileButtons />
 
               </n-space>
             </div>
