@@ -8,6 +8,18 @@
   TODO: store cache files in local storage so it won't we doenloaded again and again?
 */
 
+import { proofOfAge } from '.././zkPrograms/ProofOfAge.js'
+import { proofOfSanctions } from '.././zkPrograms/ProofOfSanctions.js'
+import { proofOfUniqueHuman } from '.././zkPrograms/ProofOfUniqueHuman.js'
+import { proofOfNationality } from '.././zkPrograms/ProofOfNationality.js'
+
+const proofs = {
+  proofOfAge: proofOfAge,
+  proofOfSanctions: proofOfSanctions,
+  proofOfUniqueHuman: proofOfUniqueHuman,
+  proofOfNationality: proofOfNationality,
+}
+
 const getCacheFiles = async (proofName) => {
   console.log(`fetching cache of ${proofName}`)
 
@@ -97,28 +109,32 @@ const FileSystem = (files) => ({
   canWrite: true,
 });
 
-const compile = async (store, proofName, proof, { useCache = true } = {}) => {
+const compile = async (store, proofName, { useCache = true } = {}) => {
+  store.state.proofs.data[proofName].isCompiling = true
+
   const proofData = store.state.proofs.data[proofName];
   if (proofData.verificationKey) {
+    store.state.proofs.data[proofName].isCompiling = false
     return; // exit early if verification key is already present
   }
 
   console.log('start compiling', proofName);
-  console.time('compiling');
+  console.time(`compiling ${proofName}`);
   
   let verificationKey, cacheFiles;
   try {
     if (useCache) {
       cacheFiles = await getCacheFiles(proofName);
-      ({ verificationKey } = await proof.compile({ cache: FileSystem(cacheFiles) }));
+      ({ verificationKey } = await proofs[proofName].compile({ cache: FileSystem(cacheFiles) }));
     } else {
-      ({ verificationKey } = await proof.compile());
+      ({ verificationKey } = await proofs[proofName].compile());
     }
-
-    console.timeEnd('compiling');
+    console.timeEnd(`compiling ${proofName}`);
     store.state.proofs.data[proofName].verificationKey = verificationKey;
   } catch (error) {
     console.error('Error compiling:', error);
+  } finally {
+    store.state.proofs.data[proofName].isCompiling = false
   }
 };
 

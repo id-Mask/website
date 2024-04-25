@@ -69,7 +69,7 @@ const createProof = async () => {
 
   // compile
   msg.content = "2/3 Compiling zkProgam 🧩🔨"
-  await compile(store, props.selectedProof, proofOfSanctions)
+  await compile(store, props.selectedProof)
 
   /* pid e.g.:
   const ofacData = {

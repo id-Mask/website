@@ -33,7 +33,6 @@ const onQrCodeDetect = (detectedCodes) => {
   if (detectedCodes.length > 0) {
     const url = detectedCodes[0].rawValue
     window.open(url, '_blank')
-    // window.open('https://www.google.com/', '_blank')
   }
 }
 
@@ -191,7 +190,6 @@ onMounted(() => {
                 <br/>
                 <n-h4 type="primary">Precompile proofs</n-h4>
                 <PrecompileButtons />
-
               </n-space>
             </div>
           </n-popover>

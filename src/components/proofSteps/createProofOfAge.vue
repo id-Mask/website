@@ -49,7 +49,7 @@ const createProof = async () => {
 
   // compile
   let msg = message.create('1/2 Compiling zkProgam 🧩🔨', { type: 'loading', duration: 10e9 })
-  await compile(store, props.selectedProof, proofOfAge)
+  await compile(store, props.selectedProof)
 
   /* pid e.g.:
   const pid = {

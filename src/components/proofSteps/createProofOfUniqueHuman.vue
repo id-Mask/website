@@ -65,7 +65,7 @@ const createProof = async () => {
   }
 
   msg.content = "2/3 Compiling zkProgam 🧩🔨"
-  await compile(store, props.selectedProof, proofOfUniqueHuman)
+  await compile(store, props.selectedProof)
 
   /* pid e.g.:
   const pid = {

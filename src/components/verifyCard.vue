@@ -42,7 +42,7 @@ const verifyJSONProof = async (proof) => {
   let msg = message.loading('Compiling zk program 🛠️', { closable: true, duration: 10e9 })
 
   // compile
-  await compile(store, props.selectedProof, proofs[props.selectedProof], { useCache: false })
+  await compile(store, props.selectedProof, { useCache: false })
 
   // verify if the provided proof is correct
   msg.content = 'Verifying the proof 🧐'
