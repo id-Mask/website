@@ -17,6 +17,7 @@ const props = defineProps({
 })
 
 const processedProofData = ref(null)
+const publicKeysMatch = ref(null)
 const proofOwnershipVerification = ref({
   showQRCodeModal: false,
 })
@@ -193,7 +194,17 @@ onMounted(() => {
         <n-statistic>
           <template #label>
             {{ value.header }}
-            <n-button v-if="value.data.startsWith('B62')" quaternary @click="initProofOwnershipVerification()">🎒</n-button>
+            <span v-if="value.data.startsWith('B62')">
+              <n-button v-if="publicKeysMatch == null" quaternary @click="initProofOwnershipVerification()">🎒</n-button>
+              <n-badge type="success" v-if="publicKeysMatch">
+                <n-button quaternary @click="initProofOwnershipVerification()">🎒</n-button>
+                <template #value>
+                  <n-icon>
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                  </n-icon>
+                </template>
+              </n-badge>
+            </span>
           </template>
           <template #default>
             <n-text @click="copyToClipboard(value.data)" style="cursor: pointer;">
@@ -220,7 +231,7 @@ onMounted(() => {
   <n-modal v-model:show="proofOwnershipVerification.showQRCodeModal">
     <n-card style="max-width: 30em;">
       <n-flex justify="center">
-        <ProofOwnershipInitiator :publicKey="processedProofData.publicKey.data"/>
+        <ProofOwnershipInitiator :publicKey="processedProofData.publicKey.data" @publicKeysMatch="() => {publicKeysMatch = true}"/>
       </n-flex>
     </n-card>
   </n-modal>

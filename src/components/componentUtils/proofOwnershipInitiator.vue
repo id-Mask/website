@@ -7,6 +7,8 @@ const props = defineProps({
   publicKey: String,
 })
 
+const emit = defineEmits(['publicKeysMatch'])
+
 const store = useStore()
 const signatureJSON = ref(null)
 const qrCodeUrl = ref(null)
@@ -46,6 +48,7 @@ const initSession = async (publicKey) => {
         const isValid = signature.verify(publicKey_, String(session.sessionId).split('').map(i => Field(i)))
         console.log(isValid.toBoolean())
         publicKeysMatch.value = isValid.toBoolean()
+        emit('publicKeysMatch')
         isLoading.value = false
         text.value = 'verified!'
       }
