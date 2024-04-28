@@ -17,7 +17,10 @@ const state = () => ({
     },
     Message: {
       padding: '20px 40px'
-    }
+    },
+    LoadingBar: {
+      height: '4px'
+    },
   },
 
   // separate overrides for dark / light only

@@ -8,7 +8,10 @@ import createProofOfUniqueHuman from './proofSteps/createProofOfUniqueHuman.vue'
 import createProofOfNationality from './proofSteps/createProofOfNationality.vue'
 import saveProof from './proofSteps/saveProof.vue'
 import { useIsMobile } from '../utils.js'
+import { useLoadingBar } from 'naive-ui';
 
+
+const loadingBar = useLoadingBar()
 const store = useStore()
 const isMobile = useIsMobile()
 const props = defineProps({
@@ -93,6 +96,11 @@ const setFinished = (val) => {
 }
 
 const setLoading = (val) => {
+  if (val) {
+    loadingBar.start()
+  } else {
+    loadingBar.finish()
+  }
   isLoading.value = val
 }
 
