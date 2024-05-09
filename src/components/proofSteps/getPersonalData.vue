@@ -74,7 +74,7 @@ const getMockPID = async () => {
 
 const getPID = async () => {
 
-  if (!data.personalIdentificationNumber) {
+  if ((data.selectedSource == 'Smart-ID') && (!data.personalIdentificationNumber)) {
     message.error('Input your personal identification number')
     return
   }
