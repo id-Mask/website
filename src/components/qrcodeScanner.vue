@@ -56,14 +56,13 @@ const verifyProof = async (data) => {
   // if not compile and save verificationKey to store
   msg.content = "Compiling zk program 🛠️"
 
-
   /*
     Here, we should be using the compile fn just as everywhere else.
     But if useCache is set to true, verify fn fails.
 
     So useCache is set to false, it takes longer but no error ¯\_(ツ)_/¯
   */
-  await compile(store, data.proof, proofs[data.proof], { useCache: useCache.value })
+  await compile(store, data.proof, { useCache: useCache.value })
 
   // verify if the provided proof is correct
   msg.content = "Verifying the proof 🧐"

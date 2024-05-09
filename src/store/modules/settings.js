@@ -2,11 +2,9 @@
 const state = () => ({
   state: null,
   emoji: null,
-  // https://api.minascan.io/node/berkeley/v1/graphql
-  // https://berkeley.graphql.minaexplorer.com/
-  // https://archive.berkeley.minaexplorer.com/
-  graphQLURL: 'https://archive.berkeley.minaexplorer.com/',
-  blockExplorer: 'https://minascan.io/berkeley/',
+  nodeUrl: 'https://api.minascan.io/node/devnet/v1/graphql',
+  graphQLURL: 'https://api.minascan.io/archive/devnet/v1/graphql',
+  blockExplorer: 'https://minascan.io/devnet/',
   zkOracle: 'https://id-mask-oracle-e6ngsd55oa-uc.a.run.app/',
   consoleDebugMode: false,
   userSignatureOptions: {

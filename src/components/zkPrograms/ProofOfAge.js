@@ -27,7 +27,7 @@ export const proofOfAge = ZkProgram({
                 Signature,
                 PublicKey, // creator wallet public key
             ],
-            method(ageToProveInYears, personalData, oracleSignature, creatorSignature, creatorPublicKey) {
+            async method(ageToProveInYears, personalData, oracleSignature, creatorSignature, creatorPublicKey) {
                 /*
                   Verify zk-oracle signature
         
@@ -87,7 +87,7 @@ export class ProofOfAge extends SmartContract {
             ...Permissions.default(),
         });
     }
-    verifyProof(proof) {
+    async verifyProof(proof) {
         // if the proof is invalid, this will fail
         // its impossible to run past this withought a valid proof
         proof.verify();
@@ -102,6 +102,6 @@ __decorate([
     method,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [ProofOfAgeProof]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], ProofOfAge.prototype, "verifyProof", null);
 //# sourceMappingURL=ProofOfAge.js.map

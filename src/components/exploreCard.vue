@@ -3,6 +3,7 @@ import { ref, h, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
 import { NButton } from 'naive-ui'
 import { useIsMobile } from '../utils.js'
+import proofsPublicOutputDataCard from './componentUtils/proofsPublicOutputDataCard.vue'
 
 import { Mina, fetchEvents } from 'o1js'
 
@@ -146,16 +147,15 @@ Object.keys(proofData).forEach(key => {
 
   <n-modal v-model:show="showModal">
     <n-card
-      title="Proof data"
-      style="max-width: 350px"
-      :bordered="false"
+      style="scale: 0.8; max-width: 340px"
       size="huge"
     >
-      <n-h3>
-        <n-text type="primary">
-          {{ modalData }}
-        </n-text>
-      </n-h3>
+      <proofsPublicOutputDataCard 
+        :proofName="props.selectedProof" 
+        :proofPublicOutput="modalData" 
+        :isProofValid="true" 
+        :isLoading="false" 
+      />
     </n-card>
   </n-modal>
 

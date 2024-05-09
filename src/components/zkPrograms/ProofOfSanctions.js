@@ -35,7 +35,7 @@ export const proofOfSanctions = ZkProgram({
                 Signature,
                 PublicKey, // creator wallet public key
             ],
-            method(publicInput, signature, creatorSignature, creatorPublicKey) {
+            async method(publicInput, signature, creatorSignature, creatorPublicKey) {
                 // verity zkOracle data
                 const verified = verifyOracleData(publicInput.isMatched, publicInput.minScore, publicInput.currentDate, signature);
                 verified.assertTrue();
@@ -73,14 +73,8 @@ export class ProofOfSanctions extends SmartContract {
             ...Permissions.default(),
         });
     }
-    verifyProof(proof) {
-        // if the proof is invalid, this will fail
-        // its impossible to run past this without a valid proof
+    async verifyProof(proof) {
         proof.verify();
-        // the above is enough to be able to check if an address has a proof
-        // but there needs to be a way to save the min score that is proved
-        // emit an event with min score to be able to query it via archive nodes
-        // surely events are not designed for this, but it will do the trick..?
         this.emitEvent('provided-valid-proof', proof.publicOutput);
     }
 }
@@ -88,6 +82,6 @@ __decorate([
     method,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [ProofOfSanctionsProof]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], ProofOfSanctions.prototype, "verifyProof", null);
 //# sourceMappingURL=ProofOfSanctions.js.map

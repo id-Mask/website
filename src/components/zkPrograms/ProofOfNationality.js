@@ -27,7 +27,7 @@ export const proofOfNationality = ZkProgram({
                 Signature,
                 PublicKey, // creator wallet public key
             ],
-            method(personalData, signature, creatorSignature, creatorPublicKey) {
+            async method(personalData, signature, creatorSignature, creatorPublicKey) {
                 // verify zkOracle data
                 const oraclePuclicKey = PublicKey.fromBase58('B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN');
                 const validSignature = signature.verify(oraclePuclicKey, personalData.toFields());
@@ -72,7 +72,7 @@ export class ProofOfNationality extends SmartContract {
             ...Permissions.default(),
         });
     }
-    verifyProof(proof) {
+    async verifyProof(proof) {
         proof.verify();
         this.emitEvent('provided-valid-proof', proof.publicOutput);
     }
@@ -81,6 +81,6 @@ __decorate([
     method,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [ProofOfNationalityProof]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], ProofOfNationality.prototype, "verifyProof", null);
 //# sourceMappingURL=ProofOfNationality.js.map

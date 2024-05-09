@@ -5,7 +5,7 @@ const getMockSecretValue = () => {
     const publicKey = privateKey.toPublicKey();
     const secret = '123abc';
     const secret_ = CircuitString.fromString('123abc');
-    const signature = Signature.create(privateKey, secret_.toFields());
+    const signature = Signature.create(privateKey, secret_.values.map((item) => item.toField()));
     return {
         secret: secret,
         signature: signature.toJSON(),

@@ -29,7 +29,7 @@ export const proofOfUniqueHuman = ZkProgram({
                 Signature,
                 PublicKey, // creator wallet public key
             ],
-            method(personalData, personalDataSignature, secretValue, secretValueSignature, creatorSignature, creatorPublicKey) {
+            async method(personalData, personalDataSignature, secretValue, secretValueSignature, creatorSignature, creatorPublicKey) {
                 const oraclePuclicKey = PublicKey.fromBase58('B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN');
                 // verify data inputs
                 const verified = personalDataSignature.verify(oraclePuclicKey, personalData.toFields());
@@ -45,17 +45,17 @@ export const proofOfUniqueHuman = ZkProgram({
                   Instead of: hash(name, surname, pno), do: hash(name, surname, pno, secretvalue)
         
                 */
-                const verified_ = secretValueSignature.verify(oraclePuclicKey, secretValue.toFields());
+                const verified_ = secretValueSignature.verify(oraclePuclicKey, secretValue.values.map((item) => item.toField()));
                 verified_.assertTrue();
                 // verify creator signature
                 const validSignature_ = creatorSignature.verify(creatorPublicKey, personalData.toFields());
                 validSignature_.assertTrue();
                 // create hash unique to this person
                 const hash = Poseidon.hash([
-                    ...personalData.name.toFields(),
-                    ...personalData.surname.toFields(),
-                    ...personalData.pno.toFields(),
-                    ...secretValue.toFields(),
+                    ...personalData.name.values.map((item) => item.toField()),
+                    ...personalData.surname.values.map((item) => item.toField()),
+                    ...personalData.pno.values.map((item) => item.toField()),
+                    ...secretValue.values.map((item) => item.toField()),
                 ]);
                 return new PublicOutput({
                     hash: hash,
@@ -86,14 +86,8 @@ export class ProofOfUniqueHuman extends SmartContract {
             ...Permissions.default(),
         });
     }
-    verifyProof(proof) {
-        // if the proof is invalid, this will fail
-        // its impossible to run past this without a valid proof
+    async verifyProof(proof) {
         proof.verify();
-        // the above is enough to be able to check if an address has a proof
-        // but there needs to be a way to save the min score that is proved
-        // emit an event with min score to be able to query it via archive nodes
-        // surely events are not designed for this, but it will do the trick..?
         this.emitEvent('provided-valid-proof', proof.publicOutput);
     }
 }
@@ -101,6 +95,6 @@ __decorate([
     method,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [ProofOfUniqueHumanProof]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], ProofOfUniqueHuman.prototype, "verifyProof", null);
 //# sourceMappingURL=ProofOfUniqueHuman.js.map

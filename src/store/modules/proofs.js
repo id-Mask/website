@@ -32,7 +32,7 @@ const state = () => ({
       displayName: 'Proof of Nationality',
       emoji: '🏛️',
       text: 'Prove your nationality status and country that issued your ID.',
-      address: null,
+      address: 'B62qnVvgzispkNmAoPCFGn5bpUiYxd84aakDnqHQDaPsYew2nL3SSKH',
       proof: null,
       verificationKey: null,
       url: 'https://github.com/id-Mask/smart-contracts/blob/main/src/ProofOfNationality.ts',

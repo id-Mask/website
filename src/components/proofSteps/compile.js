@@ -69,7 +69,7 @@ const getCacheFiles = async (proofName) => {
 
   const fetchFiles = async (proofName) => {
     const files = cacheFileByProof[proofName];
-    const url = `https://storage.googleapis.com/id-mask-config/cache/${proofName}/`;
+    const url = `https://storage.googleapis.com/id-mask-config/cache_v1/${proofName}/`;
 
     return Promise.all(files.map((file) => {
       return Promise.all([

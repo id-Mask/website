@@ -8,6 +8,7 @@ import { Mina, PublicKey, fetchAccount } from 'o1js'
 import { proofOfAge, ProofOfAge, ProofOfAgeProof } from './../zkPrograms/ProofOfAge.js'
 import { proofOfSanctions, ProofOfSanctions, ProofOfSanctionsProof } from './../zkPrograms/ProofOfSanctions.js'
 import { proofOfUniqueHuman, ProofOfUniqueHuman, ProofOfUniqueHumanProof } from './../zkPrograms/ProofOfUniqueHuman.js'
+import { proofOfNationality, ProofOfNationality, ProofOfNationalityProof } from './../zkPrograms/ProofOfNationality.js'
 
 import saveProofToGoogleWallet from './saveProofToGoogleWallet.vue'
 import saveProofToAppleWallet from './saveProofToAppleWallet.vue'
@@ -15,19 +16,21 @@ import saveProofToAppleWallet from './saveProofToAppleWallet.vue'
 
 const proofs = {
   proofOfAge: {
-    // ZkProgram: proofOfAge,
     SmartContract: ProofOfAge,
     ProofOfZkProgram: ProofOfAgeProof
   },
   proofOfSanctions: {
-    // ZkProgram: proofOfSanctions,
     SmartContract: ProofOfSanctions,
     ProofOfZkProgram: ProofOfSanctionsProof
   },
   proofOfUniqueHuman: {
     SmartContract: ProofOfUniqueHuman,
     ProofOfZkProgram: ProofOfUniqueHumanProof
-  }
+  },
+  proofOfNationality: {
+    SmartContract: ProofOfNationality,
+    ProofOfZkProgram: ProofOfNationalityProof
+  },
 }
 
 const notification = useNotification()
@@ -96,7 +99,7 @@ const saveProofOnChain = async (
   // explore tab only works with minaexplorer
   // should be taken from the store, but hardcoding here
   // store.state.settings.graphQLURL
-  const graphQlURL = 'https://api.minascan.io/node/berkeley/v1/graphql'
+  const graphQlURL = store.state.settings.nodeUrl
   const Network = Mina.Network(graphQlURL);
   Mina.setActiveInstance(Network);
 
@@ -111,7 +114,7 @@ const saveProofOnChain = async (
 
   // json -> proof
   msgReactive.content = "4/7 Preparing transaction data 🔄"
-  const proof = ProofJson.fromJSON(proofJson);
+  const proof = await ProofJson.fromJSON(proofJson);
   console.log('proof', proof);
 
   // fetch on-chain state
@@ -122,7 +125,7 @@ const saveProofOnChain = async (
   try {
     // create transaction
     msgReactive.content = "5/7 Creating zk proof ⚗️"
-    const tx = await Mina.transaction(() => {
+    const tx = await Mina.transaction( async () => {
       let zkApp = new SmartContractProgram(zkAppAddress_);
       zkApp.verifyProof(proof);
     });

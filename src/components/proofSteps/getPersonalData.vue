@@ -73,6 +73,12 @@ const getMockPID = async () => {
 }
 
 const getPID = async () => {
+
+  if (!data.personalIdentificationNumber) {
+    message.error('Input your personal identification number')
+    return
+  }
+
   emit('isLoading', true)
   data.isLoading = true
   let response = null
@@ -92,6 +98,7 @@ const getPID = async () => {
   // handle error here:
   if (response.error) {
     message.error(JSON.stringify(response))
+    emit('isLoading', false)
     return null
   }
 
