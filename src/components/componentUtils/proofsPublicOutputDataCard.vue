@@ -14,6 +14,7 @@ const props = defineProps({
   isProofValid: Boolean,
   isLoading: Boolean,
   proofName: String,
+  showVerifyButton: { type: Boolean, default: true }
 })
 
 const processedProofData = ref(null)
@@ -195,7 +196,11 @@ onMounted(() => {
           <template #label>
             {{ value.header }}
             <span v-if="value.data.startsWith('B62')">
-              <n-button v-if="publicKeysMatch == null" quaternary @click="initProofOwnershipVerification()">🎒</n-button>
+              <n-button 
+                v-if="publicKeysMatch == null && props.showVerifyButton" 
+                quaternary 
+                @click="initProofOwnershipVerification()"
+              >🎒</n-button>
               <n-badge type="success" v-if="publicKeysMatch">
                 <n-button quaternary @click="initProofOwnershipVerification()">🎒</n-button>
                 <template #value>

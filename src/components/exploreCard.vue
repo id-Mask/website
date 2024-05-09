@@ -155,6 +155,7 @@ Object.keys(proofData).forEach(key => {
         :proofPublicOutput="modalData" 
         :isProofValid="true" 
         :isLoading="false" 
+        :showVerifyButton="false"
       />
     </n-card>
   </n-modal>
