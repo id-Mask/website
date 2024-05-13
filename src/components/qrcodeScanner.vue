@@ -118,7 +118,7 @@ const paintOutline = (detectedCodes, ctx) => {
 <template>
   <n-card>
     <n-space align="center" justify="center" vertical>
-      <n-switch v-model:value="useCache">
+      <n-switch v-model:value="useCache" disabled>
         <template #checked>
           Use cache
         </template>
