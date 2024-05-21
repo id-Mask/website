@@ -182,7 +182,7 @@ const saveProofOnChain = async (
 
     <n-text :depth="3" style="font-size: 90%; text-align: justify;">
       <p>
-        There is multiple ways to save it, pick the one you like.
+        There are multiple ways to save it, pick the one you like.
       </p>
     </n-text>
 
