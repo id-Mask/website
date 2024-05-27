@@ -12,7 +12,7 @@ const store = useStore()
 
 // setup Mina Network object (used to make event requests)
 const Network = Mina.Network({
-  mina: store.state.settings.blockExplorer,
+  mina: store.state.settings.nodeUrl,
   archive: store.state.settings.graphQLURL,
 })
 Mina.setActiveInstance(Network)
