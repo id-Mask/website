@@ -138,7 +138,7 @@ const saveProofOnChain = async (
       transaction: tx.toJSON(),
       feePayer: {
         fee: '',
-        memo: 'id-Mask',
+        memo: 'idmask.xyz',
       },
     })
 
