@@ -30,7 +30,7 @@ const shortenAddress = (address) => {
 }
 
 const addressToUrl = (address) => {
-  return store.getters['settings/getBlockExplorerEnpoint'] + 'account/' + address
+  return store.state.settings.networks[store.state.settings.selectedNetwork].blockExplorer + 'account/' + address
 }
 
 const getEndpointStatus = async (url, options = {}) => {
@@ -47,7 +47,8 @@ const getGraphQLBody = () => {
     minascan: 'query MyQuery {events(input: {address: \"\"}) {blockInfo {chainStatus}}}',
     minaexplorer: 'query MyQuery {block {blockHeight}}'
   }
-  const isMinascan = store.state.settings.graphQLURL.includes('minascan')
+  const isMinascan = store.state.settings.networks[store.state.settings.selectedNetwork].graphQLURL.includes('minascan')
+  console.log(isMinascan)
   const query = isMinascan ? queries.minascan : queries.minaexplorer
   return JSON.stringify({ query: query })
 }
@@ -69,7 +70,7 @@ const updateStatus = async () => {
     (async () => {
       status.value.graphQl.isLoading = true
       const result = await getEndpointStatus(
-        store.state.settings.graphQLURL,
+        store.state.settings.networks[store.state.settings.selectedNetwork].graphQLURL,
         {
           method: 'POST',
           headers: { 'content-type': 'application/json'},

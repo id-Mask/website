@@ -10,13 +10,6 @@ import { Mina, fetchEvents } from 'o1js'
 const isMobile = useIsMobile()
 const store = useStore()
 
-// setup Mina Network object (used to make event requests)
-const Network = Mina.Network({
-  mina: store.state.settings.nodeUrl,
-  archive: store.state.settings.graphQLURL,
-})
-Mina.setActiveInstance(Network)
-
 const props = defineProps({
   selectedProof: String,
 })
@@ -25,7 +18,7 @@ const columns = ref([
   {
     title: 'Block',
     render(row) {
-      let url = store.getters['settings/getBlockExplorerEnpoint']
+      let url = store.state.settings.networks[store.state.settings.selectedNetwork].blockExplorer
       return h(
         'a', {
           href: `${url}block/${row.blockHash}`,
@@ -39,7 +32,7 @@ const columns = ref([
     render(row) {
       let txHash = row.events[0].transactionInfo.hash
       let txHash_ = txHash.slice(0, 5) + ' ... ' + txHash.slice(-5)
-      let url = store.getters['settings/getBlockExplorerEnpoint']
+      let url = store.state.settings.networks[store.state.settings.selectedNetwork].blockExplorer
       return h(
         'a', {
           href: `${url}tx/${txHash}`,
@@ -79,6 +72,16 @@ const data = ref([])
 
 const updateTable = async () => {
   isLoading.value = true
+
+  // setup mina network for archive fetching
+  const Network = Mina.Network({
+    networkId: store.state.settings.networks[store.state.settings.selectedNetwork].networkId,
+    mina: store.state.settings.networks[store.state.settings.selectedNetwork].nodeUrl,
+    archive: store.state.settings.networks[store.state.settings.selectedNetwork].graphQLURL,
+  })
+  Mina.setActiveInstance(Network)
+
+  // fetch
   const zkAppKey = store.getters['proofs/getData'][props.selectedProof].address
   const events = await fetchEvents({ publicKey: zkAppKey })
   const events_ = JSON.parse(JSON.stringify(events)) // to get rid of weird objects inside ?!
@@ -98,8 +101,8 @@ onMounted( async () => {
   await updateTable()
 })
 
-// trigger when another proof is selected
-watch(() => props.selectedProof,
+// trigger when another proof or network is selected
+watch(() => [props.selectedProof, store.state.settings.selectedNetwork],
   async () => { await updateTable() }
 )
 

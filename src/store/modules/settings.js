@@ -2,9 +2,25 @@
 const state = () => ({
   state: null,
   emoji: null,
-  nodeUrl: 'https://api.minascan.io/node/devnet/v1/graphql',
-  graphQLURL: 'https://api.minascan.io/archive/devnet/v1/graphql',
-  blockExplorer: 'https://minascan.io/devnet/',
+
+  selectedNetwork: 'devnet',
+  networks: {
+    // MAINNET
+    mainnet: {
+      networkId: 'mainnet',
+      nodeUrl: 'https://api.minascan.io/node/mainnet/v1/graphql',
+      graphQLURL: 'https://api.minascan.io/archive/mainnet/v1/graphql',
+      blockExplorer: 'https://minascan.io/mainnet/',
+    },
+    // TESTNET
+    devnet: {
+      networkId: 'testnet',
+      nodeUrl: 'https://api.minascan.io/node/devnet/v1/graphql',
+      graphQLURL: 'https://api.minascan.io/archive/devnet/v1/graphql',
+      blockExplorer: 'https://minascan.io/devnet/',
+    },
+  },
+
   zkOracle: 'https://id-mask-oracle-e6ngsd55oa-uc.a.run.app/',
   consoleDebugMode: false,
   userSignatureOptions: {

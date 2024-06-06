@@ -95,12 +95,13 @@ const saveProofOnChain = async (
 
   // setup Mina network
   let msgReactive = message.create('1/7 Setting up Mina network 🛰️', { type: 'loading', duration: 10e9 })
-  // sending transactions only work via minascan
-  // explore tab only works with minaexplorer
-  // should be taken from the store, but hardcoding here
-  // store.state.settings.graphQLURL
-  const graphQlURL = store.state.settings.nodeUrl
-  const Network = Mina.Network(graphQlURL);
+
+  // select network
+  const Network = Mina.Network({
+    networkId: store.state.settings.networks[store.state.settings.selectedNetwork].networkId,
+    mina: store.state.settings.networks[store.state.settings.selectedNetwork].nodeUrl,
+    archive: store.state.settings.networks[store.state.settings.selectedNetwork].graphQLURL,
+  });
   Mina.setActiveInstance(Network);
 
   // connect wallet
@@ -145,7 +146,7 @@ const saveProofOnChain = async (
     console.log('Transaction sent!', hash)
     msgReactive.content = "7/7 Transaction sent 🙌"
     msgReactive.type = 'success'
-    const url = `${store.getters['settings/getBlockExplorerEnpoint']}tx/${hash}`
+    const url = `${store.state.settings.networks[store.state.settings.selectedNetwork].blockExplorer}tx/${hash}`
     notification.success({
       content: 'Follow the transaction in block explorer 📦',
       meta: () => h('a', { href: url, target: '_blank' }, 'transaction url'),

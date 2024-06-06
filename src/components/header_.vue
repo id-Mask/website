@@ -56,7 +56,7 @@ onMounted(() => {
             <n-gradient-text
               type="primary"
               :gradient="{ from: themeVars.primaryColorHover, to: themeVars.primaryColor, deg: 90 }"
-            >testnet release</n-gradient-text>
+            >zk-powered-identity</n-gradient-text>
           </n-tag>
         </a>
       </template>
@@ -117,13 +117,40 @@ onMounted(() => {
             </template>
             <div>
               <n-space vertical>
+
+                <n-h4 type="primary">Network: {{ store.state.settings.selectedNetwork }}</n-h4>
+
+                <n-button-group horizontal>
+                  <n-button 
+                    style="font-size: 80%"
+                    @click="store.state.settings.selectedNetwork = 'mainnet'"
+                    :type="store.state.settings.selectedNetwork == 'mainnet' ? 'success' : 'tertiary'"
+                  >
+                    <template #icon>
+                      <n-icon><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32"><path d="M15 12h2v18h-2z" fill="currentColor"></path><path d="M11.33 18.22a7 7 0 0 1 0-10.44l1.34 1.49a5 5 0 0 0 0 7.46z" fill="currentColor"></path><path d="M20.67 18.22l-1.34-1.49a5 5 0 0 0 0-7.46l1.34-1.49a7 7 0 0 1 0 10.44z" fill="currentColor"></path><path d="M8.4 21.8a11 11 0 0 1 0-17.6l1.2 1.6a9 9 0 0 0 0 14.4z" fill="currentColor"></path><path d="M23.6 21.8l-1.2-1.6a9 9 0 0 0 0-14.4l1.2-1.6a11 11 0 0 1 0 17.6z" fill="currentColor"></path></svg></n-icon>
+                    </template>
+                    Mainnet
+                  </n-button>
+                  <n-button 
+                  style="font-size: 80%"
+                    @click="store.state.settings.selectedNetwork = 'devnet'"
+                    :type="store.state.settings.selectedNetwork == 'devnet' ? 'success' : 'tertiary'"
+                  >
+                    <template #icon>
+                      <n-icon><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32"><path d="M15 12h2v18h-2z" fill="currentColor"></path><path d="M11.33 18.22a7 7 0 0 1 0-10.44l1.34 1.49a5 5 0 0 0 0 7.46z" fill="currentColor"></path><path d="M20.67 18.22l-1.34-1.49a5 5 0 0 0 0-7.46l1.34-1.49a7 7 0 0 1 0 10.44z" fill="currentColor"></path><path d="M8.4 21.8a11 11 0 0 1 0-17.6l1.2 1.6a9 9 0 0 0 0 14.4z" fill="currentColor"></path><path d="M23.6 21.8l-1.2-1.6a9 9 0 0 0 0-14.4l1.2-1.6a11 11 0 0 1 0 17.6z" fill="currentColor"></path></svg></n-icon>
+                    </template>
+                    Devnet
+                  </n-button>
+                </n-button-group>
+                <br/>
+
                 <n-h4 type="primary">API Settings</n-h4>
 
                 <n-input-group >
                   <n-input-group-label>
                     <n-text depth="3" style="font-size: 80%">Node</n-text>
                   </n-input-group-label>
-                  <n-input v-model:value="store.state.settings.nodeUrl" type="text" placeholder="Archive graphQLURL" style="font-size: 80%">
+                  <n-input v-model:value="store.state.settings.networks[store.state.settings.selectedNetwork].nodeUrl" type="text" placeholder="Archive graphQLURL" style="font-size: 80%">
                     <template #prefix>
                       <n-icon :color="themeVars.primaryColor">
                         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24"><path d="M7.3 14.7l1.2-1.2c-1-1-1.5-2.3-1.5-3.5c0-1.3.5-2.6 1.5-3.5L7.3 5.3c-1.3 1.3-2 3-2 4.7s.7 3.4 2 4.7zM19.1 2.9l-1.2 1.2c1.6 1.6 2.4 3.8 2.4 5.9c0 2.1-.8 4.3-2.4 5.9l1.2 1.2c2-2 2.9-4.5 2.9-7.1c0-2.6-1-5.1-2.9-7.1z" fill="currentColor"></path><path d="M6.1 4.1L4.9 2.9C3 4.9 2 7.4 2 10c0 2.6 1 5.1 2.9 7.1l1.2-1.2c-1.6-1.6-2.4-3.8-2.4-5.9c0-2.1.8-4.3 2.4-5.9zm10.6 10.6c1.3-1.3 2-3 2-4.7c-.1-1.7-.7-3.4-2-4.7l-1.2 1.2c1 1 1.5 2.3 1.5 3.5c0 1.3-.5 2.6-1.5 3.5l1.2 1.2zM14.5 10a2.5 2.5 0 0 0-5 0c0 .76.34 1.42.87 1.88L7 22h2l.67-2h4.67l.66 2h2l-3.37-10.12c.53-.46.87-1.12.87-1.88zm-4.17 8L12 13l1.67 5h-3.34z" fill="currentColor"></path></svg>
@@ -136,7 +163,7 @@ onMounted(() => {
                   <n-input-group-label>
                     <n-text depth="3" style="font-size: 80%">Archive</n-text>
                   </n-input-group-label>
-                  <n-input v-model:value="store.state.settings.graphQLURL" type="text" placeholder="Archive graphQLURL" style="font-size: 80%">
+                  <n-input v-model:value="store.state.settings.networks[store.state.settings.selectedNetwork].graphQLURL" type="text" placeholder="Archive graphQLURL" style="font-size: 80%">
                     <template #prefix>
                       <n-icon :color="themeVars.primaryColor">
                         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24"><path opacity=".3" d="M5 19h14V8H5v11zm7-9l4 4h-2.55v3h-2.91v-3H8l4-4z" fill="currentColor"></path><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM6.24 5h11.52l.83 1H5.42l.82-1zM19 19H5V8h14v11zm-8.45-2h2.9v-3H16l-4-4l-4 4h2.55z" fill="currentColor"></path></svg>
@@ -149,7 +176,7 @@ onMounted(() => {
                   <n-input-group-label>
                     <n-text depth="3" style="font-size: 80%">Block explorer</n-text>
                   </n-input-group-label>
-                  <n-input v-model:value="store.state.settings.blockExplorer" type="text" placeholder="Block explorer" style="font-size: 80%">
+                  <n-input v-model:value="store.state.settings.networks[store.state.settings.selectedNetwork].blockExplorer" type="text" placeholder="Block explorer" style="font-size: 80%">
                     <template #prefix>
                       <n-icon :color="themeVars.primaryColor">
                         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 20 20"><g fill="none"><path d="M10 7.96l3.029-1.21l-7.5-3l-2.586 1.034a1.499 1.499 0 0 0-.364.208L10 7.961zM2.035 5.853A1.5 1.5 0 0 0 2 6.176v7.646a1.5 1.5 0 0 0 .943 1.393L8.7 17.518c.26.104.528.175.8.214V8.838L2.035 5.852zm8.465 11.88a3.5 3.5 0 0 0 .8-.214l5.757-2.303A1.5 1.5 0 0 0 18 13.822V6.176c0-.11-.012-.219-.035-.324L10.5 8.838v8.894zm6.921-12.74l-3.046 1.219l-7.5-3L8.7 2.48a3.5 3.5 0 0 1 2.6 0l5.757 2.303a1.5 1.5 0 0 1 .364.208z" fill="currentColor"></path></g></svg>

@@ -14,6 +14,8 @@ const state = () => ({
       primaryColorHover: '#06bef5',
       primaryColorPressed: '#09dbfd',
       successColor: '#5F5FEAFF',
+      successColorHover: '#7373e9',
+      successColorPressed: '#5454d9',
     },
     Message: {
       padding: '20px 40px'
