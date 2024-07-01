@@ -3,6 +3,9 @@ import { reactive, ref, watch } from 'vue'
 import { useMessage } from 'naive-ui'
 import { useStore } from 'vuex'
 
+import { useNotification, NButton } from 'naive-ui'
+import { h } from 'vue'
+
 const emit = defineEmits(['finished', 'isLoading', 'triggerNextStep'])
 
 const props = defineProps({
@@ -10,6 +13,8 @@ const props = defineProps({
 })
 
 const message = useMessage()
+const notification = useNotification()
+const notificationLoading = ref(true)
 const store = useStore()
 const verificationCodeModal = ref({
   show: false,
@@ -62,14 +67,39 @@ const getSmartIDPID = async () => {
 }
 
 const getMockPID = async () => {
+
+  notificationLoading.value = true
+
   const url = store.state.settings.zkOracle
-  const response = await fetch(url + 'getSmartIDMockData', {
+  const response_ = await fetch(url + 'getSmartIDMockData', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
   })
-  return await response.json()
+  const response = await response_.json()
+
+  // create a notification with mock id
+  notification.destroyAll()
+  const n = notification.create({
+    title: "Your random identity 🪪",
+    description: "If you don't like this identity you can roll it once again 🎲.",
+    content: `Name: ${response.data.name}, \nSurname: ${response.data.surname}, \nPNO: ${response.data.pno}, \nCountry: ${response.data.country}`,
+    action: () => h(
+      NButton,
+      {
+        type: 'primary',
+        loading: notificationLoading.value,
+        onClick: async () => { await getMockPID() }
+      },
+      {
+        default: () => 'Reroll'
+      }
+    ),
+  });
+  notificationLoading.value = false
+
+  return response
 }
 
 const getPID = async () => {

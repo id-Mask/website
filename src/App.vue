@@ -37,7 +37,7 @@ const route = computed(() => {
 <template>
 
   <n-config-provider :theme="store.getters['theme/getTheme']" :theme-overrides="store.getters['theme/getThemeOverrides']">
-    <n-notification-provider>
+    <n-notification-provider placement='bottom-right'>
       <n-loading-bar-provider>
         <n-message-provider>
 
