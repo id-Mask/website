@@ -84,27 +84,28 @@ const getMockPID = async () => {
   // create a notification with mock id
   notification.destroyAll()
   notification.create({
-    title: "Your random identity 🪪",
-    description: "If you don't like this identity you can roll it once again 🎲.",
+    title: "Your mock identity 🪪",
+    description: "Don't like this identity? Roll the dice and generate a new one! 🎲",
     content: `
         Name: ${response.data.name}, 
         Surname: ${response.data.surname}, 
         PNO: ${response.data.pno.split('-')[1]}, 
         Date of birth: ${parseDOB(response.data.pno.split('-')[1])}, 
+        Sex: ${['1', '3', '5'].includes(response.data.pno.split('-')[1][0]) ? 'Male' : 'Female'},
         Country: ${response.data.country}
     `.trim().split('\n').map(line => line.trim()).join('\n'),
     action: () => h(
-        NButton,
-        {
-            type: 'primary',
-            loading: notificationLoading.value,
-            onClick: async () => {
-                await getMockPID();
-            }
-        },
-        {
-            default: () => 'Reroll'
+      NButton,
+      {
+        type: 'primary',
+        loading: notificationLoading.value,
+        onClick: async () => {
+          await getMockPID();
         }
+      },
+      {
+        default: () => '🎲 Reroll'
+      }
     ),
 });
 

@@ -90,23 +90,25 @@ const saveProofOnChain = async (
   zkAppAddress
 ) => {
 
+  // connect wallet
+  let msgReactive = message.create("1/7 Connecting wallet 👛", { type: 'loading', duration: 10e9 })
+  const accounts = await window.mina.requestAccounts()
+  await window.mina.switchChain({ 
+    networkID: `mina:${store.state.settings.networks[store.state.settings.selectedNetwork].networkId}`
+  })
+
+  // start loading animations
   emit('isLoading', true)
   isLoading.value = true
 
   // setup Mina network
-  let msgReactive = message.create('1/7 Setting up Mina network 🛰️', { type: 'loading', duration: 10e9 })
-
-  // select network
+  msgReactive.content = "2/7 Setting up Mina network 🛰️"
   const Network = Mina.Network({
     networkId: store.state.settings.networks[store.state.settings.selectedNetwork].networkId,
     mina: store.state.settings.networks[store.state.settings.selectedNetwork].nodeUrl,
     archive: store.state.settings.networks[store.state.settings.selectedNetwork].graphQLURL,
   });
   Mina.setActiveInstance(Network);
-
-  // connect wallet
-  msgReactive.content = "2/7 Connecting wallet 👛"
-  const accounts = await window.mina.requestAccounts()
 
   // compile
   msgReactive.content = "3/7 Compiling smart contract ZK program 👩‍💻"
