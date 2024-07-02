@@ -10,7 +10,7 @@ import { proofOfSanctions } from './zkPrograms/ProofOfSanctions.js'
 import { proofOfUniqueHuman } from './zkPrograms/ProofOfUniqueHuman.js'
 import { proofOfNationality } from './zkPrograms/ProofOfNationality.js'
 
-import { fetchEvents } from 'o1js'
+import { Mina, fetchEvents } from 'o1js'
 
 import proofsPublicOutputDataCard from './componentUtils/proofsPublicOutputDataCard.vue'
 
@@ -86,7 +86,6 @@ const handleUpload = async ({file, event}) => {
 const verifyOnChainProof = async () => {
 
   const getZkAppTxs = async (zkAppAddress) => {
-
     /*
       This is overly complicated because we can only fetch last 50 txs. 
       What if there is more!? We need a while loop that continuesly fetches
@@ -95,7 +94,6 @@ const verifyOnChainProof = async () => {
 
       Also bad because we've to expose the api key. This should be public free API ideally.
     */
-
     const apiKey = 'U2xR6593JPsXQGRoZr0Nh8zlCUC6m8'
     let page = 0
     let response_
@@ -133,11 +131,19 @@ const verifyOnChainProof = async () => {
   */
   try {
       // fetch all zkApp transactions and find the last transaction with a proof
+      // TODO: THIS ONLY WORKS FOR MAINNET 
       const data = await getZkAppTxs(store.state.proofs.data[props.selectedProof].address)
       const proofTx = data.find(item => item.proverAddress === address.value)
 
       // fetch all zkApp events
-      // now sure how it knows that I switch chains, but id does..?
+      // setup mina network for archive fetching (could do inside watch, but lets repeat this every time)
+      const Network = Mina.Network({
+        networkId: store.state.settings.networks[store.state.settings.selectedNetwork].networkId,
+        mina: store.state.settings.networks[store.state.settings.selectedNetwork].nodeUrl,
+        archive: store.state.settings.networks[store.state.settings.selectedNetwork].graphQLURL,
+      })
+      Mina.setActiveInstance(Network)
+
       const accountInfo = { publicKey: store.state.proofs.data[props.selectedProof].address };
       const events = await fetchEvents(accountInfo);
 
