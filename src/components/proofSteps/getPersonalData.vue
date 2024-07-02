@@ -6,6 +6,8 @@ import { useStore } from 'vuex'
 import { useNotification, NButton } from 'naive-ui'
 import { h } from 'vue'
 
+import { parseDOB } from '../../utils.js'
+
 const emit = defineEmits(['finished', 'isLoading', 'triggerNextStep'])
 
 const props = defineProps({
@@ -81,22 +83,31 @@ const getMockPID = async () => {
 
   // create a notification with mock id
   notification.destroyAll()
-  const n = notification.create({
+  notification.create({
     title: "Your random identity 🪪",
     description: "If you don't like this identity you can roll it once again 🎲.",
-    content: `Name: ${response.data.name}, \nSurname: ${response.data.surname}, \nPNO: ${response.data.pno}, \nCountry: ${response.data.country}`,
+    content: `
+        Name: ${response.data.name}, 
+        Surname: ${response.data.surname}, 
+        PNO: ${response.data.pno.split('-')[1]}, 
+        Date of birth: ${parseDOB(response.data.pno.split('-')[1])}, 
+        Country: ${response.data.country}
+    `.trim().split('\n').map(line => line.trim()).join('\n'),
     action: () => h(
-      NButton,
-      {
-        type: 'primary',
-        loading: notificationLoading.value,
-        onClick: async () => { await getMockPID() }
-      },
-      {
-        default: () => 'Reroll'
-      }
+        NButton,
+        {
+            type: 'primary',
+            loading: notificationLoading.value,
+            onClick: async () => {
+                await getMockPID();
+            }
+        },
+        {
+            default: () => 'Reroll'
+        }
     ),
-  });
+});
+
   notificationLoading.value = false
 
   return response
