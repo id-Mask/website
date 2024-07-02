@@ -101,31 +101,31 @@ const saveProofOnChain = async (
   emit('isLoading', true)
   isLoading.value = true
 
-  // setup Mina network
-  msgReactive.content = "2/7 Setting up Mina network 🛰️"
-  const Network = Mina.Network({
-    networkId: store.state.settings.networks[store.state.settings.selectedNetwork].networkId,
-    mina: store.state.settings.networks[store.state.settings.selectedNetwork].nodeUrl,
-    archive: store.state.settings.networks[store.state.settings.selectedNetwork].graphQLURL,
-  });
-  Mina.setActiveInstance(Network);
-
-  // compile
-  msgReactive.content = "3/7 Compiling smart contract ZK program 👩‍💻"
-  await SmartContractProgram.compile();
-  await sleep(500)
-
-  // json -> proof
-  msgReactive.content = "4/7 Preparing transaction data 🔄"
-  const proof = await ProofJson.fromJSON(proofJson);
-  console.log('proof', proof);
-
-  // fetch on-chain state
-  const zkAppAddress_ = PublicKey.fromBase58(zkAppAddress);
-  let { account, error } = await fetchAccount({ publicKey: zkAppAddress_ });
-  console.log('fetch account', account, error)
-
   try {
+    // setup Mina network
+    msgReactive.content = "2/7 Setting up Mina network 🛰️"
+    const Network = Mina.Network({
+      networkId: store.state.settings.networks[store.state.settings.selectedNetwork].networkId,
+      mina: store.state.settings.networks[store.state.settings.selectedNetwork].nodeUrl,
+      archive: store.state.settings.networks[store.state.settings.selectedNetwork].graphQLURL,
+    });
+    Mina.setActiveInstance(Network);
+
+    // compile
+    msgReactive.content = "3/7 Compiling smart contract ZK program 👩‍💻"
+    await SmartContractProgram.compile();
+    await sleep(500)
+
+    // json -> proof
+    msgReactive.content = "4/7 Preparing transaction data 🔄"
+    const proof = await ProofJson.fromJSON(proofJson);
+    console.log('proof', proof);
+
+    // fetch on-chain state
+    const zkAppAddress_ = PublicKey.fromBase58(zkAppAddress);
+    let { account, error } = await fetchAccount({ publicKey: zkAppAddress_ });
+    console.log('fetch account', account, error)
+
     // create transaction
     msgReactive.content = "5/7 Creating zk proof ⚗️"
     const tx = await Mina.transaction( async () => {
@@ -165,7 +165,7 @@ const saveProofOnChain = async (
       typeof error === 'object' && error !== null
         ? JSON.stringify(error)
         : String(error),
-      { type: 'error', closable: true, duration: 20000, }
+      { type: 'error', closable: true, duration: 2000, }
     );
   } finally {
     isLoading.value = false
