@@ -10,6 +10,8 @@ import { proofOfSanctions } from './zkPrograms/ProofOfSanctions.js'
 import { proofOfUniqueHuman } from './zkPrograms/ProofOfUniqueHuman.js'
 import { proofOfNationality } from './zkPrograms/ProofOfNationality.js'
 
+import { fetchEvents } from 'o1js'
+
 import proofsPublicOutputDataCard from './componentUtils/proofsPublicOutputDataCard.vue'
 
 import { compile } from './proofSteps/compile.js'
@@ -36,6 +38,7 @@ const address = ref('')
 const isLoading = ref(false)
 const showModal = ref(false)
 const modalData = ref({})
+
 
 const verifyJSONProof = async (proof) => {
 
@@ -65,7 +68,6 @@ const verifyJSONProof = async (proof) => {
     await sleep(4000)
     msg.destroy()
   }
-
 }
 
 const handleUpload = async ({file, event}) => {
@@ -83,77 +85,79 @@ const handleUpload = async ({file, event}) => {
 
 const verifyOnChainProof = async () => {
 
-  const checkIfAddressHasProof = async (URL, zkAppAddress, address) => {
-    const response = await fetch(URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query: `
-          query MyQuery {
-            events(query: {
-              zkAppCommandHash: {
-                zkappCommand: {
-                  accountUpdates: {
-                    body: {publicKey: "${zkAppAddress}"}
-                  },
-                  feePayer: {
-                    body: {
-                      publicKey: "${address}"
-                    }
-                  }
-                }
-              },
-              canonical: true
-            }) {
-              blockHeight
-              canonical
-              dateTime
-              event
-              zkAppCommandHash {
-                zkappCommand {
-                  feePayer {
-                    body {
-                      publicKey
-                    }
-                  }
-                }
-              }
-            }
-          }
-        `,
-      }),
-    })
-    const response_ = await response.json()
-    return response_
-  }
+  const getZkAppTxs = async (zkAppAddress) => {
 
+    /*
+      This is overly complicated because we can only fetch last 50 txs. 
+      What if there is more!? We need a while loop that continuesly fetches
+      and concatinates unitl we arrive at the last page of txs and got an
+      array full of all txs.
+
+      Also bad because we've to expose the api key. This should be public free API ideally.
+    */
+
+    const apiKey = 'U2xR6593JPsXQGRoZr0Nh8zlCUC6m8'
+    let page = 0
+    let response_
+    let transactions = []
+    do {
+      const url = `https://api.blockberry.one/mina-mainnet/v1/zkapps/accounts/${zkAppAddress}/txs?page=${page}&size=50&orderBy=DESC&sortBy=AGE`;
+      const response = await fetch(url, {
+        headers: {
+          'accept': 'application/json',
+          'x-api-key': apiKey
+        }
+      })
+      response_ = await response.json()
+      transactions = transactions.concat(response_.data)
+      page += 1
+    } while (!response_.last)
+    return transactions
+  };
+
+  // prep
   isLoading.value = true
   let msg = message.loading('verifying', { closable: true, duration: 10000 })
 
-  const zkAppAddress = store.state.proofs.data[props.selectedProof].address
-  const URL = store.getters['settings/getGraphQlEnpoint']
+  /*
+    There's def a better way to do it...?
+    Ideally: fetch all user txs, check if it has a tx with the zkApp.
+    Fetch that transaction events.
 
+    Now:
+    Fetch all zkApp transcations
+    Find transaction which prover is the address
+    Fetch all zkApp events 
+    Map the user tx hash with the events tx hash
+    Display in the UI
+  */
   try {
-    let response = await checkIfAddressHasProof(URL, zkAppAddress, address.value)
-    let events = response.data.events.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime))
-    let ok = events.length > 0 ? true : false
-    if (ok) {
+      // fetch all zkApp transactions and find the last transaction with a proof
+      const data = await getZkAppTxs(store.state.proofs.data[props.selectedProof].address)
+      const proofTx = data.find(item => item.proverAddress === address.value)
+
+      // fetch all zkApp events
+      // now sure how it knows that I switch chains, but id does..?
+      const accountInfo = { publicKey: store.state.proofs.data[props.selectedProof].address };
+      const events = await fetchEvents(accountInfo);
+
+      // match proofTx with corresponding event
+      const event = events.find(event => event.events[0].transactionInfo.hash == proofTx.hash)
+      console.log(event)
+
       msg.type = 'success'
-      msg.content = 'Provided address has a proof'
-      modalData.value = events[0].event
+      msg.content = 'The proof is valid!'
+      modalData.value = event.events[0].data
       showModal.value = true
-    } else {
-      msg.type = 'error'
-      msg.content = 'Failed to find the proof asociated with the address'
-    }
+
   } catch (error) {
     msg.type = 'error'
-    msg.content = `Something is wrong: ${error}`
+    msg.content = 'The address has no proof!'
+  } finally {
+    isLoading.value = false
+    await sleep(4000)
+    msg.destroy()
   }
-  isLoading.value = false
-
 }
 
 // map proof key to it's display name
@@ -206,7 +210,12 @@ Object.keys(proofData).forEach(key => {
         </n-tab-pane>
         <n-tab-pane tab="Mina address" name="Mina address">
           <n-input-group>
-            <n-button type="primary" @click="verifyOnChainProof" :loading="isLoading" disabled>
+            <n-button 
+              type="primary" 
+              @click="verifyOnChainProof" 
+              :loading="isLoading" 
+              :disabled="store.state.settings.networks[store.state.settings.selectedNetwork].networkId != 'mainnet'"
+            >
               Verify
             </n-button>
             <n-input :style="{ width: '100%' }" v-model:value="address" placeholder="Mina address" />
