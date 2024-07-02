@@ -107,9 +107,12 @@ const getMockPID = async () => {
         default: () => '🎲 Reroll'
       }
     ),
-});
+  })
 
   notificationLoading.value = false
+  
+  // a bit of a mess, but have to save it here.
+  store.dispatch('pid/saveData', response)
 
   return response
 }
@@ -149,7 +152,6 @@ const getPID = async () => {
   emit('finished')
   emit('triggerNextStep')
   store.dispatch('pid/saveData', response)
-  data.pid = response
 
   if (store.state.settings.consoleDebugMode) {
     console.log('Personal data:', response)
