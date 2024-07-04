@@ -22,7 +22,8 @@ const status = ref({
 
 const backedBy = [
   { name: 'MINA Protocol', url: 'https://minaprotocol.com/' },
-  { name: 'zkIgnite Cohort 2', url: 'https://zkignite.minaprotocol.com/' }
+  { name: 'Mina zkIgnite Cohort 2', url: 'https://zkignite.minaprotocol.com/' },
+  { name: 'Mina Navigators Season 1', url: 'https://minaprotocol.com/blog/navigators-season-1-grand-prizes' }
 ]
 
 const shortenAddress = (address) => {
