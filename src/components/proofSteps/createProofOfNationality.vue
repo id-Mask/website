@@ -28,6 +28,18 @@ const props = defineProps({
 const emit = defineEmits(['finished', 'isLoading', 'triggerNextStep'])
 
 const createProof = async () => {
+
+  // throw explanation if user needs to sign and does not have a wallet
+  if (store.state.settings.userSignatureOptions.requestUserWalletSignature) {
+    if (!await isWalletAvailable()) {
+      message.create(
+        'Mina wallet not available. Please install Auro or Pallad wallet 👛', 
+        { type: 'error', closable: true, duration: 20000 }
+      )
+      return null
+    }
+  }
+
   data.value.isLoading = true
   emit('isLoading', true)
   emit('finished', false)

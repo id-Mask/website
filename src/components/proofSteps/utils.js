@@ -66,3 +66,11 @@ export const generateSignature = async (fieldsArray, userSignatureOptions) => {
     )
   }
 }
+
+
+/*
+  Check if browser has a wallet display message if not
+*/
+export const isWalletAvailable = async () => {
+  return await window.mina ? true : false
+}

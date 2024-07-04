@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useMessage } from 'naive-ui'
 import { sleep } from './../../utils.js'
-import { generateSignature } from './utils.js'
+import { generateSignature, isWalletAvailable } from './utils.js'
 import {
   CircuitString,
   Field,
@@ -29,6 +29,28 @@ const props = defineProps({
 const emit = defineEmits(['finished', 'isLoading', 'triggerNextStep'])
 
 const createProof = async () => {
+
+  // throw explanation if user needs to sign and does not have a wallet
+  if (store.state.settings.userSignatureOptions.requestUserWalletSignature) {
+    if (!await isWalletAvailable()) {
+      message.create(
+        'Mina wallet not available. Please install Auro or Pallad wallet 👛', 
+        { type: 'error', closable: true, duration: 20000 }
+      )
+      return null
+    }
+  }
+
+    // throw error if user did not input a value
+  console.log(data.value.ageToProveInYears)
+  if (!(data.value.ageToProveInYears)) {
+    message.create(
+      `Input the number of years you wish to prove you are older than 🙄`, 
+      { type: 'error', closable: true, duration: 20000 }
+    )
+    return null
+  }
+
   data.value.isLoading = true
   emit('isLoading', true)
   emit('finished', false)
@@ -42,6 +64,7 @@ const createProof = async () => {
     pno: CircuitString.fromString(pid.data.pno),
     currentDate: Field(pid.data.currentDate),
   })
+
   const [creatorPublicKey, creatorDataSignature] = await generateSignature(
     personalData.toFields(), 
     store.state.settings.userSignatureOptions
