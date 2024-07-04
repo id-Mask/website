@@ -16,7 +16,7 @@ const blurEmoji = ref(false)
 // Id-Mask char loop
 const word = ref('Mask')
 const words = ['Mask']
-const alphabet = '0123456789abcdefghijklmnopqrstuvwxyzM '
+const alphabet = '!@#$%^&*()_+0123456789abcdefghijklmnopqrstuvwxyzM '
 
 // intro text taht will be 'typed'
 const texts = ref([
