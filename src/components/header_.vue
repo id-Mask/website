@@ -262,7 +262,7 @@ onMounted(() => {
   cursor: pointer;
 }
 .logo:hover {
-  filter: drop-shadow(0em 0em 0.3em v-bind(themeVars.primaryColor));
+  filter: drop-shadow(0em 0em 0.6em v-bind(themeVars.primaryColor));
   transform: scale(1.1);
 }
 
