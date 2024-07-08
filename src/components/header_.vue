@@ -242,6 +242,16 @@ onMounted(() => {
 
       <n-modal v-model:show="showScannerModal">
         <n-card style="max-width: 50em;">
+          <n-alert title="What is it for?" type="default" style="font-size: 90%">
+            <template #icon>
+              <n-icon :color="themeVars.primaryColor">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 12 12"><g fill="none"><path d="M11 6A5 5 0 1 1 1 6a5 5 0 0 1 10 0zm-5.5.5V8a.5.5 0 0 0 1 0V6.5a.5.5 0 0 0-1 0zM6 3.75a.75.75 0 1 0 0 1.5a.75.75 0 0 0 0-1.5z" fill="currentColor"></path></g></svg>
+              </n-icon>
+            </template>
+            Use this scanner to scan an account ownership challange posed to you by the proof consumer (qr-code).
+            Be ready to use the same MINA account the proof was tied to during the creation.
+          </n-alert>
+          <br/>
           <qrcode-stream 
             @detect="onQrCodeDetect" 
             @errors="console.error" 
