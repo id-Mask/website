@@ -187,9 +187,16 @@ watch(() => data.personalIdentificationNumber, (_personalIdentificationNumber) =
       >
         <n-tab-pane name="Mock-ID" tab="Mock-ID">
           <n-input-group>
-            <n-button type="primary" @click="getPID()" :loading="data.isLoading">
-              Get data
-            </n-button>
+            <n-popover :trigger="store.state.settings.selectedNetwork == 'mainnet' ? 'hover' : 'manual'">
+              <template #trigger>
+                <n-button type="primary" @click="getPID()" :loading="data.isLoading" :disabled="store.state.settings.selectedNetwork == 'mainnet'">
+                  Get data
+                </n-button>
+              </template>
+              <span style="font-size: 90%; text-align: justify;">
+                Switch network 🔄. Mock-ID only works on devnet.
+              </span>
+            </n-popover>
             <n-popover trigger="hover">
               <template #trigger>
                 <n-select
