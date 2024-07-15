@@ -1,14 +1,9 @@
 <script setup>
 import { ref } from 'vue'
 import { useStore } from 'vuex'
-import { useMessage } from 'naive-ui'
+import { useMessage, useThemeVars } from 'naive-ui'
 import { verify } from 'o1js';
 import qrcodeScanner from './qrcodeScanner.vue';
-
-import { proofOfAge } from './zkPrograms/ProofOfAge.js'
-import { proofOfSanctions } from './zkPrograms/ProofOfSanctions.js'
-import { proofOfUniqueHuman } from './zkPrograms/ProofOfUniqueHuman.js'
-import { proofOfNationality } from './zkPrograms/ProofOfNationality.js'
 
 import { Mina, fetchEvents } from 'o1js'
 
@@ -18,13 +13,7 @@ import { compile } from './proofSteps/compile.js'
 import { useIsMobile } from '../utils.js'
 import { sleep } from './../utils.js'
 
-const proofs = {
-  proofOfAge: proofOfAge,
-  proofOfSanctions: proofOfSanctions,
-  proofOfUniqueHuman: proofOfUniqueHuman,
-  proofOfNationality: proofOfNationality,
-}
-
+const themeVars = useThemeVars()
 const isMobile = useIsMobile()
 const store = useStore()
 const message = useMessage()
@@ -216,14 +205,32 @@ Object.keys(proofData).forEach(key => {
         </n-tab-pane>
         <n-tab-pane tab="Mina address" name="Mina address">
           <n-input-group>
-            <n-button 
-              type="primary" 
-              @click="verifyOnChainProof" 
-              :loading="isLoading" 
-              :disabled="store.state.settings.networks[store.state.settings.selectedNetwork].networkId != 'mainnet'"
-            >
-              Verify
-            </n-button>
+
+            <n-popover :trigger="store.state.settings.selectedNetwork == 'mainnet' ? 'manual' : 'hover'">
+              <template #trigger>
+                <n-button 
+                  type="primary" 
+                  @click="verifyOnChainProof" 
+                  :loading="isLoading" 
+                  :disabled="store.state.settings.networks[store.state.settings.selectedNetwork].networkId != 'mainnet'"
+                >
+                  Verify
+                </n-button>
+              </template>
+              <span style="font-size: 90%; text-align: justify;">
+                <n-alert title="Feature not available" type="default">
+                  <template #icon>
+                    <n-icon :color="themeVars.primaryColor">
+                      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 16 16"><g fill="none"><path d="M8 2a6 6 0 1 0 0 12A6 6 0 0 0 8 2zm.75 3.5a.749.749 0 1 1-1.499 0a.749.749 0 0 1 1.498 0zM8 7a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 8 7z" fill="currentColor"></path></g></svg>
+                    </n-icon>
+                  </template>
+                  <span style="font-size: 90%;">
+                    <p>Currently proof verification by address only works on mainnet 🤷.</p>
+                    <p>Please try saving and verifying the proof using other methods.</p>
+                  </span>
+                </n-alert>
+              </span>
+            </n-popover>
             <n-input :style="{ width: '100%' }" v-model:value="address" placeholder="Mina address" />
           </n-input-group>
         </n-tab-pane>
