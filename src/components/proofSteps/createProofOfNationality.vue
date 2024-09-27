@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { useMessage } from 'naive-ui'
 import { sleep } from './../../utils.js'
-import { generateSignature } from './utils.js'
+import { generateSignature, isWalletAvailable } from './utils.js'
 import {
   CircuitString,
   Field,
