@@ -92,6 +92,7 @@ const saveProofOnChain = async (
 
   // connect wallet
   let msgReactive = message.create("1/7 Connecting wallet 👛", { type: 'loading', duration: 10e9 })
+  // seems to fail in prod..?
   const accounts = await window.mina.requestAccounts()
   await window.mina.switchChain({ 
     networkID: `mina:${store.state.settings.networks[store.state.settings.selectedNetwork].networkId}`
