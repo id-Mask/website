@@ -39,7 +39,7 @@ const generateSignatureUsingAuroWallet = async (fieldsArray) => {
     signature by asking the user to sign it using Auro wallet and
     user's own publick and private key pair.
   */
-  const _ = await window.mina.requestAccounts();
+  const _ = await window.mina.request({ method: 'mina_accounts' });
   const stringsArray = fieldsArray.map(field => field.toString());
   const signedData = await window.mina.signFields({
     message: stringsArray
