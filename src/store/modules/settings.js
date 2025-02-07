@@ -30,6 +30,14 @@ const state = () => ({
       privateKey: 'EKFFPMTjJivav7xxEdXyCVKs5KedZsZaQWSWXkXdM4UjeH54rJV4'
     }
   },
+  passkeysOptions: {
+    requestsPasskeysSignature: false,
+    defaultSignatureValues: {
+      publicKeyHex: null,
+      signatureHex: null,
+      payloadHex: null,
+    }
+  }
 })
 
 const getters = {

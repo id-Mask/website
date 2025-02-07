@@ -227,6 +227,18 @@ onMounted(() => {
                   <n-switch v-model:value="store.state.settings.userSignatureOptions.requestUserWalletSignature" />
                 </n-flex>
 
+                <n-flex align="center" justify="space-between">
+                  <n-popover trigger="hover">
+                    <template #trigger>
+                      <n-text depth="3" style="font-size: 80%">Request passkeys on proof creation</n-text>
+                    </template>
+                    <n-text depth="3" style="font-size: 80%">
+                      Bind passkey to created proofs
+                    </n-text>
+                    </n-popover>
+                  <n-switch v-model:value="store.state.settings.passkeysOptions.requestsPasskeysSignature" />
+                </n-flex>
+
                 <br/>
                 <n-h4 type="primary">Precompile proofs</n-h4>
                 <PrecompileButtons />
