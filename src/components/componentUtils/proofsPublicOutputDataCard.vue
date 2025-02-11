@@ -6,6 +6,10 @@ import { useStore } from 'vuex'
 // import ProofOwnersipInitiator from './components/componentUtils/proofOwnershipInitiator.vue'
 import ProofOwnershipInitiator from './proofOwnershipInitiator.vue'
 
+import { 
+  Secp256r1,
+} from './../zkPrograms/proof.utils.js'
+
 const message = useMessage()
 const store = useStore()
 
@@ -36,11 +40,19 @@ const trimString = (string) => {
 const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
 
   // convert public key encoded as an array of Fields to a string
-  const getPublicKeyFromProofsOutput = (proofsPublicOutput) => {
+  const getMinaPublicKeyFromProofsOutput = (proofsPublicOutput) => {
     return PublicKey.fromFields([
       Field(proofsPublicOutput[2]),
       Field(proofsPublicOutput[3]),
     ]).toBase58()
+  }
+
+  // convert passkey id encoded as an array of Fields to a string
+  const getPasskeysPublicKeyFromProofsOutput = (proofsPublicOutput) => {
+    const x = proofsPublicOutput.slice(4, 7).map(i => new Field(i));
+    const y = proofsPublicOutput.slice(7, 10).map(i => new Field(i));
+    const pk = new Secp256r1({x: x, y: y})
+    return JSON.stringify(pk)
   }
 
   // convert country encoded as an int into a string
@@ -76,10 +88,16 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
           suffix: null,
         },
         publicKey: {
-          data: getPublicKeyFromProofsOutput(proofsPublicOutput),
-          header: 'Creators public key',
+          data: getMinaPublicKeyFromProofsOutput(proofsPublicOutput),
+          header: 'Creators Mina wallet public key',
           emoji: '🔑',
           suffix: null,
+        },
+        passkey: {
+          data: getPasskeysPublicKeyFromProofsOutput(proofsPublicOutput),
+          header: 'Creators passkey',
+          emoji: '🔑',
+          suffix: null
         }
       },
 
@@ -97,7 +115,7 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
           suffix: null,
         },
         publicKey: {
-          data: getPublicKeyFromProofsOutput(proofsPublicOutput),
+          data: getMinaPublicKeyFromProofsOutput(proofsPublicOutput),
           header: 'Creators public key',
           emoji: '🔑',
           suffix: null,
@@ -118,7 +136,7 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
           suffix: null,
         },
         publicKey: {
-          data: getPublicKeyFromProofsOutput(proofsPublicOutput),
+          data: getMinaPublicKeyFromProofsOutput(proofsPublicOutput),
           header: 'Creators public key',
           emoji: '🔑',
           suffix: null,
@@ -139,7 +157,7 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
           suffix: null,
         },
         publicKey: {
-          data: getPublicKeyFromProofsOutput(proofsPublicOutput),
+          data: getMinaPublicKeyFromProofsOutput(proofsPublicOutput),
           header: 'Creators public key',
           emoji: '🔑',
           suffix: null,

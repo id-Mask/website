@@ -8,33 +8,38 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import { Field, method, Signature, SmartContract, Permissions, PublicKey, Struct, ZkProgram, } from 'o1js';
-import { PersonalData } from './ProofOfAge.utils.js';
+import { PersonalData, PassKeysParams, Secp256r1 } from './proof.utils.js';
 class PublicOutput extends Struct({
     nationality: Field,
     currentDate: Field,
     creatorPublicKey: PublicKey,
+    passkeysPublicKey: Secp256r1,
+    passkeysId: Field,
 }) {
 }
 export const proofOfNationality = ZkProgram({
     name: 'ZkProofOfNationality',
     publicInput: undefined,
-    publicOutput: PublicOutput,
+    publicOutput: PublicOutput, // defined above
     methods: {
         proveNationality: {
             privateInputs: [
                 PersonalData,
-                Signature,
-                Signature,
+                Signature, // zkOracle data signature
+                Signature, // creator wallet signature
                 PublicKey, // creator wallet public key
+                PassKeysParams, // passkeys params
             ],
-            async method(personalData, signature, creatorSignature, creatorPublicKey) {
+            async method(personalData, signature, creatorSignature, creatorPublicKey, PassKeysParams) {
                 // verify zkOracle data
-                const oraclePuclicKey = PublicKey.fromBase58('B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN');
-                const validSignature = signature.verify(oraclePuclicKey, personalData.toFields());
-                validSignature.assertTrue();
+                const validSignatureOracle = signature.verify(PublicKey.fromBase58('B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN'), personalData.toFields());
+                validSignatureOracle.assertTrue();
                 // verify creator signature
-                const validSignature_ = creatorSignature.verify(creatorPublicKey, personalData.toFields());
-                validSignature_.assertTrue();
+                const validSignatureWallet = creatorSignature.verify(creatorPublicKey, personalData.toFields());
+                validSignatureWallet.assertTrue();
+                // verify passkeys signature
+                const validSignaturePassKeys = PassKeysParams.signature.verifySignedHash(PassKeysParams.payload, PassKeysParams.publicKey);
+                validSignaturePassKeys.assertTrue();
                 /*
                   Nationality is expressed as a single Field element which can be mapped
                   back to 2 letter country code: https://asecuritysite.com/coding/asc2
@@ -43,11 +48,15 @@ export const proofOfNationality = ZkProgram({
                 const firstChar = personalData.country.values[0].value;
                 const secondChar = personalData.country.values[1].value;
                 const nationality = firstChar.mul(100).add(secondChar);
-                return new PublicOutput({
-                    nationality: nationality,
-                    currentDate: personalData.currentDate,
-                    creatorPublicKey: creatorPublicKey,
-                });
+                return {
+                    publicOutput: {
+                        nationality: nationality,
+                        currentDate: personalData.currentDate,
+                        creatorPublicKey: creatorPublicKey,
+                        passkeysPublicKey: PassKeysParams.publicKey,
+                        passkeysId: PassKeysParams.id,
+                    },
+                };
             },
         },
     },

@@ -2,6 +2,7 @@
 const state = () => ({
   state: null,
   emoji: null,
+  useCache: true,
 
   selectedNetwork: 'devnet',
   networks: {
@@ -31,11 +32,12 @@ const state = () => ({
     }
   },
   passkeysOptions: {
-    requestsPasskeysSignature: false,
+    requestPasskeysSignature: false,
     defaultSignatureValues: {
-      publicKeyHex: null,
-      signatureHex: null,
-      payloadHex: null,
+      id: '0000000000000000000000',
+      publicKeyHex: '0x0418dc9fe2130baf94619766415817c5c16bd290590b7910280efb31490bb01ccc80e30e5e50739c16fe3dbccea3266e8fee690b0ad056be94b030d460bdb4b507',
+      signatureHex: '0x9631d0a5540a095d6c88c6dceb276df839af4d9b4de9c7ac37022bfafdcc988248dee789ad6e0fdf95e0d399c3f56a6aa13d5f10ac5a7b0d48d8cf9450f053ad',
+      payloadHex: '0x1fe3ceb2df37192f47c1e72c2dbc0cec691a74045c3669d89cedef462c0bea79',
     }
   }
 })

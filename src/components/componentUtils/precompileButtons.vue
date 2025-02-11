@@ -8,11 +8,10 @@ import { compile } from '.././proofSteps/compile.js'
 const themeVars = useThemeVars()
 const store = useStore()
 
-const useCache = ref(false)
 const proofs = Object.keys(store.state.proofs.data)
 
 const precompile = async (proofName) => {
-  await compile(store, proofName, { useCache: useCache.value })
+  await compile(store, proofName, { useCache: store.state.settings.useCache })
 }
 
 </script>
@@ -30,7 +29,7 @@ const precompile = async (proofName) => {
         If consuming the proofs - precompile with no cache
       </n-text>
       </n-popover>
-    <n-switch v-model:value="useCache" />
+    <n-switch v-model:value="store.state.settings.useCache" />
   </n-flex>
 
   <n-flex style="max-width: 25em">

@@ -1,22 +1,4 @@
-import { Field, PrivateKey, Signature, CircuitString, Struct, Provable, } from 'o1js';
-class PersonalData extends Struct({
-    name: CircuitString,
-    surname: CircuitString,
-    country: CircuitString,
-    pno: CircuitString,
-    currentDate: Field,
-}) {
-    // method for signature creation and verification
-    toFields() {
-        return [
-            ...this.name.values.map((item) => item.toField()),
-            ...this.surname.values.map((item) => item.toField()),
-            ...this.country.values.map((item) => item.toField()),
-            ...this.pno.values.map((item) => item.toField()),
-            this.currentDate,
-        ];
-    }
-}
+import { Field, Provable, } from 'o1js';
 /*
 11 digits (https://learn.microsoft.com/en-us/purview/sit-defn-estonia-personal-identification-code):
 one digit that corresponds to sex and century of birth (odd number male, even number female; 1-2: 19th century; 3-4: 20th century; 5-6: 21st century)
@@ -24,7 +6,7 @@ six digits that correspond to date of birth (YYMMDD)
 three digits that correspond to a serial number separating persons born on the same date
 one check digit
 */
-const parseDateFromPNO = (pno) => {
+export const parseDateFromPNO = (pno) => {
     /*
       pno: CircuitString is an array of 128 Fields, where each Field represents a char
       Each char is represented in UTF-16 decimals, for example:
@@ -56,30 +38,4 @@ const parseDateFromPNO = (pno) => {
         .add(daySecondDigit.mul(Field(1)));
     return date;
 };
-const zkOracleResponseMock = () => {
-    const TESTING_PRIVATE_KEY = process.env.TESTING_PRIVATE_KEY;
-    const privateKey = PrivateKey.fromBase58(TESTING_PRIVATE_KEY);
-    const publicKey = privateKey.toPublicKey();
-    const data = {
-        name: 'Hilary',
-        surname: 'Ouse',
-        country: 'EE',
-        pno: 'PNOLT-41111117143',
-        currentDate: 20231024,
-    };
-    const personalData = new PersonalData({
-        name: CircuitString.fromString(data.name),
-        surname: CircuitString.fromString(data.surname),
-        country: CircuitString.fromString(data.country),
-        pno: CircuitString.fromString(data.pno),
-        currentDate: Field(data.currentDate),
-    });
-    const signature = Signature.create(privateKey, personalData.toFields());
-    return {
-        data: data,
-        signature: signature.toJSON(),
-        publicKey: publicKey.toBase58(),
-    };
-};
-export { PersonalData, parseDateFromPNO, zkOracleResponseMock };
 //# sourceMappingURL=ProofOfAge.utils.js.map

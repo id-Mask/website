@@ -11,7 +11,7 @@ import {
 
 import { compile } from './compile.js'
 import { proofOfSanctions, PublicInput } from './../zkPrograms/ProofOfSanctions.js'
-import { generateSignature, isWalletAvailable } from './utils.js'
+import { generateSignature, isWalletAvailable } from './walletUtils.js'
 
 const message = useMessage()
 const store = useStore()

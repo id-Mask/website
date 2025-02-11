@@ -11,8 +11,8 @@ import {
 
 import { compile } from './compile.js'
 import { proofOfUniqueHuman } from './../zkPrograms/ProofOfUniqueHuman.js'
-import { PersonalData } from './../zkPrograms/ProofOfAge.utils.js'
-import { generateSignature, isWalletAvailable } from './utils.js'
+import { PersonalData } from './../zkPrograms/proof.utils.js'
+import { generateSignature, isWalletAvailable } from './walletUtils.js'
 
 const message = useMessage()
 const store = useStore()

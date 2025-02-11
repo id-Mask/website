@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { useMessage } from 'naive-ui'
 import { sleep } from './../../utils.js'
-import { generateSignature, isWalletAvailable } from './utils.js'
+import { generateSignature, isWalletAvailable } from './walletUtils.js'
 import {
   CircuitString,
   Field,
@@ -12,7 +12,7 @@ import {
 
 import { compile } from './compile.js'
 import { proofOfNationality } from './../zkPrograms/ProofOfNationality.js'
-import { PersonalData } from './../zkPrograms/ProofOfAge.utils.js'
+import { PersonalData } from './../zkPrograms/proof.utils.js'
 
 const message = useMessage()
 const store = useStore()

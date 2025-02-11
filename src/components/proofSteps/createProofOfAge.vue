@@ -3,7 +3,8 @@ import { ref, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useMessage } from 'naive-ui'
 import { sleep } from './../../utils.js'
-import { generateSignature, isWalletAvailable } from './utils.js'
+import { generateSignature, isWalletAvailable } from './walletUtils.js'
+import { createPasskeys, usePasskeys } from './passkeysUtils.js'
 import {
   CircuitString,
   Field,
@@ -12,7 +13,13 @@ import {
 
 import { compile } from './compile.js'
 import { proofOfAge } from './../zkPrograms/ProofOfAge.js'
-import { PersonalData } from './../zkPrograms/ProofOfAge.utils.js'
+import { 
+  PersonalData, 
+  PassKeysParams, 
+  Secp256r1, 
+  EcdsaP256, 
+  encodeToAsciiNumber 
+} from './../zkPrograms/proof.utils.js'
 
 const message = useMessage()
 const store = useStore()
@@ -28,6 +35,12 @@ const props = defineProps({
 
 const emit = defineEmits(['finished', 'isLoading', 'triggerNextStep'])
 
+// passkeys helpers
+const showPasskeysModal = ref(false)
+const passkeysSignature = ref(store.state.settings.passkeysOptions.defaultSignatureValues)
+const usePasskeys_ = async () => { passkeysSignature.value = await usePasskeys() }
+
+// main fn
 const createProof = async () => {
 
   // throw explanation if user needs to sign and does not have a wallet
@@ -65,14 +78,29 @@ const createProof = async () => {
     currentDate: Field(pid.data.currentDate),
   })
 
+  // generate wallet signature
   const [creatorPublicKey, creatorDataSignature] = await generateSignature(
     personalData.toFields(), 
     store.state.settings.userSignatureOptions
   )
 
+  // generate passkeys signature
+  let passKeysParams = null
+  if (store.state.settings.passkeysOptions.requestPasskeysSignature) {
+    showPasskeysModal.value = true
+  } else {
+    passKeysParams = new PassKeysParams({
+      id: Field(encodeToAsciiNumber(store.state.settings.passkeysOptions.defaultSignatureValues.id)),
+      publicKey: Secp256r1.fromHex(store.state.settings.passkeysOptions.defaultSignatureValues.publicKeyHex),
+      payload: Secp256r1.Scalar.from(store.state.settings.passkeysOptions.defaultSignatureValues.payloadHex),
+      signature: EcdsaP256.fromHex(store.state.settings.passkeysOptions.defaultSignatureValues.signatureHex),
+    });
+  }
+  console.log(passKeysParams)
+
   // compile
   let msg = message.create('1/2 Compiling zkProgam 🧩🔨', { type: 'loading', duration: 10e9 })
-  await compile(store, props.selectedProof)
+  await compile(store, props.selectedProof, { useCache: store.state.settings })
 
   /* pid e.g.:
   const pid = {
@@ -93,12 +121,13 @@ const createProof = async () => {
 
   msg.content = "2/2 Creating the proof 🌈✨"
   try {
-    const proof = await proofOfAge.proveAge(
+    const { proof } = await proofOfAge.proveAge(
       Field(data.value.ageToProveInYears),
       personalData,
       Signature.fromJSON(pid.signature),
       creatorDataSignature,
       creatorPublicKey,
+      passKeysParams,
     );
 
     const jsonProof = proof.toJSON()
@@ -128,7 +157,7 @@ const createProof = async () => {
     message.destroyAll()
   }
 }
-
+usePasskeys
 onMounted(async () => {
 })
 
@@ -159,6 +188,21 @@ onMounted(async () => {
     </n-input-group>
 
   </n-space>
+
+  <n-modal v-model:show="showPasskeysModal">
+    <n-card
+      style="max-width: 600px"
+      title="Passkeys"
+      :bordered="false"
+    >
+    <n-flex>
+      <n-button type="primary" @click="createPasskeys()">create new</n-button>
+      <n-button type="primary" @click="usePasskeys_()">use created</n-button>
+      <br/>
+      {{ passkeysSignature }}
+    </n-flex>
+    </n-card>
+  </n-modal>
 
 </template>
 
