@@ -96,7 +96,6 @@ const createProof = async () => {
       signature: EcdsaP256.fromHex(store.state.settings.passkeysOptions.defaultSignatureValues.signatureHex),
     });
   }
-  console.log(passKeysParams)
 
   // compile
   let msg = message.create('1/2 Compiling zkProgam 🧩🔨', { type: 'loading', duration: 10e9 })

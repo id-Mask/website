@@ -8,6 +8,7 @@ import ProofOwnershipInitiator from './proofOwnershipInitiator.vue'
 
 import { 
   Secp256r1,
+  toPublicKeyHex,
 } from './../zkPrograms/proof.utils.js'
 
 const message = useMessage()
@@ -51,8 +52,8 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
   const getPasskeysPublicKeyFromProofsOutput = (proofsPublicOutput) => {
     const x = proofsPublicOutput.slice(4, 7).map(i => new Field(i));
     const y = proofsPublicOutput.slice(7, 10).map(i => new Field(i));
-    const pk = new Secp256r1({x: x, y: y})
-    return JSON.stringify(pk)
+    const pk = new Secp256r1({x: x, y: y}).toBigint()
+    return toPublicKeyHex(pk.x, pk.y)
   }
 
   // convert country encoded as an int into a string
@@ -95,7 +96,7 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
         },
         passkey: {
           data: getPasskeysPublicKeyFromProofsOutput(proofsPublicOutput),
-          header: 'Creators passkey',
+          header: 'Creators passkey hex',
           emoji: '🔑',
           suffix: null
         }
