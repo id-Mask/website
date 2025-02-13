@@ -236,7 +236,7 @@ onMounted(() => {
                       Bind passkey to created proofs
                     </n-text>
                     </n-popover>
-                  <n-switch v-model:value="store.state.settings.passkeysOptions.requestsPasskeysSignature" />
+                  <n-switch v-model:value="store.state.settings.passkeysOptions.requestPasskeysSignature" />
                 </n-flex>
 
                 <br/>
