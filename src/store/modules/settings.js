@@ -32,7 +32,7 @@ const state = () => ({
     }
   },
   passkeysOptions: {
-    requestPasskeysSignature: false,
+    requestPasskeysSignature: true,
     defaultSignatureValues: {
       id: '0000000000000000000000',
       publicKeyHex: '0x0418dc9fe2130baf94619766415817c5c16bd290590b7910280efb31490bb01ccc80e30e5e50739c16fe3dbccea3266e8fee690b0ad056be94b030d460bdb4b507',
