@@ -39,11 +39,21 @@ const emit = defineEmits(['finished', 'isLoading', 'triggerNextStep'])
 // passkeys helpers
 const showPasskeysModal = ref(false)
 const passkeysSignature = ref(store.state.settings.passkeysOptions.defaultSignatureValues)
+
 const createPasskeys_ = async () => {
+  /*
+    When creating the new passkeys, promt the user to use it instantly
+    The user will not have to click button to use it after creation
+  */
   await createPasskeys()
   await usePasskeys_()
 }
+
 const usePasskeys_ = async () => {
+  /*
+    Try to use passkeys created previously with id stored on localstorage.
+    This is easier than asking the user to chose between create or use old
+  */
   try {
     const passkeysValues = await usePasskeys()
     passkeysSignature.value = new PassKeysParams({
@@ -55,7 +65,11 @@ const usePasskeys_ = async () => {
   } catch (error) {
     console.log(error)
   }
-  // check if new passkeys are saved and close the modal if so
+  /*
+    Check if new passkeys are saved and close the modal if so.
+    If default passkey values are still going to be used, then
+    keep the modal up and force the user to either create or use old.
+  */
   if (passkeysSignature.value.id == '0000000000000000000000') {
     showPasskeysModal.value = true
   } else {
