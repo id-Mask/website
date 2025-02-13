@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useStore } from 'vuex'
-import { useMessage } from 'naive-ui'
+import { useMessage, useThemeVars } from 'naive-ui'
 import { sleep } from './../../utils.js'
 import { generateSignature, isWalletAvailable } from './walletUtils.js'
 import { createPasskeys, usePasskeys } from './passkeysUtils.js'
@@ -21,6 +21,7 @@ import {
   encodeToAsciiNumber 
 } from './../zkPrograms/proof.utils.js'
 
+const themeVars = useThemeVars()
 const message = useMessage()
 const store = useStore()
 const data = ref({
@@ -38,7 +39,17 @@ const emit = defineEmits(['finished', 'isLoading', 'triggerNextStep'])
 // passkeys helpers
 const showPasskeysModal = ref(false)
 const passkeysSignature = ref(store.state.settings.passkeysOptions.defaultSignatureValues)
-const usePasskeys_ = async () => { passkeysSignature.value = await usePasskeys() }
+const usePasskeys_ = async () => { 
+  passkeysSignature.value = await usePasskeys()
+  // check if new passkeys are saved and close the modal if so
+  if (passkeysSignature.value.id != '0000000000000000000000') {
+    message.create(
+      `Pass keys are ready to be bind`, 
+      { type: 'success', closable: true, duration: 4000 }
+    )
+    showPasskeysModal.value = false
+  }
+}
 
 // main fn
 const createProof = async () => {
@@ -85,6 +96,7 @@ const createProof = async () => {
   )
 
   // generate passkeys signature
+  // TODO refactor to a single async function
   let passKeysParams = null
   if (store.state.settings.passkeysOptions.requestPasskeysSignature) {
     showPasskeysModal.value = true
@@ -190,16 +202,27 @@ onMounted(async () => {
 
   <n-modal v-model:show="showPasskeysModal">
     <n-card
-      style="max-width: 600px"
-      title="Passkeys"
+      style="max-width: 600px; padding-top: 1em; padding-bottom: 2em;"
       :bordered="false"
+      size="huge"
     >
-    <n-flex>
-      <n-button type="primary" @click="createPasskeys()">create new</n-button>
-      <n-button type="primary" @click="usePasskeys_()">use created</n-button>
+    <n-space vertical style="text-align: center;">
+      <div>
+        <n-icon-wrapper :size="48" :border-radius="10" :color="themeVars.pressedColor">
+          <n-icon :size="28" :color="themeVars.primaryColor">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24"><g fill="none"><path d="M14 14.05V14H4.253a2.249 2.249 0 0 0-2.25 2.25v.919c0 .572.18 1.13.511 1.596C4.056 20.929 6.58 22 10 22c.715 0 1.39-.046 2.026-.14A2.51 2.51 0 0 1 12 21.5v-5a2.5 2.5 0 0 1 2-2.45zM10 2.005a5 5 0 1 1 0 10a5 5 0 0 1 0-10zM15 15v-1a2.5 2.5 0 0 1 5 0v1h.5a1.5 1.5 0 0 1 1.5 1.5v5a1.5 1.5 0 0 1-1.5 1.5h-6a1.5 1.5 0 0 1-1.5-1.5v-5a1.5 1.5 0 0 1 1.5-1.5h.5zm1.5-1v1h2v-1a1 1 0 1 0-2 0zm2 5a1 1 0 1 0-2 0a1 1 0 0 0 2 0z" fill="currentColor"></path></g></svg>
+          </n-icon>
+        </n-icon-wrapper>
+        <n-text :depth="2" tag="h2">Bind your passkeys to the proof</n-text>
+      </div>
       <br/>
+      <n-button type="primary" @click="usePasskeys_()">use created</n-button>
+      <n-divider>Or</n-divider>
+      <n-button type="primary" @click="createPasskeys()">create new</n-button>
+      <br/>
+      <n-divider></n-divider>
       {{ passkeysSignature }}
-    </n-flex>
+    </n-space>
     </n-card>
   </n-modal>
 
