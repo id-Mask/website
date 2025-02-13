@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { useMessage, useThemeVars } from 'naive-ui'
 import { sleep } from './../../utils.js'
@@ -39,13 +39,29 @@ const emit = defineEmits(['finished', 'isLoading', 'triggerNextStep'])
 // passkeys helpers
 const showPasskeysModal = ref(false)
 const passkeysSignature = ref(store.state.settings.passkeysOptions.defaultSignatureValues)
-const usePasskeys_ = async () => { 
-  passkeysSignature.value = await usePasskeys()
+const createPasskeys_ = async () => {
+  await createPasskeys()
+  await usePasskeys_()
+}
+const usePasskeys_ = async () => {
+  try {
+    const passkeysValues = await usePasskeys()
+    passkeysSignature.value = new PassKeysParams({
+      id: Field(encodeToAsciiNumber(passkeysValues.id)),
+      publicKey: Secp256r1.fromHex(passkeysValues.publicKeyHex),
+      payload: Secp256r1.Scalar.from(passkeysValues.payloadHex),
+      signature: EcdsaP256.fromHex(passkeysValues.signatureHex),
+    });
+  } catch (error) {
+    console.log(error)
+  }
   // check if new passkeys are saved and close the modal if so
-  if (passkeysSignature.value.id != '0000000000000000000000') {
+  if (passkeysSignature.value.id == '0000000000000000000000') {
+    showPasskeysModal.value = true
+  } else {
     message.create(
-      `Pass keys are ready to be bind`, 
-      { type: 'success', closable: true, duration: 4000 }
+      `Pass keys are ready to be bind 🔑`, 
+      { type: 'success', closable: false, duration: 4000 }
     )
     showPasskeysModal.value = false
   }
@@ -66,7 +82,6 @@ const createProof = async () => {
   }
 
     // throw error if user did not input a value
-  console.log(data.value.ageToProveInYears)
   if (!(data.value.ageToProveInYears)) {
     message.create(
       `Input the number of years you wish to prove you are older than 🙄`, 
@@ -74,10 +89,6 @@ const createProof = async () => {
     )
     return null
   }
-
-  data.value.isLoading = true
-  emit('isLoading', true)
-  emit('finished', false)
 
   // praparations
   const pid = store.state.pid.data
@@ -96,18 +107,21 @@ const createProof = async () => {
   )
 
   // generate passkeys signature
-  // TODO refactor to a single async function
-  let passKeysParams = null
   if (store.state.settings.passkeysOptions.requestPasskeysSignature) {
-    showPasskeysModal.value = true
+    await usePasskeys_()
   } else {
-    passKeysParams = new PassKeysParams({
+    passkeysSignature.value = new PassKeysParams({
       id: Field(encodeToAsciiNumber(store.state.settings.passkeysOptions.defaultSignatureValues.id)),
       publicKey: Secp256r1.fromHex(store.state.settings.passkeysOptions.defaultSignatureValues.publicKeyHex),
       payload: Secp256r1.Scalar.from(store.state.settings.passkeysOptions.defaultSignatureValues.payloadHex),
       signature: EcdsaP256.fromHex(store.state.settings.passkeysOptions.defaultSignatureValues.signatureHex),
     });
   }
+
+  // start loading bars
+  data.value.isLoading = true
+  emit('isLoading', true)
+  emit('finished', false)
 
   // compile
   let msg = message.create('1/2 Compiling zkProgam 🧩🔨', { type: 'loading', duration: 10e9 })
@@ -138,7 +152,7 @@ const createProof = async () => {
       Signature.fromJSON(pid.signature),
       creatorDataSignature,
       creatorPublicKey,
-      passKeysParams,
+      passkeysSignature.value,
     );
 
     const jsonProof = proof.toJSON()
@@ -168,9 +182,6 @@ const createProof = async () => {
     message.destroyAll()
   }
 }
-usePasskeys
-onMounted(async () => {
-})
 
 </script>
 
@@ -200,9 +211,9 @@ onMounted(async () => {
 
   </n-space>
 
-  <n-modal v-model:show="showPasskeysModal">
+  <n-modal v-model:show="showPasskeysModal" mask-closable=false>
     <n-card
-      style="max-width: 600px; padding-top: 1em; padding-bottom: 2em;"
+      style="max-width: 500px; padding-top: 1em; padding-bottom: 2em;"
       :bordered="false"
       size="huge"
     >
@@ -217,11 +228,11 @@ onMounted(async () => {
       </div>
       <br/>
       <n-button type="primary" @click="usePasskeys_()">use created</n-button>
+      <n-text :depth="2" style="font-size: 90%">Use already created keys if you've created thenm before</n-text>
       <n-divider>Or</n-divider>
-      <n-button type="primary" @click="createPasskeys()">create new</n-button>
-      <br/>
-      <n-divider></n-divider>
-      {{ passkeysSignature }}
+      <n-button type="primary" @click="createPasskeys_()">create new</n-button>
+      <n-text :depth="2" style="font-size: 90%">Create new if you've never done this before</n-text>
+      
     </n-space>
     </n-card>
   </n-modal>

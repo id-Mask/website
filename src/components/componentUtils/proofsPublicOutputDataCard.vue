@@ -96,7 +96,7 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
         },
         passkey: {
           data: getPasskeysPublicKeyFromProofsOutput(proofsPublicOutput),
-          header: 'Creators passkey hex',
+          header: 'Bind passkey public key hex',
           emoji: '🔑',
           suffix: null
         }
@@ -166,14 +166,27 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
       },
     }
 
+    // TODO: do these checks when parsing the value and return null..?
+    // To do that will have to refactor the html par as well
+
     /*
-      check if the proof is signed using the default key pair and remove it
+      check if the proof is signed using the default Mina key pair and remove it
       from the object if that is the case. If not, keep it and it will show on the UI.
     */
-    const defaultPublicKey = store.state.settings.userSignatureOptions.defaultKeyPair.publicKey
-    const isSignedWithDefaultKeys = proofs[proofName].publicKey.data == defaultPublicKey
-    if (isSignedWithDefaultKeys) {
+    const defaultMinaPublicKey = store.state.settings.userSignatureOptions.defaultKeyPair.publicKey
+    const isSignedWithDefaultMinaKeys = proofs[proofName].publicKey.data == defaultMinaPublicKey
+    if (isSignedWithDefaultMinaKeys) {
       delete proofs[proofName].publicKey
+    }
+
+    /*
+      check if the proof is signed using the default passkeys pair and remove it
+      from the object if that is the case. If not, keep it and it will show on the UI.
+    */
+    const defaultPasskeyPublicKey = store.state.settings.passkeysOptions.defaultSignatureValues.publicKeyHex
+    const isSignedWithDefaultPassKeys = proofs[proofName].passkey.data == defaultPasskeyPublicKey
+    if (isSignedWithDefaultPassKeys) {
+      delete proofs[proofName].passkey
     }
 
     return proofs[proofName]

@@ -263,20 +263,20 @@ export const usePasskeys = async () => {
   };
   const assertion = await navigator.credentials.get({ publicKey });
   if (assertion) {
-    console.log('assertion', assertion);
+
     const payloadHex = await parsePayloadHex(
       assertion.response.clientDataJSON,
       assertion.response.authenticatorData
     );
-    console.log('payloadHex', payloadHex);
+
     const signatureHex = await parseSignatureHex(
       bufferToBase64(assertion.response.signature)
     );
-    console.log('signatureHex', signatureHex);
 
     return {
       id: id,
       publicKeyHex: publicKeyHex,
+      payloadHex: payloadHex,
       signatureHex: signatureHex,
     }
   }
