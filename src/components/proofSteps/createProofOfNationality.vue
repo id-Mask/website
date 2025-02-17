@@ -91,7 +91,7 @@ const createProof = async () => {
 
   msg.content = "3/3 Creating the proof 🌈✨"
   try {
-    const proof = await proofOfNationality.proveNationality(
+    const { proof } = await proofOfNationality.proveNationality(
       personalData,
       Signature.fromJSON(pid.signature),
       creatorDataSignature,

@@ -104,7 +104,7 @@ const createProof = async () => {
 
   msg.content = "3/3 Creating the proof 🌈✨"
   try {
-    const proof = await proofOfUniqueHuman.proveUniqueHuman(
+    const { proof } = await proofOfUniqueHuman.proveUniqueHuman(
       personalData,
       Signature.fromJSON(pid.signature),
       CircuitString.fromString(secretValue.data.secret),

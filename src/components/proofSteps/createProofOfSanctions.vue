@@ -128,7 +128,7 @@ const createProof = async () => {
     )
     const passkeysParams = await setupPasskeys()
 
-    const proof = await proofOfSanctions.proveSanctions(
+    const { proof } = await proofOfSanctions.proveSanctions(
       publicInput,
       Signature.fromJSON(ofacData.signature),
       creatorDataSignature,
