@@ -11,7 +11,10 @@ import {
 
 import { compile } from './compile.js'
 import { proofOfSanctions, PublicInput } from './../zkPrograms/ProofOfSanctions.js'
-import { generateSignature, isWalletAvailable } from './walletUtils.js'
+import { generateSignature, isWalletAvailable } from './utils/walletUtils.js'
+
+import PasskeysModal from './utils/passkeysModal.vue'
+import { usePasskeysSetup } from './utils/passkeysSetup'
 
 const message = useMessage()
 const store = useStore()
@@ -25,6 +28,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['finished', 'isLoading', 'triggerNextStep'])
+
+const { setupPasskeys } = usePasskeysSetup()
 
 const getOFACData = async () => {
   const response = await fetch(store.state.settings.zkOracle + 'getOFACmatches', {
@@ -121,12 +126,14 @@ const createProof = async () => {
       publicInput.toFields(), 
       store.state.settings.userSignatureOptions
     )
+    const passkeysParams = await setupPasskeys()
 
     const proof = await proofOfSanctions.proveSanctions(
       publicInput,
       Signature.fromJSON(ofacData.signature),
       creatorDataSignature,
       creatorPublicKey,
+      passkeysParams,
     )
 
     const jsonProof = proof.toJSON()
@@ -180,6 +187,8 @@ onMounted(async () => {
       </n-button>
     </n-input-group>
   </n-space>
+
+  <PasskeysModal />
 
 </template>
 

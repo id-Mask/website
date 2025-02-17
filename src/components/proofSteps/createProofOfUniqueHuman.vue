@@ -12,7 +12,10 @@ import {
 import { compile } from './compile.js'
 import { proofOfUniqueHuman } from './../zkPrograms/ProofOfUniqueHuman.js'
 import { PersonalData } from './../zkPrograms/proof.utils.js'
-import { generateSignature, isWalletAvailable } from './walletUtils.js'
+import { generateSignature, isWalletAvailable } from './utils/walletUtils.js'
+
+import PasskeysModal from './utils/passkeysModal.vue'
+import { usePasskeysSetup } from './utils/passkeysSetup'
 
 const message = useMessage()
 const store = useStore()
@@ -26,6 +29,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['finished', 'isLoading', 'triggerNextStep'])
+
+const { setupPasskeys } = usePasskeysSetup()
 
 const getSecreteValue = async () => {
   const url = store.state.settings.zkOracle
@@ -68,6 +73,7 @@ const createProof = async () => {
     personalData.toFields(), 
     store.state.settings.userSignatureOptions
   )
+  const passkeysParams = await setupPasskeys()
 
   let msg = message.create('1/3 Crafting your secrets 🤫🔐', { type: 'loading', duration: 10e9 })
   const secretValue = await getSecreteValue()
@@ -105,6 +111,7 @@ const createProof = async () => {
       Signature.fromJSON(secretValue.signature),
       creatorDataSignature,
       creatorPublicKey,
+      passkeysParams,
     );
 
     const jsonProof = proof.toJSON()
@@ -156,6 +163,8 @@ onMounted(async () => {
       Create proof
     </n-button>
   </n-space>
+
+  <PasskeysModal />
 
 </template>
 

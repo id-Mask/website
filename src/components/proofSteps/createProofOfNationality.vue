@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { useMessage } from 'naive-ui'
 import { sleep } from './../../utils.js'
-import { generateSignature, isWalletAvailable } from './walletUtils.js'
+import { generateSignature, isWalletAvailable } from './utils/walletUtils.js'
 import {
   CircuitString,
   Field,
@@ -13,6 +13,9 @@ import {
 import { compile } from './compile.js'
 import { proofOfNationality } from './../zkPrograms/ProofOfNationality.js'
 import { PersonalData } from './../zkPrograms/proof.utils.js'
+
+import PasskeysModal from './utils/passkeysModal.vue'
+import { usePasskeysSetup } from './utils/passkeysSetup'
 
 const message = useMessage()
 const store = useStore()
@@ -26,6 +29,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['finished', 'isLoading', 'triggerNextStep'])
+
+const { setupPasskeys } = usePasskeysSetup()
 
 const createProof = async () => {
 
@@ -61,6 +66,9 @@ const createProof = async () => {
     store.state.settings.userSignatureOptions
   )
 
+  // generate passkeys signature
+  const passkeysParams = await setupPasskeys()
+
   msg.content = "2/3 Compiling zkProgam 🧩🔨"
   await compile(store, props.selectedProof)
 
@@ -88,6 +96,7 @@ const createProof = async () => {
       Signature.fromJSON(pid.signature),
       creatorDataSignature,
       creatorPublicKey,
+      passkeysParams,
     );
 
     const jsonProof = proof.toJSON()
@@ -135,6 +144,8 @@ const createProof = async () => {
       Create proof
     </n-button>
   </n-space>
+
+  <PasskeysModal />
 
 </template>
 

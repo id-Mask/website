@@ -100,7 +100,7 @@ export const parsePayloadHex = async (clientDataJSON, authenticatorData) => {
     clientDataJSON
   );
   // const authenticatorDataBuffer = base64urlToBuffer(authenticatorData);
-  console.log(authenticatorData);
+  // console.log(authenticatorData);
 
   // concatenate
   const payload = new Uint8Array(
@@ -228,20 +228,20 @@ export const createPasskeys = async () => {
 
   // parse objects
   const publicKeyHex = parsePublicKeyHex(credential.response.attestationObject);
-  console.log(publicKeyHex);
+  // console.log(publicKeyHex);
 
   // save for auth
   window.localStorage.setItem(
     'id',
     JSON.stringify({ [credential.id]: publicKeyHex })
   );
-  console.log(window.localStorage);
+  // console.log(window.localStorage);
 };
 
 export const usePasskeys = async () => {
   // suggest latest created key
   const account = JSON.parse(localStorage.getItem('id'));
-  console.log(account);
+  // console.log(account);
   let id = null;
   let publicKeyHex = null;
   let allowCredentials = [];
@@ -281,17 +281,3 @@ export const usePasskeys = async () => {
     }
   }
 };
-
-/*
-  For convenience, wrap around both functions above and create a single
-  entry function to be called to collect either a default signature or  
-  proper signature created by the user using webauthn.
-*/
-export const generatePasskeysSignature = async (passkeysOptions) => {
-  const useWebAuthn = passkeysOptions.requestsPasskeysSignature
-  if (useWebAuthn) {
-    return await usePasskeys()
-  } else {
-    return passkeysOptions.defaultSignatureValues
-  }
-}
