@@ -204,14 +204,17 @@ const generateRandomChallenge = () => {
 };
 
 export const createPasskeys = async () => {
+  const base_name = 'id-mask-'
+  const mini_uuid = Math.random().toString(36).slice(2, 6)
+  const name = base_name.concat(mini_uuid)
   const publicKey = {
     rp: {
-      name: 'raidas',
+      name: name,
     },
     user: {
-      id: Uint8Array.from('id-mask', (c) => c.charCodeAt(0)),
-      name: 'id-mask',
-      displayName: 'id-mask',
+      id: Uint8Array.from(name, (c) => c.charCodeAt(0)),
+      name: name,
+      displayName: name,
     },
     pubKeyCredParams: [
       {
