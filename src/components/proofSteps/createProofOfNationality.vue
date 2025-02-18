@@ -45,10 +45,6 @@ const createProof = async () => {
     }
   }
 
-  data.value.isLoading = true
-  emit('isLoading', true)
-  emit('finished', false)
-
   // prepare personal data
   const pid = store.state.pid.data
   const personalData = new PersonalData({
@@ -68,6 +64,11 @@ const createProof = async () => {
 
   // generate passkeys signature
   const passkeysParams = await setupPasskeys()
+
+  // start loading bars
+  data.value.isLoading = true
+  emit('isLoading', true)
+  emit('finished', false)
 
   msg.content = "2/3 Compiling zkProgam 🧩🔨"
   await compile(store, props.selectedProof)

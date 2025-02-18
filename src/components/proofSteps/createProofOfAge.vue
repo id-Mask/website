@@ -67,6 +67,7 @@ const createProof = async () => {
   })
 
   // generate wallet signature
+  let msg = message.create('1/3 Crafting your signature 🤫🔐', { type: 'loading', duration: 10e9 })
   const [creatorPublicKey, creatorDataSignature] = await generateSignature(
     personalData.toFields(), 
     store.state.settings.userSignatureOptions
@@ -75,13 +76,8 @@ const createProof = async () => {
   // generate passkeys signature
   const passkeysParams = await setupPasskeys()
 
-  // start loading bars
-  data.value.isLoading = true
-  emit('isLoading', true)
-  emit('finished', false)
-
   // compile
-  let msg = message.create('1/2 Compiling zkProgam 🧩🔨', { type: 'loading', duration: 10e9 })
+  msg.content = '2/3 Compiling zkProgam 🧩🔨'
   await compile(store, props.selectedProof, { useCache: store.state.settings })
 
   /* pid e.g.:
@@ -101,7 +97,13 @@ const createProof = async () => {
   }
   */
 
-  msg.content = "2/2 Creating the proof 🌈✨"
+  // start loading bars
+  data.value.isLoading = true
+  emit('isLoading', true)
+  emit('finished', false)
+
+
+  msg.content = "3/3 Creating the proof 🌈✨"
   try {
     const { proof } = await proofOfAge.proveAge(
       Field(data.value.ageToProveInYears),
