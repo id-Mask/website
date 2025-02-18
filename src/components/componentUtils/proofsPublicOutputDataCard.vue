@@ -3,7 +3,6 @@ import { onMounted, ref } from 'vue'
 import { useMessage } from 'naive-ui'
 import { PublicKey, Field } from 'o1js'
 import { useStore } from 'vuex'
-// import ProofOwnersipInitiator from './components/componentUtils/proofOwnershipInitiator.vue'
 import ProofOwnershipInitiator from './proofOwnershipInitiator.vue'
 
 import { 
@@ -99,7 +98,7 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
           header: 'Bind passkey public key hex',
           emoji: '🔑',
           suffix: null
-        }
+        },
       },
 
       proofOfSanctions: {
@@ -120,7 +119,13 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
           header: 'Creators public key',
           emoji: '🔑',
           suffix: null,
-        }
+        },
+        passkey: {
+          data: getPasskeysPublicKeyFromProofsOutput(proofsPublicOutput),
+          header: 'Bind passkey public key hex',
+          emoji: '🔑',
+          suffix: null
+        },
       },
 
       proofOfUniqueHuman: {
@@ -141,7 +146,13 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
           header: 'Creators public key',
           emoji: '🔑',
           suffix: null,
-        }
+        },
+        passkey: {
+          data: getPasskeysPublicKeyFromProofsOutput(proofsPublicOutput),
+          header: 'Bind passkey public key hex',
+          emoji: '🔑',
+          suffix: null
+        },
       },
 
       proofOfNationality: {
@@ -162,7 +173,13 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
           header: 'Creators public key',
           emoji: '🔑',
           suffix: null,
-        }
+        },
+        passkey: {
+          data: getPasskeysPublicKeyFromProofsOutput(proofsPublicOutput),
+          header: 'Bind passkey public key hex',
+          emoji: '🔑',
+          suffix: null
+        },
       },
     }
 
@@ -196,7 +213,8 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
     for example if an old proof with different structure is provided
     the above fns will fail.
   */
-  } catch {
+  } catch (error) {
+    console.log(error)
     return {}
   }
 }
