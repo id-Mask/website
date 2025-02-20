@@ -106,6 +106,7 @@ export const usePasskeysSetup = () => {
     while (true) {
       try {
         const passkeysValues = await usePasskeys();
+        console.log('passkeys values', passkeysValues)
         return new PassKeysParams({
           id: Field(encodeToAsciiNumber(passkeysValues.id)),
           publicKey: Secp256r1.fromHex(passkeysValues.publicKeyHex),
