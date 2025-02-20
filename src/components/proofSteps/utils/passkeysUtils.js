@@ -266,7 +266,7 @@ export const usePasskeys = async () => {
   };
   const assertion = await navigator.credentials.get({ publicKey });
   if (assertion) {
-
+    id = bufferToBase64(assertion.rawId).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
     const payloadHex = await parsePayloadHex(
       assertion.response.clientDataJSON,
       assertion.response.authenticatorData
