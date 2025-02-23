@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { useStore } from 'vuex'
-import { createPasskeys, usePasskeys } from './passkeysUtils.js'
+import { createPasskeys, usePasskeys, parsePublicKeyHex, bufferToBase64 } from './passkeysUtils.js'
 import { Field } from 'o1js'
 import {
   PassKeysParams,
@@ -60,6 +60,34 @@ setupPasskeys()
 export const showModal = ref(false)
 const modalResolve = ref(null)
 
+/*
+  helper functions to save { id: publicKey } to db and fetch it back
+*/
+const savePasskeysIdAndPublicKey = async (credential, zkOracleUrl) => {
+  const publicKeyHex = parsePublicKeyHex(credential.response.attestationObject);
+  const id = bufferToBase64(credential.rawId).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  const response = await fetch(`${zkOracleUrl}/passkeys/insert`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ [id]: publicKeyHex })
+  });
+  const result = await response.json();
+  console.log('saved response', result)
+}
+
+const fetchPasskeysIdAndPublicKey = async (id, zkOracleUrl) => {
+  const response = await fetch(`${zkOracleUrl}/passkeys/fetch/${id}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' }
+  });
+  const passkeys = await response.json();
+  console.log('fetched response', passkeys)
+  return passkeys
+}
+
+/*
+  main setup funtion
+*/
 export const usePasskeysSetup = () => {
   const store = useStore()
 
@@ -73,9 +101,12 @@ export const usePasskeysSetup = () => {
   const handleChoice = async (choice) => {
     try {
       if (choice === 'create') {
-        await createPasskeys();
+        const credential = await createPasskeys();
+        await savePasskeysIdAndPublicKey(credential, store.state.settings.zkOracle);
       }
       const passkeysValues = await usePasskeys();
+      const passkeysPk = await fetchPasskeysIdAndPublicKey(passkeysValues.id, store.state.settings.zkOracle)
+      passkeysValues.publicKeyHex = passkeysPk.value
       const result = new PassKeysParams({
         id: Field(encodeToAsciiNumber(passkeysValues.id)),
         publicKey: Secp256r1.fromHex(passkeysValues.publicKeyHex),
@@ -106,7 +137,8 @@ export const usePasskeysSetup = () => {
     while (true) {
       try {
         const passkeysValues = await usePasskeys();
-        console.log('passkeys values', passkeysValues)
+        const passkeysPk = await fetchPasskeysIdAndPublicKey(passkeysValues.id, store.state.settings.zkOracle)
+        passkeysValues.publicKeyHex = passkeysPk.value
         return new PassKeysParams({
           id: Field(encodeToAsciiNumber(passkeysValues.id)),
           publicKey: Secp256r1.fromHex(passkeysValues.publicKeyHex),

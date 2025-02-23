@@ -228,45 +228,18 @@ export const createPasskeys = async () => {
   };
 
   const credential = await navigator.credentials.create({ publicKey })
-
-  // parse objects
-  const publicKeyHex = parsePublicKeyHex(credential.response.attestationObject);
-  // console.log(publicKeyHex);
-
-  // save for auth
-  window.localStorage.setItem(
-    'id',
-    JSON.stringify({ [credential.id]: publicKeyHex })
-  );
-  // console.log(window.localStorage);
+  return credential
 };
 
 export const usePasskeys = async () => {
-  // suggest latest created key
-  const account = JSON.parse(localStorage.getItem('id'));
-  // console.log(account);
-  let id = null;
-  let publicKeyHex = null;
-  let allowCredentials = [];
-  if (account) {
-    [[id, publicKeyHex]] = Object.entries(account);
-    allowCredentials = [
-      {
-        type: 'public-key',
-        id: base64urlToBuffer(id),
-        transports: [],
-      },
-    ];
-  }
-
   const publicKey = {
     challenge: generateRandomChallenge(),
-    allowCredentials: id ? allowCredentials : [],
+    allowCredentials: [],
     userVerification: 'preferred',
   };
   const assertion = await navigator.credentials.get({ publicKey });
   if (assertion) {
-    id = bufferToBase64(assertion.rawId).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    const id = bufferToBase64(assertion.rawId).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
     const payloadHex = await parsePayloadHex(
       assertion.response.clientDataJSON,
       assertion.response.authenticatorData
@@ -278,7 +251,7 @@ export const usePasskeys = async () => {
 
     return {
       id: id,
-      publicKeyHex: publicKeyHex,
+      // publicKeyHex: passkeys.value,
       payloadHex: payloadHex,
       signatureHex: signatureHex,
     }
