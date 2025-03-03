@@ -237,6 +237,22 @@ onMounted(() => {
 <template>
   <n-spin :show="props.isLoading">
     <div v-if="!props.isLoading">
+      <div v-if="Boolean(props.proofPublicOutput[10])">
+        <n-result
+          status="warning"
+          title="Warning"
+          size="small"
+        >
+        <template #default>
+          <n-text depth="3">
+            This proof was generated using simulated data, not real data.
+          </n-text>
+        </template>
+        </n-result>
+      </div>
+      <br/>
+      <n-divider />
+      <br/>
       <n-space 
         :size="[2, 2]" 
         vertical 
