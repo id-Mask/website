@@ -15,6 +15,7 @@ class PublicOutput extends Struct({
     creatorPublicKey: PublicKey,
     passkeysPublicKey: Secp256r1,
     passkeysId: Field,
+    isMockData: Field,
 }) {
 }
 export const proofOfUniqueHuman = ZkProgram({
@@ -56,10 +57,14 @@ export const proofOfUniqueHuman = ZkProgram({
                 // verify passkeys signature
                 const validSignaturePassKeys = PassKeysParams.signature.verifySignedHash(PassKeysParams.payload, PassKeysParams.publicKey);
                 validSignaturePassKeys.assertTrue();
-                // create hash unique to this person
+                /*
+                  Use personal number (pno) and secret value for the hash, not name or surname:
+                  - Names and surnames can change (e.g., marriage, legal name change), so they're unreliable identifiers.
+                  - Personal numbers are immutable and unique, making them stable identifiers.
+                */
                 const hash = Poseidon.hash([
-                    ...personalData.name.values.map((item) => item.toField()),
-                    ...personalData.surname.values.map((item) => item.toField()),
+                    // ...personalData.name.values.map((item) => item.toField()),
+                    // ...personalData.surname.values.map((item) => item.toField()),
                     ...personalData.pno.values.map((item) => item.toField()),
                     ...secretValue.values.map((item) => item.toField()),
                 ]);
@@ -70,6 +75,7 @@ export const proofOfUniqueHuman = ZkProgram({
                         creatorPublicKey: creatorPublicKey,
                         passkeysPublicKey: PassKeysParams.publicKey,
                         passkeysId: PassKeysParams.id,
+                        isMockData: personalData.isMockData,
                     },
                 };
             },

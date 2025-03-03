@@ -6,11 +6,13 @@ import { sleep } from './../../utils.js'
 import {
   Field,
   Bool,
-  Signature
+  Signature,
+  CircuitString,
 } from 'o1js'
 
 import { compile } from './compile.js'
-import { proofOfSanctions, PublicInput } from './../zkPrograms/ProofOfSanctions.js'
+import { proofOfSanctions, SanctionsData } from './../zkPrograms/ProofOfSanctions.js'
+import { PersonalData } from './../zkPrograms/proof.utils.js'
 import { generateSignature, isWalletAvailable } from './utils/walletUtils.js'
 
 import PasskeysModal from './utils/passkeysModal.vue'
@@ -32,7 +34,7 @@ const emit = defineEmits(['finished', 'isLoading', 'triggerNextStep'])
 const { setupPasskeys } = usePasskeysSetup()
 
 const getOFACData = async () => {
-  const response = await fetch(store.state.settings.zkOracle + 'getOFACmatches', {
+  const response = await fetch(store.state.settings.zkOracle + 'sanctions/getOFACmatches', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -64,7 +66,7 @@ const createProof = async () => {
   emit('finished', false)
 
   // get ofac data and put it to store
-  let msg = message.create('1/3 Verifying your status with OFAC 🌐🕵️‍♀️', { type: 'loading', duration: 10e9 })
+  let msg = message.create('1/4 Verifying your status with OFAC 🌐🕵️‍♀️', { type: 'loading', duration: 10e9 })
   const ofacData = await getOFACData()
   store.state.sanctions.data = ofacData
 
@@ -84,52 +86,45 @@ const createProof = async () => {
     )
   }
 
+  // prepare personal data
+  const pid = store.state.pid.data
+  const personalData = new PersonalData({
+    name: CircuitString.fromString(pid.data.name),
+    surname: CircuitString.fromString(pid.data.surname),
+    country: CircuitString.fromString(pid.data.country),
+    pno: CircuitString.fromString(pid.data.pno),
+    currentDate: Field(pid.data.currentDate),
+    isMockData: Field(pid.data.isMockData),
+  })
+
+  // prepare seanctionsData
+  const sanctionsData = new SanctionsData({
+    isMatched: Bool(ofacData.data.isMatched),
+    minScore: Field(ofacData.data.minScore),
+    currentDate: Field(ofacData.data.currentDate),
+  })
+
+  // generate wallet signature
+  msg.content = '2/4 Crafting your signature 🤫🔐'
+  const [creatorPublicKey, creatorDataSignature] = await generateSignature(
+    sanctionsData.toFields(), 
+    store.state.settings.userSignatureOptions
+  )
+
+  // generate passkeys signature
+  const passkeysParams = await setupPasskeys()
+
   // compile
-  msg.content = "2/3 Compiling zkProgam 🧩🔨"
+  msg.content = "3/4 Compiling zkProgam 🧩🔨"
   await compile(store, props.selectedProof)
 
-  /* pid e.g.:
-  const ofacData = {
-    "data": {
-      "isMatched": 0,
-      "minScore": 95,
-      "currentDate": "2023-11-17"
-    },
-    "signature": {
-      "r": "8385305162155431653982403636492076158195401748235962038052254520261262346192",
-      "s": "20488907727414495015698000834244181034194863548194503532107929980174798919322"
-    },
-    "publicKey": "B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN",
-    "metaData": {
-      "error": false,
-      "sourcesUsed": [
-        {
-          "source": "SDN",
-          "publishDate": "11/16/2023"
-        }
-      ],
-      "matches": {
-        "Douglas Doe": []
-      }
-    }
-  }
-  */
-
-  msg.content = "3/3 Creating the proof 🌈✨"
+  msg.content = "4/4 Creating the proof 🌈✨"
   try {
-    const publicInput = new PublicInput({
-      isMatched: Bool(ofacData.data.isMatched),
-      minScore: Field(ofacData.data.minScore),
-      currentDate: Field(ofacData.data.currentDate),
-    })
-    const [creatorPublicKey, creatorDataSignature] = await generateSignature(
-      publicInput.toFields(), 
-      store.state.settings.userSignatureOptions
-    )
-    const passkeysParams = await setupPasskeys()
 
     const { proof } = await proofOfSanctions.proveSanctions(
-      publicInput,
+      sanctionsData,
+      personalData,
+      Signature.fromJSON(pid.signature),
       Signature.fromJSON(ofacData.signature),
       creatorDataSignature,
       creatorPublicKey,

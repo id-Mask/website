@@ -53,6 +53,7 @@ const createProof = async () => {
     country: CircuitString.fromString(pid.data.country),
     pno: CircuitString.fromString(pid.data.pno),
     currentDate: Field(pid.data.currentDate),
+    isMockData: Field(pid.data.isMockData),
   })
 
   // Craft the signature of the data using wallet or default creds

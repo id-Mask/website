@@ -1,15 +1,5 @@
-import { Field, PublicKey, PrivateKey, Signature, Bool } from 'o1js';
-const verifyOracleData = (isMatched, minScore, currentDate, signature) => {
-    const PUBLIC_KEY = 'B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN';
-    const publicKey = PublicKey.fromBase58(PUBLIC_KEY);
-    const validSignature = signature.verify(publicKey, [
-        isMatched.toField(),
-        minScore,
-        currentDate,
-    ]);
-    return validSignature;
-};
-const zkOracleResponseMock = (isMatched) => {
+import { Field, PrivateKey, Signature, Bool } from 'o1js';
+const zkOracleSanctionsDataResponseMock = (isMatched) => {
     const data = {
         isMatched: isMatched,
         minScore: 95,
@@ -30,5 +20,5 @@ const zkOracleResponseMock = (isMatched) => {
         publicKey: publicKey.toBase58(),
     };
 };
-export { verifyOracleData, zkOracleResponseMock };
+export { zkOracleSanctionsDataResponseMock };
 //# sourceMappingURL=ProofOfSanctions.utils.js.map

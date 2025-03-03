@@ -22,7 +22,7 @@ const state = () => ({
     },
   },
 
-  zkOracle: 'https://id-mask-oracle-e6ngsd55oa-uc.a.run.app/',
+  zkOracle: 'https://id-mask-oracle-624141835646.us-east1.run.app/',
   consoleDebugMode: false,
   userSignatureOptions: {
     requestUserWalletSignature: false,

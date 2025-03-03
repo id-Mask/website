@@ -38,7 +38,7 @@ const data = reactive({
 
 const getSmartIDPID = async () => {
   const url = store.state.settings.zkOracle
-  const sessionData = await fetch(url + 'initiateSession', {
+  const sessionData = await fetch(url + 'smartId/initiateSession', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ const getSmartIDPID = async () => {
   verificationCodeModal.value.show = true
   verificationCodeModal.value.verificationCode = sessionData_.verificationCode
 
-  const response = await fetch(url + 'getData', {
+  const response = await fetch(url + 'smartId/getData', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ const getMockPID = async () => {
   notificationLoading.value = true
 
   const url = store.state.settings.zkOracle
-  const response_ = await fetch(url + 'getSmartIDMockData', {
+  const response_ = await fetch(url + 'smartId/getMockData', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

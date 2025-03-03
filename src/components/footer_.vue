@@ -61,7 +61,7 @@ const updateStatus = async () => {
     (async () => {
       status.value.zkOracle.isLoading = true
       const result = await getEndpointStatus(
-        store.state.settings.zkOracle + 'ping'
+        store.state.settings.zkOracle + 'api/health'
       )
       status.value.zkOracle.status = result
       status.value.zkOracle.isLoading = false

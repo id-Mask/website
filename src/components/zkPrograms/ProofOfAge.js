@@ -16,6 +16,7 @@ class PublicOutput extends Struct({
     creatorPublicKey: PublicKey,
     passkeysPublicKey: Secp256r1,
     passkeysId: Field,
+    isMockData: Field,
 }) {
 }
 export const proofOfAge = ZkProgram({
@@ -32,6 +33,13 @@ export const proofOfAge = ZkProgram({
                 PassKeysParams, // passkeys params
             ],
             async method(ageToProveInYears, personalData, oracleSignature, creatorSignature, creatorPublicKey, PassKeysParams) {
+                /*
+                  Validate ageToProveInYears input to make sure we do not go into the negatives
+                  and keep the age generally in reasonable range.
+                  Note: audit's fidning 3.3
+                */
+                ageToProveInYears.assertGreaterThan(0);
+                ageToProveInYears.assertLessThan(200);
                 /*
                   Verify zk-oracle signature
         
@@ -65,9 +73,10 @@ export const proofOfAge = ZkProgram({
                 // edge case: https://discord.com/channels/484437221055922177/1136989663152840714
                 personalData.currentDate.greaterThan(dateOfBirth).assertTrue();
                 // verify that (current date - age to prove) > date of birth
+                // note: audit's finding 3.6
                 const olderThanAgeToProve = personalData.currentDate
                     .sub(ageToProveInYears.mul(Field(10000)))
-                    .greaterThan(dateOfBirth);
+                    .greaterThanOrEqual(dateOfBirth);
                 olderThanAgeToProve.assertTrue();
                 return {
                     publicOutput: {
@@ -76,6 +85,7 @@ export const proofOfAge = ZkProgram({
                         creatorPublicKey: creatorPublicKey,
                         passkeysPublicKey: PassKeysParams.publicKey,
                         passkeysId: PassKeysParams.id,
+                        isMockData: personalData.isMockData,
                     },
                 };
             },

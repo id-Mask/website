@@ -1,4 +1,4 @@
-import { Field, Provable, } from 'o1js';
+import { Field, Provable } from 'o1js';
 /*
 11 digits (https://learn.microsoft.com/en-us/purview/sit-defn-estonia-personal-identification-code):
 one digit that corresponds to sex and century of birth (odd number male, even number female; 1-2: 19th century; 3-4: 20th century; 5-6: 21st century)

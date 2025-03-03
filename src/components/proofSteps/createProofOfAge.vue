@@ -58,12 +58,14 @@ const createProof = async () => {
 
   // praparations
   const pid = store.state.pid.data
+  console.log(pid)
   const personalData = new PersonalData({
     name: CircuitString.fromString(pid.data.name),
     surname: CircuitString.fromString(pid.data.surname),
     country: CircuitString.fromString(pid.data.country),
     pno: CircuitString.fromString(pid.data.pno),
     currentDate: Field(pid.data.currentDate),
+    isMockData: Field(pid.data.isMockData)
   })
 
   // generate wallet signature
