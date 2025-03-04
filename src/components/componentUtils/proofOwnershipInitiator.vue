@@ -21,16 +21,21 @@ const initSession = async (publicKey) => {
   const url = store.state.settings.zkOracle
 
   // init session
-  const initSessionResponse = await fetch(url + 'createOwnershipSession', {
+  const initSessionResponse = await fetch(url + 'ownership/createSession', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
   })
   const initSessionResponse_ = await initSessionResponse.json()
-  qrCodeUrl.value = `https://idmask.xyz/proofOwnershipValidation?sessionId=${initSessionResponse_.sessionId}`
+  
+  const baseUrl = window.location.origin; // Gets the base URL (e.g., https://yourdomain.com)
+  const path = '/proofOwnershipValidation';
+  const query = `?sessionId=${initSessionResponse_.sessionId}`;
+  qrCodeUrl.value = `${baseUrl}${path}${query}`;
+
   text.value = 'waiting for user to verify ownership'
 
   const getSignatureFromSession = async (session) => {
-    const response = await fetch(url + 'getSignatureFromOwnershipSession', {
+    const response = await fetch(url + 'ownership/getSignature', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(session),

@@ -29,7 +29,7 @@ const postSignatureForSession = async (sessionId, signature) => {
     sessionId: sessionId,
     signature: signature
   }
-  const response = await fetch(url + 'verifyOwnership', {
+  const response = await fetch(url + 'ownership/verify', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(data)
@@ -37,8 +37,9 @@ const postSignatureForSession = async (sessionId, signature) => {
   return response
 }
 
-const signMessage = async () => {
-  const _ = await window.mina.requestAccounts()
+const signMessageAndPostToServer = async () => {
+  // const _ = await window.mina.requestAccounts()
+  const _ = await window.mina.request({ method: 'mina_accounts' })
   const arrayOfFields = urlParams.value.sessionId.split('').map(i => Field(i))
   const arrayOfStrings = arrayOfFields.map(field => field.toString())
   const signature = await window.mina.signFields({ 
@@ -53,7 +54,7 @@ onMounted(async () => {
   console.log('proof ownership validation launched')
   urlParams.value = getUrlParams()
   try {
-    const response = await signMessage()
+    const response = await signMessageAndPostToServer()
     if (response.ok) {
       isFinished.value = true
       message.success('Sucessfully verified!')
