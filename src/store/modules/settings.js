@@ -15,7 +15,7 @@ const state = () => ({
     },
     // TESTNET
     devnet: {
-      networkId: 'testnet',
+      networkId: 'devnet',
       nodeUrl: 'https://api.minascan.io/node/devnet/v1/graphql',
       graphQLURL: 'https://api.minascan.io/archive/devnet/v1/graphql',
       blockExplorer: 'https://minascan.io/devnet/',
