@@ -89,13 +89,13 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
         },
         publicKey: {
           data: getMinaPublicKeyFromProofsOutput(proofsPublicOutput),
-          header: 'Creators Mina wallet public key',
+          header: 'Mina wallet public key',
           emoji: '🔑',
           suffix: null,
         },
         passkey: {
           data: getPasskeysPublicKeyFromProofsOutput(proofsPublicOutput),
-          header: 'Bind passkey public key hex',
+          header: 'Passkey public key hex',
           emoji: '🔑',
           suffix: null
         },
@@ -116,13 +116,13 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
         },
         publicKey: {
           data: getMinaPublicKeyFromProofsOutput(proofsPublicOutput),
-          header: 'Creators public key',
+          header: 'Mina public key',
           emoji: '🔑',
           suffix: null,
         },
         passkey: {
           data: getPasskeysPublicKeyFromProofsOutput(proofsPublicOutput),
-          header: 'Bind passkey public key hex',
+          header: 'Passkey public key hex',
           emoji: '🔑',
           suffix: null
         },
@@ -143,13 +143,13 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
         },
         publicKey: {
           data: getMinaPublicKeyFromProofsOutput(proofsPublicOutput),
-          header: 'Creators public key',
+          header: 'Mina public key',
           emoji: '🔑',
           suffix: null,
         },
         passkey: {
           data: getPasskeysPublicKeyFromProofsOutput(proofsPublicOutput),
-          header: 'Bind passkey public key hex',
+          header: 'Passkey public key hex',
           emoji: '🔑',
           suffix: null
         },
@@ -170,13 +170,13 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
         },
         publicKey: {
           data: getMinaPublicKeyFromProofsOutput(proofsPublicOutput),
-          header: 'Creators public key',
+          header: 'Mina public key',
           emoji: '🔑',
           suffix: null,
         },
         passkey: {
           data: getPasskeysPublicKeyFromProofsOutput(proofsPublicOutput),
-          header: 'Bind passkey public key hex',
+          header: 'Passkey public key hex',
           emoji: '🔑',
           suffix: null
         },
