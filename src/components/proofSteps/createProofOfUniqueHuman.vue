@@ -34,7 +34,7 @@ const { setupPasskeys } = usePasskeysSetup()
 
 const getSecreteValue = async () => {
   const url = store.state.settings.zkOracle
-  const response = await fetch(url + 'getSecretValueOfIdentity', {
+  const response = await fetch(url + 'uniqueHuman/getSecretValue', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(store.state.pid.data),
@@ -68,12 +68,17 @@ const createProof = async () => {
     country: CircuitString.fromString(pid.data.country),
     pno: CircuitString.fromString(pid.data.pno),
     currentDate: Field(pid.data.currentDate),
+    isMockData: Field(pid.data.isMockData)
   })
   const [creatorPublicKey, creatorDataSignature] = await generateSignature(
     personalData.toFields(), 
     store.state.settings.userSignatureOptions
   )
   const passkeysParams = await setupPasskeys()
+  message.create(
+    'Success: your passkeys are set up and ready to be linked to your proof',
+    { type: 'success', duration: 10000, closable: true }
+  )
 
   let msg = message.create('1/3 Crafting your secrets 🤫🔐', { type: 'loading', duration: 10e9 })
   const secretValue = await getSecreteValue()

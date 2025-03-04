@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, h } from 'vue'
+import { ref, h } from 'vue'
 import { useThemeVars, useMessage, useNotification } from 'naive-ui'
 import { useStore } from 'vuex'
 import { sleep } from './../../utils.js'
@@ -90,20 +90,22 @@ const saveProofOnChain = async (
   zkAppAddress
 ) => {
 
-  // connect wallet
-  let msgReactive = message.create("1/7 Connecting wallet 👛", { type: 'loading', duration: 10e9 })
-  // fails because of two wallets installed? https://discord.com/channels/484437221055922177/915745847692636181/1254640605498179595
-  // const accounts = await window.mina.requestAccounts()
-  const accounts = await window.mina.request({ method: 'mina_accounts' })
-  await window.mina.switchChain({ 
-    networkID: `mina:${store.state.settings.networks[store.state.settings.selectedNetwork].networkId}`
-  })
-
-  // start loading animations
-  emit('isLoading', true)
-  isLoading.value = true
-
   try {
+
+    // connect wallet
+    let msgReactive = message.create("1/7 Connecting wallet 👛", { type: 'loading', duration: 10e9 })
+
+    // fails because of two wallets installed? https://discord.com/channels/484437221055922177/915745847692636181/1254640605498179595
+    // const accounts = await window.mina.requestAccounts()
+    // const accounts = await window.mina.request({ method: 'mina_accounts' })
+    await window.mina.switchChain({ 
+      networkID: `mina:${store.state.settings.networks[store.state.settings.selectedNetwork].networkId}`
+    })
+
+    // start loading animations
+    emit('isLoading', true)
+    isLoading.value = true
+
     // setup Mina network
     msgReactive.content = "2/7 Setting up Mina network 🛰️"
     const Network = Mina.Network({
@@ -167,7 +169,7 @@ const saveProofOnChain = async (
       typeof error === 'object' && error !== null
         ? JSON.stringify(error)
         : String(error),
-      { type: 'error', closable: true, duration: 2000, }
+      { type: 'error', closable: true, duration: 20000, }
     );
   } finally {
     isLoading.value = false

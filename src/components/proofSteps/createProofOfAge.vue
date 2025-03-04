@@ -58,7 +58,6 @@ const createProof = async () => {
 
   // praparations
   const pid = store.state.pid.data
-  console.log(pid)
   const personalData = new PersonalData({
     name: CircuitString.fromString(pid.data.name),
     surname: CircuitString.fromString(pid.data.surname),
@@ -77,6 +76,10 @@ const createProof = async () => {
 
   // generate passkeys signature
   const passkeysParams = await setupPasskeys()
+  message.create(
+    'Success: your passkeys are set up and ready to be linked to your proof',
+    { type: 'success', duration: 10000, closable: true }
+  )
 
   // compile
   msg.content = '2/3 Compiling zkProgam 🧩🔨'

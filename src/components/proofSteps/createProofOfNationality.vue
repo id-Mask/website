@@ -65,6 +65,10 @@ const createProof = async () => {
 
   // generate passkeys signature
   const passkeysParams = await setupPasskeys()
+  message.create(
+    'Success: your passkeys are set up and ready to be linked to your proof',
+    { type: 'success', duration: 10000, closable: true }
+  )
 
   // start loading bars
   data.value.isLoading = true
