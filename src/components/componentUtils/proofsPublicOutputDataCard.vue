@@ -4,10 +4,12 @@ import { useMessage } from 'naive-ui'
 import { PublicKey, Field } from 'o1js'
 import { useStore } from 'vuex'
 import ProofOwnershipInitiator from './proofOwnershipInitiator.vue'
+import PasskeysChallangeInitiator from './passkeysChallangeInitiator.vue'
 
 import { 
   Secp256r1,
   toPublicKeyHex,
+  decodeFromAsciiNumber,
 } from './../zkPrograms/proof.utils.js'
 
 const message = useMessage()
@@ -89,13 +91,13 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
         },
         publicKey: {
           data: getMinaPublicKeyFromProofsOutput(proofsPublicOutput),
-          header: 'Mina wallet public key',
+          header: 'Mina public key',
           emoji: '🔑',
           suffix: null,
         },
         passkey: {
           data: getPasskeysPublicKeyFromProofsOutput(proofsPublicOutput),
-          header: 'Passkey public key hex',
+          header: 'Passkey public key',
           emoji: '🔑',
           suffix: null
         },
@@ -122,7 +124,7 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
         },
         passkey: {
           data: getPasskeysPublicKeyFromProofsOutput(proofsPublicOutput),
-          header: 'Passkey public key hex',
+          header: 'Passkey public key',
           emoji: '🔑',
           suffix: null
         },
@@ -149,7 +151,7 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
         },
         passkey: {
           data: getPasskeysPublicKeyFromProofsOutput(proofsPublicOutput),
-          header: 'Passkey public key hex',
+          header: 'Passkey public key',
           emoji: '🔑',
           suffix: null
         },
@@ -176,7 +178,7 @@ const getProcessedPublicDataOfTheProof = (proofsPublicOutput, proofName) => {
         },
         passkey: {
           data: getPasskeysPublicKeyFromProofsOutput(proofsPublicOutput),
-          header: 'Passkey public key hex',
+          header: 'Passkey public key',
           emoji: '🔑',
           suffix: null
         },
@@ -229,6 +231,7 @@ const initProofOwnershipVerification = () => {
 }
 
 onMounted(() => {
+  console.log(props.proofPublicOutput)
   processedProofData.value = getProcessedPublicDataOfTheProof(props.proofPublicOutput, props.proofName)
 })
 
@@ -298,6 +301,17 @@ onMounted(() => {
       </n-statistic>
     </div>
   </n-spin>
+
+  <div 
+    v-if="processedProofData 
+      && processedProofData.passkey 
+      && processedProofData.passkey.data 
+      && processedProofData.passkey.data !== store.state.settings.passkeysOptions.defaultSignatureValues.publicKeyHex">
+    <PasskeysChallangeInitiator
+      :publicKeyHex="processedProofData.passkey.data" 
+      :passkeysID="decodeFromAsciiNumber(BigInt(props.proofPublicOutput[10]))"
+    />
+  </div>
 
   <n-modal v-model:show="proofOwnershipVerification.showQRCodeModal">
     <n-card style="max-width: 30em;">

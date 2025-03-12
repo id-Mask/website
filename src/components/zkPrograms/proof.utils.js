@@ -65,15 +65,21 @@ export const passKeysResponseMock = () => {
         signature: EcdsaP256.fromHex('0x708330e4d634d1446cd955272c514c9a2a963e5cb1bffc5185fd404f7a6ad794274c91e52ebfa9331ce79a558ec7477a38bf43c19463fc034a022311234fa840'),
     };
 };
-// Convert string to concatenated ASCII values
 export const encodeToAsciiNumber = (str) => {
-    return parseInt([...str].map((char) => char.charCodeAt(0)).join(''));
-};
+    return BigInt(
+      str
+        .split('')
+        .map((char) => char.charCodeAt(0))
+        .join('')
+    );
+  };
+  
 // Convert concatenated ASCII values back to string
 export const decodeFromAsciiNumber = (num) => {
     const strNum = num.toString();
     const result = [];
     let i = 0;
+
     while (i < strNum.length) {
         // Try 3-digit ASCII first (for values >= 100)
         if (i + 2 < strNum.length) {
@@ -85,6 +91,7 @@ export const decodeFromAsciiNumber = (num) => {
                 continue;
             }
         }
+
         // Try 2-digit ASCII
         if (i + 1 < strNum.length) {
             const asciiVal = parseInt(strNum.slice(i, i + 2));
@@ -94,11 +101,13 @@ export const decodeFromAsciiNumber = (num) => {
                 continue;
             }
         }
+
         // Single digit
         const asciiVal = parseInt(strNum[i]);
         result.push(String.fromCharCode(asciiVal));
         i += 1;
     }
+
     return result.join('');
 };
 export const toPublicKeyHex = (x, y) => {
