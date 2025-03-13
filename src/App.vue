@@ -8,7 +8,7 @@ import LandingPage from './components/LandingPage.vue'
 import ProofPage from './components/ProofPage.vue'
 import footer_ from './components/footer_.vue'
 import ProofOwnershipValidation from './components/componentUtils/proofOwnershipValidation.vue'
-import PasskeysChallangePage from './components/componentUtils/passkeysChallangePage.vue'
+import PasskeysChallengePage from './components/componentUtils/passkeysChallengePage.vue'
 // import WorkerPOC from './components/workerPOC.vue'
 
 const store = useStore()
@@ -51,8 +51,8 @@ const route = computed(() => {
           <span v-if="route == '/proofOwnershipValidation'">
             <ProofOwnershipValidation/>
           </span>
-          <span v-else-if="route == '/passkeysChallangePage'">
-            <PasskeysChallangePage/>
+          <span v-else-if="route == '/passkeysChallengePage'">
+            <PasskeysChallengePage/>
           </span>
           <span v-else>
             <n-layout>

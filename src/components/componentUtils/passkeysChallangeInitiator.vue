@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useStore } from 'vuex'
-import { Signature, PublicKey, Field } from 'o1js'
 
 const props = defineProps({
   publicKeyHex: String,
@@ -11,33 +10,30 @@ const props = defineProps({
 const store = useStore()
 const qrCodeUrl = ref(null)
 const INTERVAL = 2500
-const isLoading = ref(true)
-let interval = null // this is to stop requests after unmount
+let interval = null // this is to stop requests after unmount or proper response
 
-const additionalCheckIfComponentIsMounted = () => {
-  return window.location.pathname.contains('passkeysChallangePage')
-}
 
 const initSession = async () => {
   const url = store.state.settings.zkOracle
 
   // init session
-  const initSessionResponse = await fetch(url + 'passkeys/createChallangeSession', {
+  const initSessionResponse = await fetch(url + 'passkeys/createChallengeSession', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
   })
   const initSessionResponse_ = await initSessionResponse.json()
+  console.log(initSessionResponse_)
   
-  const baseUrl = window.location.origin; // Gets the base URL (e.g., https://yourdomain.com)
-  const path = '/passkeysChallangePage';
-  const query = `?challange=${initSessionResponse_.challange}&rawId=${props.passkeysID}`;
+  // create the qr code
+  const baseUrl = window.location.origin;
+  const path = '/passkeysChallengePage';
+  const query = `?challenge=${initSessionResponse_.challenge}&rawId=${props.passkeysID}`;
   qrCodeUrl.value = `${baseUrl}${path}${query}`;
 
-  const getSignatureFromSession = async (session) => {
+  const getSignatureForChallenge = async (challenge) => {
 
     const url = store.state.settings.zkOracle
-    const challange = 'atydeu6v';
-    const response = await fetch(`${url}passkeys/getAssertion?request=${challange}`, {
+    const response = await fetch(`${url}passkeys/getAssertion?request=${challenge}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -47,19 +43,22 @@ const initSession = async () => {
     if (response.status === 200) {
       const data = await response.json()
       console.log('ASSERTION OBJECT', data)
+
+      // stop sending requests if got proper response
+      if (Object.keys(data).length > 0) {
+        clearInterval(interval);
+        interval = null;
+      }
     }
   }
 
-  // get signature
-  await getSignatureFromSession(initSessionResponse_)
-  interval = setInterval(() => getSignatureFromSession(initSessionResponse_), INTERVAL)
+  // repeat requests until proper response
+  interval = setInterval(() => getSignatureForChallenge(initSessionResponse_.challenge), INTERVAL)
 
 }
 
 onMounted(async () => {
-  // if (additionalCheckIfComponentIsMounted) {
-    await initSession()
-  // }
+  await initSession()
 })
 
 onUnmounted(() => {

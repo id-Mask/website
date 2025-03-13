@@ -1,15 +1,12 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useStore } from 'vuex'
-import { Signature, Field } from 'o1js'
-import { useMessage } from 'naive-ui'
 import { base64urlToBuffer } from '../proofSteps/utils/passkeysUtils.js'
 
 const urlParams = ref({})
 const store = useStore()
 const isFinished = ref(false)
 const isLoading = ref(true)
-const message = useMessage()
 
 const getUrlParams = () => {
   const url = window.location.href
@@ -24,10 +21,10 @@ const getUrlParams = () => {
   return params;
 };
 
-const postAssertion = async (challange, assertion) => {
+const postAssertion = async (challenge, assertion) => {
   const url = store.state.settings.zkOracle
   const data = {
-    challange: challange,
+    challenge: challenge,
     assertion: assertion,
   }
   const response = await fetch(url + 'passkeys/postAssertion', {
@@ -40,7 +37,7 @@ const postAssertion = async (challange, assertion) => {
 
 const getAssertion = async (rawId) => {
   const publicKeyCredentialCreationOptions = {
-    challenge: Uint8Array.from(urlParams.value.challange, c => c.charCodeAt(0)),
+    challenge: Uint8Array.from(urlParams.value.challenge, c => c.charCodeAt(0)),
     allowCredentials: [{
       type: 'public-key',
       id: base64urlToBuffer(rawId),
@@ -57,10 +54,10 @@ const getAssertion = async (rawId) => {
 }
 
 onMounted(async () => {
-  console.log('passkeys challange launched')
+  console.log('passkeys challenge launched')
   urlParams.value = getUrlParams()
   const credential = await getAssertion(urlParams.value.rawId)
-  const response = await postAssertion(urlParams.value.challange, credential)
+  await postAssertion(urlParams.value.challenge, credential)
   isFinished.value = true
 })
 
@@ -73,9 +70,9 @@ onMounted(async () => {
         <n-card style="max-width: 500px;" hoverable>
           <n-text style="font-size: 8em;">🎒</n-text>
           <br>
-          <n-text :depth="2" style="font-size: 1.5em;">Proof consumer kindly ask you to verify your ownership of the proof</n-text>
+          <n-text :depth="2" style="font-size: 1.5em;">Please verify your ownership of the proof</n-text>
           <br><br>
-          <n-text :depth="3">You will be signing a challange using your passkeys</n-text>
+          <n-text :depth="3">You will be signing a challenge using your passkeys</n-text>
           <br><br>
           <n-text :depth="3">{{ urlParams }}</n-text>
           <br><br>
@@ -85,7 +82,7 @@ onMounted(async () => {
         <div v-else>
           <n-text style="font-size: 8em;">✅</n-text>
           <br>
-          <n-text :depth="2" style="font-size: 1.5em;">Challange signed!</n-text>
+          <n-text :depth="2" style="font-size: 1.5em;">Challenge signed!</n-text>
           <br><br>
           <n-text :depth="3">You're good to go!</n-text>
         </div>
