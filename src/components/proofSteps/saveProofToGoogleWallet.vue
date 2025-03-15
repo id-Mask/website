@@ -61,7 +61,7 @@ const encrypt = async (proofJson, secret) => {
 }
 
 const uploadToIPFS = async (data) => {
-  const url = store.state.settings.zkOracle + 'uploadToIPFS'
+  const url = store.state.settings.zkOracle + 'ipfs/upload'
   const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-type': 'application/json' },
@@ -100,7 +100,7 @@ const save = async () => {
   }
   store.state.settings.consoleDebugMode && console.log('Wallet data:', walletData)
 
-  const url = store.state.settings.zkOracle + 'createGoogeWalletPass'
+  const url = store.state.settings.zkOracle + 'googleWallet/createPass'
   const identifier = generateSecret(12).replace(/[^a-zA-Z0-9]/g, '')
   const response = await fetch(url, {
     method: 'POST',
