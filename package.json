@@ -16,6 +16,7 @@
     "crypto-js": "^4.2.0",
     "highlight.js": "^11.8.0",
     "o1js": "2.2.0",
+    "ox": "^0.6.10",
     "vhook": "^1.0.0",
     "vue": "^3.3.4",
     "vue-qrcode-reader": "^5.5.1",
