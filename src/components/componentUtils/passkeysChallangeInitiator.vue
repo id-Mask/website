@@ -2,7 +2,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useStore } from 'vuex'
 import { useThemeVars } from 'naive-ui'
-import { parseSignatureHex, base64urlToBuffer } from '../proofSteps/utils/passkeysUtils.js' 
+import { parseSignatureHex, parsePayloadHex, base64urlToBuffer } from '../proofSteps/utils/passkeysUtils.js' 
 import * as ox from 'ox'
 
 const props = defineProps({
@@ -18,51 +18,12 @@ const qrCodeUrl = ref(null)
 const INTERVAL = 2500
 let interval = null // this is to stop requests after unmount or proper response
 
-/*
-  why do wee need this instead of the following
-  import { parsePayloadHex } from '../proofSteps/utils/passkeysUtils.js' 
-
-  the above is designed to deal with assertion directly from webauth, 
-  where objects are encoded as byte arrays. Because of our internal API,
-  the assertion object here is base64 string encoded. Therefore it wont work
-  with the default implementation and we need to update it with the logic below.
-
-*/
-const parsePayloadHex = async (clientDataJSON, authenticatorData) => {
-  if (!crypto.subtle) {
-    throw new Error('Web Crypto API is not supported in this browser.');
-  }
-
-  const clientDataJSONBuffer = base64urlToBuffer(clientDataJSON);
-  const hashedClientDataJSON = await crypto.subtle.digest(
-    'SHA-256',
-    clientDataJSONBuffer
-  );
-
-  const authenticatorDataBuffer = base64urlToBuffer(authenticatorData);
-
-  // Concatenate
-  const payload = new Uint8Array(
-    authenticatorDataBuffer.byteLength + hashedClientDataJSON.byteLength
-  );
-  payload.set(new Uint8Array(authenticatorDataBuffer), 0);
-  payload.set(new Uint8Array(hashedClientDataJSON), authenticatorDataBuffer.byteLength);
-
-  const hashedPayload = await crypto.subtle.digest('SHA-256', payload);
-  const payloadHex =
-    '0x' +
-    Array.from(new Uint8Array(hashedPayload))
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('');
-
-  return payloadHex;
-};
 
 const verifyAssertion = async () => {
   const publicKeyHex = props.publicKeyHex
   const payloadHex = await parsePayloadHex(
-    assertion.value.response.clientDataJSON, 
-    assertion.value.response.authenticatorData
+    base64urlToBuffer(assertion.value.response.clientDataJSON), 
+    base64urlToBuffer(assertion.value.response.authenticatorData)
   )
   const signatureHex = parseSignatureHex(assertion.value.response.signature)
 
