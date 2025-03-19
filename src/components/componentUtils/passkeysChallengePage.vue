@@ -2,11 +2,13 @@
 import { ref, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { base64urlToBuffer } from '../proofSteps/utils/passkeysUtils.js'
+import { useMessage } from 'naive-ui'
 
 const urlParams = ref({})
 const store = useStore()
 const isFinished = ref(false)
 const isLoading = ref(true)
+const message = useMessage()
 
 const getUrlParams = () => {
   const url = window.location.href
@@ -50,15 +52,31 @@ const getAssertion = async (rawId) => {
   });
 
   return credential
-
 }
 
+const startClosingCounter = async () => {
+  let remainingTime = 5;
+  const msg = message.loading({ content: `Closing in ${remainingTime}s`, duration: 10e9 });
+
+  const interval = setInterval(() => {
+    remainingTime--;
+    msg.content = `Closing in ${remainingTime}s` // Proper way to update Ant Design message
+    if (remainingTime === 0) {
+      clearInterval(interval);
+      window.close();
+    }
+  }, 1000);
+};
+
 onMounted(async () => {
-  console.log('passkeys challenge launched')
   urlParams.value = getUrlParams()
   const credential = await getAssertion(urlParams.value.rawId)
-  await postAssertion(urlParams.value.challenge, credential)
-  isFinished.value = true
+  const response = await postAssertion(urlParams.value.challenge, credential)
+  console.log(response)
+  if (response.status == 200) {
+    isFinished.value = true
+    // await startClosingCounter()
+  }
 })
 
 </script>
