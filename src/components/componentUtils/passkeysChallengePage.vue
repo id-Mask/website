@@ -56,12 +56,15 @@ const getAssertion = async (rawId) => {
 
 const startClosingCounter = async () => {
   let remainingTime = 5;
-  const msg = message.loading({ content: `Closing in ${remainingTime}s`, duration: 10e9 });
+  console.log('create')
+  const msg = message.info(`Closing in ${remainingTime}s`, { duration: 5000 });
 
   const interval = setInterval(() => {
     remainingTime--;
+    console.log(remainingTime)
     msg.content = `Closing in ${remainingTime}s` // Proper way to update Ant Design message
     if (remainingTime === 0) {
+      console.log('inner')
       clearInterval(interval);
       window.close();
     }
@@ -75,13 +78,14 @@ onMounted(async () => {
   console.log(response)
   if (response.status == 200) {
     isFinished.value = true
-    // await startClosingCounter()
+    await startClosingCounter()
   }
 })
 
 </script>
 
 <template>
+  <n-layout>
     <n-flex justify="center" style="height: 100vh;">
       <n-flex justify="center" style="text-align: center;" vertical>
       <div v-if="!isFinished">
@@ -106,6 +110,7 @@ onMounted(async () => {
         </div>
       </n-flex>
     </n-flex>
+  </n-layout>
 </template>
 
 <style>
