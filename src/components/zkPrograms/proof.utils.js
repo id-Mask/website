@@ -59,27 +59,23 @@ export const zkOracleResponseMock = () => {
 };
 export const passKeysResponseMock = () => {
     return {
-        id: Field(parseInt([...'qaJp7BwUkIObDyRE5o_xNg'].map((char) => char.charCodeAt(0)).join(''))),
+        id: Field(BigInt([...'qaJp7BwUkIObDyRE5o_xNg'].map((char) => char.charCodeAt(0)).join(''))),
         publicKey: Secp256r1.fromHex('0x04f233d2c2db88ea7c936939cea21f22f1d308d3f527969f5e73ef49b47245d80c8abc0824030a31ee43dfba8419e5044f1f9e82d4e72d73b847b8ffd5f606d0a8'),
         payload: Secp256r1.Scalar.from('0xecaa80f4b8f73bec3100e49e601a9ffbf194d4d6b1610701aafdcc390a4ca953'),
         signature: EcdsaP256.fromHex('0x708330e4d634d1446cd955272c514c9a2a963e5cb1bffc5185fd404f7a6ad794274c91e52ebfa9331ce79a558ec7477a38bf43c19463fc034a022311234fa840'),
     };
 };
 export const encodeToAsciiNumber = (str) => {
-    return BigInt(
-      str
+    return BigInt(str
         .split('')
         .map((char) => char.charCodeAt(0))
-        .join('')
-    );
-  };
-  
+        .join(''));
+};
 // Convert concatenated ASCII values back to string
 export const decodeFromAsciiNumber = (num) => {
     const strNum = num.toString();
     const result = [];
     let i = 0;
-
     while (i < strNum.length) {
         // Try 3-digit ASCII first (for values >= 100)
         if (i + 2 < strNum.length) {
@@ -91,7 +87,6 @@ export const decodeFromAsciiNumber = (num) => {
                 continue;
             }
         }
-
         // Try 2-digit ASCII
         if (i + 1 < strNum.length) {
             const asciiVal = parseInt(strNum.slice(i, i + 2));
@@ -101,13 +96,11 @@ export const decodeFromAsciiNumber = (num) => {
                 continue;
             }
         }
-
         // Single digit
         const asciiVal = parseInt(strNum[i]);
         result.push(String.fromCharCode(asciiVal));
         i += 1;
     }
-
     return result.join('');
 };
 export const toPublicKeyHex = (x, y) => {
