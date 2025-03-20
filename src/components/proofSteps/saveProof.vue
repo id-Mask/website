@@ -96,8 +96,9 @@ const saveProofOnChain = async (
     let msgReactive = message.create("1/7 Connecting wallet 👛", { type: 'loading', duration: 10e9 })
 
     // fails because of two wallets installed? https://discord.com/channels/484437221055922177/915745847692636181/1254640605498179595
-    // const accounts = await window.mina.requestAccounts()
+    const accounts = await window.mina.requestAccounts()
     // const accounts = await window.mina.request({ method: 'mina_accounts' })
+    
     await window.mina.switchChain({ 
       networkID: `mina:${store.state.settings.networks[store.state.settings.selectedNetwork].networkId}`
     })
