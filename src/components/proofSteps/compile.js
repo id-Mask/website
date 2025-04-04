@@ -27,35 +27,22 @@ const getCacheFiles = async (proofName) => {
     proofOfAge: [
       { name:'srs-fp-65536', type: 'string' },
       { name:'srs-fq-32768', type: 'string' },
-      { name:'lagrange-basis-fp-16384', type: 'string' },
-      { name:'lagrange-basis-fq-8192', type: 'string' },
       { name:'step-pk-zkproofofage-proveage', type: 'string' },
       { name:'step-vk-zkproofofage-proveage', type: 'string' },
       { name:'wrap-pk-zkproofofage', type: 'string' },
       { name:'wrap-vk-zkproofofage', type: 'string' },
     ],
     proofOfSanctions: [
-
-      /*
-      * Something's wrong with the cache. Cant get it to work for this zk-program
-      * It just freezes on compilation if this cache is mounted. 
-      * Not sure how to fix, so just disabling it completely.
-      */
-
-      // { name:'srs-fp-65536', type: 'string' },
-      // { name:'srs-fq-32768', type: 'string' },
-      // { name:'lagrange-basis-fp-16384', type: 'string' },
-      // { name:'lagrange-basis-fq-8192', type: 'string' },
-      // { name:'step-pk-zkproofofsanctions-provesanctions', type: 'string' },
-      // { name:'step-vk-zkproofofsanctions-provesanctions', type: 'string' },
-      // { name:'wrap-pk-zkproofofsanctions', type: 'string' },
-      // { name:'wrap-vk-zkproofofsanctions', type: 'string' },
+      { name:'srs-fp-65536', type: 'string' },
+      { name:'srs-fq-32768', type: 'string' },
+      { name:'step-pk-zkproofofsanctions-provesanctions', type: 'string' },
+      { name:'step-vk-zkproofofsanctions-provesanctions', type: 'string' },
+      { name:'wrap-pk-zkproofofsanctions', type: 'string' },
+      { name:'wrap-vk-zkproofofsanctions', type: 'string' },
     ],
     proofOfUniqueHuman: [
       { name:'srs-fp-65536', type: 'string' },
       { name:'srs-fq-32768', type: 'string' },
-      { name:'lagrange-basis-fp-16384', type: 'string' },
-      { name:'lagrange-basis-fq-8192', type: 'string' },
       { name:'step-pk-zkproofofuniquehuman-proveuniquehuman', type: 'string' },
       { name:'step-vk-zkproofofuniquehuman-proveuniquehuman', type: 'string' },
       { name:'wrap-pk-zkproofofuniquehuman', type: 'string' },
@@ -64,8 +51,6 @@ const getCacheFiles = async (proofName) => {
     proofOfNationality: [
       { name:'srs-fp-65536', type: 'string' },
       { name:'srs-fq-32768', type: 'string' },
-      { name:'lagrange-basis-fp-16384', type: 'string' },
-      { name:'lagrange-basis-fq-8192', type: 'string' },
       { name:'step-pk-zkproofofnationality-provenationality', type: 'string' },
       { name:'step-vk-zkproofofnationality-provenationality', type: 'string' },
       { name:'wrap-pk-zkproofofnationality', type: 'string' },
@@ -75,7 +60,7 @@ const getCacheFiles = async (proofName) => {
 
   const fetchFiles = async (proofName) => {
     const files = cacheFileByProof[proofName];
-    const url = `https://storage.googleapis.com/id-mask-config/cache_v1/${proofName}/`;
+    const url = `https://storage.googleapis.com/id-mask-config/cache_v2/${proofName}/`;
 
     return Promise.all(files.map((file) => {
       return Promise.all([
