@@ -38,7 +38,6 @@ const message = useMessage()
 const store = useStore()
 const themeVars = useThemeVars()
 const data = ref({
-  proof: {mock: 'mock'},
   isLoading: false,
 })
 
@@ -133,9 +132,9 @@ const saveProofOnChain = async (
 
     // create transaction
     msgReactive.content = "5/7 Creating zk proof ⚗️"
+    const zkApp = new SmartContractProgram(zkAppAddress_);
     const tx = await Mina.transaction( async () => {
-      let zkApp = new SmartContractProgram(zkAppAddress_);
-      zkApp.verifyProof(proof);
+      await zkApp.verifyProof(proof);
     });
     await tx.prove();
 
