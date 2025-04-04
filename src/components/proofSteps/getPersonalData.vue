@@ -242,7 +242,7 @@ watch(() => data.personalIdentificationNumber, (_personalIdentificationNumber) =
             />
           </n-input-group>
         </n-tab-pane>
-        <n-tab-pane name="Ausweisapp" tab="Ausweis-app" disabled></n-tab-pane>
+        <!-- <n-tab-pane name="Ausweisapp" tab="Ausweis-app" disabled></n-tab-pane>? -->
         <!-- <n-tab-pane name="Ausweisapp" tab="zk-Passport" disabled></n-tab-pane> -->
       </n-tabs>
     </n-space>
