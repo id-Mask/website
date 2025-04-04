@@ -19,7 +19,7 @@ const contactsModal = ref(false)
       <n-button size="tiny" quaternary @click="ppModal = true">Privacy Policy</n-button>
     </div>
     <div>
-      <n-button size="tiny" quaternary @click="imprintModal = true">Imprint</n-button>
+      <!-- <n-button size="tiny" quaternary @click="imprintModal = true">Imprint</n-button> -->
       <n-button size="tiny" quaternary @click="contactsModal = true">Contacts</n-button>
     </div>
   </n-space>
