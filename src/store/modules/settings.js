@@ -2,7 +2,7 @@
 const state = () => ({
   state: null,
   emoji: null,
-  useCache: true,
+  useCache: false,
 
   selectedNetwork: 'devnet',
   networks: {
@@ -22,7 +22,7 @@ const state = () => ({
     },
   },
 
-  zkOracle: 'https://id-mask-oracle-624141835646.us-east1.run.app/',
+  zkOracle: 'https://id-mask-oracle-624141835646.us-central1.run.app/',
   consoleDebugMode: false,
   userSignatureOptions: {
     requestUserWalletSignature: false,
