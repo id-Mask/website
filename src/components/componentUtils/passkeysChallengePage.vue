@@ -73,12 +73,14 @@ const startClosingCounter = async () => {
 
 onMounted(async () => {
   urlParams.value = getUrlParams()
+  console.log('LOG - challange params:', urlParams.value)
   const credential = await getAssertion(urlParams.value.rawId)
+  console.log('LOG - credentials:', credential)
   const response = await postAssertion(urlParams.value.challenge, credential)
-  console.log(response)
+  console.log('LOG - post assertion response:', await response.json())
   if (response.status == 200) {
     isFinished.value = true
-    await startClosingCounter()
+    // await startClosingCounter()
   }
 })
 
