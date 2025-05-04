@@ -83,7 +83,7 @@ const createProof = async () => {
 
   // compile
   msg.content = '2/3 Compiling zkProgam 🧩🔨'
-  await compile(store, props.selectedProof, { useCache: store.state.settings })
+  await compile(store, props.selectedProof, { useCache: store.state.settings.useCache })
 
   /* pid e.g.:
   const pid = {
