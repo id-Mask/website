@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, inject } from 'vue'
 import { useStore } from 'vuex'
 import getPersonalData from './proofSteps/getPersonalData.vue'
 import createProofOfAge from './proofSteps/createProofOfAge.vue'
@@ -10,7 +10,7 @@ import saveProof from './proofSteps/saveProof.vue'
 import { useIsMobile } from '../utils.js'
 import { useLoadingBar } from 'naive-ui';
 
-
+const loadingBarTargetRef = inject('loadingBarTargetRef')
 const loadingBar = useLoadingBar()
 const store = useStore()
 const isMobile = useIsMobile()
@@ -136,6 +136,7 @@ watch(() => props.selectedProof, () => {
 
 <template>
   <br>
+
   <n-card
     :segmented="{ content: true, footer: 'soft' }"
     :header-extra-style="{'align-items': 'start'}"
@@ -199,6 +200,20 @@ watch(() => props.selectedProof, () => {
     </n-space>
     </template>
 
+    <div
+      ref="loadingBarTargetRef"
+      style="
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        border-radius: var(--n-border-radius);
+        overflow: hidden;
+        pointer-events: none;
+      "
+    />
+
     <!-- https://vuejs.org/guide/built-ins/keep-alive.html#basic-usage -->
     <KeepAlive>
       <component
@@ -210,9 +225,8 @@ watch(() => props.selectedProof, () => {
       />
     </KeepAlive>
     <br/>
-    <template #action>
-    </template>
   </n-card>
+
 </template>
 
 <style>

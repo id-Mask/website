@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, provide } from 'vue'
 import { useStore } from 'vuex'
 import { useBreakpoint } from 'vooks'
 
@@ -13,6 +13,8 @@ import PasskeysChallengePage from './components/componentUtils/passkeysChallenge
 
 const store = useStore()
 const breakpoint = useBreakpoint()
+const loadingBarTargetRef = ref(void 0)
+provide('loadingBarTargetRef', loadingBarTargetRef)
 
 const padding = computed(() => {
   const breakpoints = {
@@ -39,7 +41,7 @@ const route = computed(() => {
 
   <n-config-provider :theme="store.getters['theme/getTheme']" :theme-overrides="store.getters['theme/getThemeOverrides']">
     <n-notification-provider placement='bottom-right'>
-      <n-loading-bar-provider>
+      <n-loading-bar-provider :to="loadingBarTargetRef" container-style="position: absolute;">
         <n-message-provider>
 
           <!-- 
