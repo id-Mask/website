@@ -46,7 +46,7 @@ const getSmartIDPID = async () => {
     body: JSON.stringify({
       pno: data.personalIdentificationNumber,
       country: data.selectedCountry,
-      displayText: '🙋, this is idMask requesting your data 🙌'
+      displayText: 'ID-Mask is requesting your data 🙋'
     }),
   })
   const sessionData_ = await sessionData.json()
