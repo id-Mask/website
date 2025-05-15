@@ -25,17 +25,8 @@
 
 */
 
-import { proofOfAge } from '.././zkPrograms/ProofOfAge.js'
-import { proofOfSanctions } from '.././zkPrograms/ProofOfSanctions.js'
-import { proofOfUniqueHuman } from '.././zkPrograms/ProofOfUniqueHuman.js'
-import { proofOfNationality } from '.././zkPrograms/ProofOfNationality.js'
-
-const proofs = {
-  proofOfAge: proofOfAge,
-  proofOfSanctions: proofOfSanctions,
-  proofOfUniqueHuman: proofOfUniqueHuman,
-  proofOfNationality: proofOfNationality,
-}
+import { getProofWorker } from './utils/proofWorker.singleton.js';
+const proofWorker = getProofWorker();
 
 const getCacheFiles = async (proofName) => {
   console.log(`fetching cache of ${proofName}`)
@@ -135,7 +126,8 @@ const compile = async (store, proofName, { useCache = true } = {}) => {
       cacheFiles = await getCacheFiles(proofName);
       ({ verificationKey } = await proofs[proofName].compile({ cache: FileSystem(cacheFiles) }));
     } else {
-      ({ verificationKey } = await proofs[proofName].compile());
+      // ({ verificationKey } = await proofs[proofName].compile());
+      ({ verificationKey } = await proofWorker.compile(proofName))
     }
     console.timeEnd(`compiling ${proofName}`);
     store.state.proofs.data[proofName].verificationKey = verificationKey;

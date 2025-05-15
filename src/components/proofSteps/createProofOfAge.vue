@@ -11,12 +11,13 @@ import {
 } from 'o1js'
 
 import { compile } from './compile.js'
-import { proofOfAge } from './../zkPrograms/ProofOfAge.js'
 import { PersonalData } from './../zkPrograms/proof.utils.js'
-
 import PasskeysModal from './utils/passkeysModal.vue'
 import { usePasskeysSetup } from './utils/passkeysSetup'
 
+import { getProofWorker } from './utils/proofWorker.singleton.js';
+
+const proofWorker = getProofWorker();
 const message = useMessage()
 const store = useStore()
 const data = ref({
@@ -110,7 +111,15 @@ const createProof = async () => {
 
   msg.content = "3/3 Creating the proof 🌈✨"
   try {
-    const { proof } = await proofOfAge.proveAge(
+    // const { proof } = await proofOfAge.proveAge(
+    //   Field(data.value.ageToProveInYears),
+    //   personalData,
+    //   Signature.fromJSON(pid.signature),
+    //   creatorDataSignature,
+    //   creatorPublicKey,
+    //   passkeysParams,
+    // );
+    const { proof } = await proofWorker.proveAge(
       Field(data.value.ageToProveInYears),
       personalData,
       Signature.fromJSON(pid.signature),
