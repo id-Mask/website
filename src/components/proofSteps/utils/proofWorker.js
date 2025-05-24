@@ -25,8 +25,11 @@ const workerApi = {
   // verify
   async verify(proof, verificationKey) {
     console.log(verificationKey)
-    const vk = new VerificationKey()
-    return await verify(proof, vk.fromJSON(verificationKey));
+    const vk = new VerificationKey({
+      data: verificationKey.data,
+      hash: Field(verificationKey.hash)
+    })
+    return await verify(proof, vk);
   },
 
   // run zk-program methods
