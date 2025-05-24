@@ -1,5 +1,4 @@
 import {
-  PublicKey,
   PrivateKey,
   Signature,
 } from 'o1js'
@@ -30,7 +29,10 @@ const generateSignatureUsingDefaultKeys = (fieldsArray, privateKey) => {
     creatorPrivateKey,
     fieldsArray
   );
-  return [creatorPublicKey, creatorDataSignature]
+  return {
+    publicKey: creatorPublicKey.toBase58(),
+    signature: creatorDataSignature.toJSON(),
+  }
 }
 
 const generateSignatureUsingAuroWallet = async (fieldsArray) => {
@@ -45,10 +47,10 @@ const generateSignatureUsingAuroWallet = async (fieldsArray) => {
   const signedData = await window.mina.signFields({
     message: stringsArray
   });
-  const creatorPublicKey = PublicKey.fromBase58(signedData.publicKey);
-  const creatorDataSignature = Signature.fromBase58(signedData.signature);
-
-  return [creatorPublicKey, creatorDataSignature]
+  return {
+    publicKey: signedData.publicKey,
+    signature: signedData.signature
+  }
 }
 
 /*
@@ -56,7 +58,7 @@ const generateSignatureUsingAuroWallet = async (fieldsArray) => {
   entry function to be called to collect either a default signature or  
   proper signature created by the user using Auro wallet.
 */
-export const generateSignature = async (fieldsArray, userSignatureOptions) => {
+export const generateCreatorAccountSignature = async (fieldsArray, userSignatureOptions) => {
   const useAuroWallet = userSignatureOptions.requestUserWalletSignature
   if (useAuroWallet) {
     return await generateSignatureUsingAuroWallet(fieldsArray)

@@ -12,7 +12,7 @@ import {
 import { compile } from './compile.js'
 import { proofOfUniqueHuman } from './../zkPrograms/ProofOfUniqueHuman.js'
 import { PersonalData } from './../zkPrograms/proof.utils.js'
-import { generateSignature, isWalletAvailable } from './utils/walletUtils.js'
+import { generateCreatorAccountSignature, isWalletAvailable } from './utils/walletUtils.js'
 
 import PasskeysModal from './utils/passkeysModal.vue'
 import { usePasskeysSetup } from './utils/passkeysSetup'
@@ -87,7 +87,7 @@ const createProof = async () => {
     console.log('Your secrets:', secretValue)
   }
 
-  msg.content = "2/3 Compiling zkProgam 🧩🔨"
+  msg.content = "2/3 Compiling zkProgam 🛠️"
   await compile(store, props.selectedProof, { useCache: store.state.settings.useCache })
 
   /* pid e.g.:

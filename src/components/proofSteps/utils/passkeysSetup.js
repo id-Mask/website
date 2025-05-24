@@ -1,13 +1,7 @@
 import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { createPasskeys, usePasskeys, parsePublicKeyHex, bufferToBase64 } from './passkeysUtils.js'
-import { Field } from 'o1js'
-import {
-  PassKeysParams,
-  Secp256r1,
-  EcdsaP256,
-  encodeToAsciiNumber
-} from '../../zkPrograms/proof.utils.js'
+import { PassKeys } from '../../zkPrograms/proof.utils.js'
 
 /*
 Passkeys Setup Flow Explained:
@@ -24,7 +18,7 @@ The flow is as follows:
 2. **Main Function - setupPasskeys**:
    - Checks if `requestPasskeysSignature` is disabled. If disabled, it returns default passkeys immediately.
    - If enabled, it tries to retrieve passkeys using `usePasskeys()`.
-   - On success, constructs `PassKeysParams` and returns it.
+   - On success, constructs `PassKeys` and returns it.
    - On failure, it calls `handleModal()` to show the modal, waiting for the user to take action.
    - If the user action yields a valid result, it returns that result; otherwise, it throws a "Passkeys setup failed" error.
 
@@ -37,7 +31,7 @@ The flow is as follows:
    - Takes a user `choice` (e.g., 'create').
    - If the user chooses 'create', it calls `createPasskeys()`.
    - Then retrieves passkeys using `usePasskeys()`.
-   - If retrieval succeeds, it constructs `PassKeysParams` and resolves the promise stored in `modalResolve`.
+   - If retrieval succeeds, it constructs `PassKeys` and resolves the promise stored in `modalResolve`.
    - If retrieval fails, it logs the error and resolves the promise with `null`.
    - Finally, it sets `showModal` to `false` to hide the modal.
 
@@ -45,14 +39,14 @@ The flow is as follows:
 
 ```plaintext
 setupPasskeys()
-    └─> usePasskeys()  → Success → Return PassKeysParams
+    └─> usePasskeys()  → Success → Return PassKeys
                   └─> Failure → handleModal()
                                    └─> showModal = true
                                         ↓
                               User interacts with modal
                                         ↓
                            handleChoice(choice)
-                                ├─> choice = 'create' → createPasskeys() → usePasskeys() → Success → Resolve promise with PassKeysParams
+                                ├─> choice = 'create' → createPasskeys() → usePasskeys() → Success → Resolve promise with PassKeys
                                 ├─> failure → Resolve promise with null
                                 └─> showModal = false
 */
@@ -106,13 +100,9 @@ export const usePasskeysSetup = () => {
       }
       const passkeysValues = await usePasskeys();
       const passkeysPk = await fetchPasskeysIdAndPublicKey(passkeysValues.id, store.state.settings.zkOracle)
-      passkeysValues.publicKeyHex = passkeysPk.value
-      const result = new PassKeysParams({
-        id: Field(encodeToAsciiNumber(passkeysValues.id)),
-        publicKey: Secp256r1.fromHex(passkeysValues.publicKeyHex),
-        payload: Secp256r1.Scalar.from(passkeysValues.payloadHex),
-        signature: EcdsaP256.fromHex(passkeysValues.signatureHex),
-      });
+      passkeysValues.publicKey = passkeysPk.value
+      console.log(passkeysValues)
+      const result = new PassKeys(passkeysValues);
   
       if (modalResolve.value) {
         modalResolve.value(result);
@@ -126,25 +116,15 @@ export const usePasskeysSetup = () => {
 
   const setupPasskeys = async () => {
     if (!store.state.settings.passkeysOptions.requestPasskeysSignature) {
-      return new PassKeysParams({
-        id: Field(encodeToAsciiNumber(store.state.settings.passkeysOptions.defaultSignatureValues.id)),
-        publicKey: Secp256r1.fromHex(store.state.settings.passkeysOptions.defaultSignatureValues.publicKeyHex),
-        payload: Secp256r1.Scalar.from(store.state.settings.passkeysOptions.defaultSignatureValues.payloadHex),
-        signature: EcdsaP256.fromHex(store.state.settings.passkeysOptions.defaultSignatureValues.signatureHex),
-      });
+      return new PassKeys(store.state.settings.passkeysOptions.defaultSignatureValues);
     }
   
     while (true) {
       try {
         const passkeysValues = await usePasskeys();
         const passkeysPk = await fetchPasskeysIdAndPublicKey(passkeysValues.id, store.state.settings.zkOracle)
-        passkeysValues.publicKeyHex = passkeysPk.value
-        return new PassKeysParams({
-          id: Field(encodeToAsciiNumber(passkeysValues.id)),
-          publicKey: Secp256r1.fromHex(passkeysValues.publicKeyHex),
-          payload: Secp256r1.Scalar.from(passkeysValues.payloadHex),
-          signature: EcdsaP256.fromHex(passkeysValues.signatureHex),
-        });
+        passkeysValues.publicKey = passkeysPk.value
+        return new PassKeys(passkeysValues);
       } catch (error) {
         const result = await handleModal();
         if (result) {

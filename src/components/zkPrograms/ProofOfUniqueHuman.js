@@ -7,8 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Field, method, Signature, SmartContract, Permissions, Struct, ZkProgram, Poseidon, CircuitString, PublicKey, } from 'o1js';
-import { PersonalData, PassKeysParams, Secp256r1 } from './proof.utils.js';
+import { Field, method, SmartContract, Permissions, Struct, ZkProgram, Poseidon, PublicKey, } from 'o1js';
+import { PersonalData, PassKeys, Secp256r1, CreatorAccount, } from './proof.utils.js';
+import { PersonalSecretValue } from './ProofOfUniqueHuman.utils.js';
 class PublicOutput extends Struct({
     hash: Field,
     currentDate: Field,
@@ -26,17 +27,14 @@ export const proofOfUniqueHuman = ZkProgram({
         proveUniqueHuman: {
             privateInputs: [
                 PersonalData,
-                Signature, // zkOracle data signature
-                CircuitString, // unique secret value
-                Signature, // signature of unique secret value
-                Signature, // creator wallet signature
-                PublicKey, // creator wallet public key
-                PassKeysParams, // passkeys params
+                PersonalSecretValue, // unique secret value
+                CreatorAccount,
+                PassKeys, // passkeys params
             ],
-            async method(personalData, personalDataSignature, secretValue, secretValueSignature, creatorSignature, creatorPublicKey, PassKeysParams) {
+            async method(personalData, personalSecretValue, creatorAccount, PassKeys) {
                 const oraclePublicKey = PublicKey.fromBase58('B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN');
                 // verify data inputs
-                const validSignatureOracle = personalDataSignature.verify(oraclePublicKey, personalData.toFields());
+                const validSignatureOracle = personalData.signature.verify(oraclePublicKey, personalData.toFields());
                 validSignatureOracle.assertTrue();
                 /*
                   Why use SecretValue?
@@ -49,13 +47,13 @@ export const proofOfUniqueHuman = ZkProgram({
                   Instead of: hash(name, surname, pno), do: hash(name, surname, pno, secretvalue)
         
                 */
-                const validSecretValue = secretValueSignature.verify(oraclePublicKey, secretValue.values.map((item) => item.toField()));
+                const validSecretValue = personalSecretValue.signature.verify(oraclePublicKey, personalSecretValue.toFields());
                 validSecretValue.assertTrue();
                 // verify creator signature
-                const validSignatureWallet = creatorSignature.verify(creatorPublicKey, personalData.toFields());
+                const validSignatureWallet = creatorAccount.signature.verify(creatorAccount.publicKey, personalData.toFields());
                 validSignatureWallet.assertTrue();
                 // verify passkeys signature
-                const validSignaturePassKeys = PassKeysParams.signature.verifySignedHash(PassKeysParams.payload, PassKeysParams.publicKey);
+                const validSignaturePassKeys = PassKeys.signature.verifySignedHash(PassKeys.payload, PassKeys.publicKey);
                 validSignaturePassKeys.assertTrue();
                 /*
                   Use personal number (pno) and secret value for the hash, not name or surname:
@@ -66,15 +64,15 @@ export const proofOfUniqueHuman = ZkProgram({
                     // ...personalData.name.values.map((item) => item.toField()),
                     // ...personalData.surname.values.map((item) => item.toField()),
                     ...personalData.pno.values.map((item) => item.toField()),
-                    ...secretValue.values.map((item) => item.toField()),
+                    ...personalSecretValue.toFields(),
                 ]);
                 return {
                     publicOutput: {
                         hash: hash,
                         currentDate: personalData.currentDate,
-                        creatorPublicKey: creatorPublicKey,
-                        passkeysPublicKey: PassKeysParams.publicKey,
-                        passkeysId: PassKeysParams.id,
+                        creatorPublicKey: creatorAccount.publicKey,
+                        passkeysPublicKey: PassKeys.publicKey,
+                        passkeysId: PassKeys.id,
                         isMockData: personalData.isMockData,
                     },
                 };

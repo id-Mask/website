@@ -7,8 +7,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Field, method, Signature, SmartContract, Permissions, PublicKey, Struct, ZkProgram, } from 'o1js';
-import { PersonalData, PassKeysParams, Secp256r1 } from './proof.utils.js';
+import { Field, method, SmartContract, Permissions, PublicKey, Struct, ZkProgram, } from 'o1js';
+import { PersonalData, PassKeys, Secp256r1, CreatorAccount, } from './proof.utils.js';
 import { parseDateFromPNO } from './ProofOfAge.utils.js';
 class PublicOutput extends Struct({
     ageToProveInYears: Field,
@@ -27,12 +27,10 @@ export const proofOfAge = ZkProgram({
         proveAge: {
             privateInputs: [
                 PersonalData,
-                Signature, // zkOracle data signature
-                Signature, // creator wallet signature
-                PublicKey, // creator wallet public key
-                PassKeysParams, // passkeys params
+                CreatorAccount,
+                PassKeys, // passkeys params
             ],
-            async method(ageToProveInYears, personalData, oracleSignature, creatorSignature, creatorPublicKey, PassKeysParams) {
+            async method(ageToProveInYears, personalData, creatorAccount, passKeys) {
                 /*
                   Validate ageToProveInYears input to make sure we do not go into the negatives
                   and keep the age generally in reasonable range.
@@ -47,7 +45,7 @@ export const proofOfAge = ZkProgram({
                   untampered with and aligns precisely with the information provided by
                   the KYC/digital ID provider.
                 */
-                const validSignatureOracle = oracleSignature.verify(PublicKey.fromBase58('B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN'), personalData.toFields());
+                const validSignatureOracle = personalData.signature.verify(PublicKey.fromBase58('B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN'), personalData.toFields());
                 validSignatureOracle.assertTrue();
                 /*
                   Verify creatorSignature
@@ -59,14 +57,14 @@ export const proofOfAge = ZkProgram({
                   prompting the user to sign a superficial message and provide evidence of ownership
                   of the corresponding account.
                 */
-                const validSignatureWallet = creatorSignature.verify(creatorPublicKey, personalData.toFields());
+                const validSignatureWallet = creatorAccount.signature.verify(creatorAccount.publicKey, personalData.toFields());
                 validSignatureWallet.assertTrue();
                 /*
                   verify passkeys signature: The rationale behind this is to bind the proof to passkeys.
                   same as with creatorSignature. In fact this is a better replacement for it. We can
                   depreciate creatorSignature in the future.
                 */
-                const validSignaturePassKeys = PassKeysParams.signature.verifySignedHash(PassKeysParams.payload, PassKeysParams.publicKey);
+                const validSignaturePassKeys = passKeys.signature.verifySignedHash(passKeys.payload, passKeys.publicKey);
                 validSignaturePassKeys.assertTrue();
                 // parse date of birth from pno
                 const dateOfBirth = parseDateFromPNO(personalData.pno);
@@ -82,9 +80,9 @@ export const proofOfAge = ZkProgram({
                     publicOutput: {
                         ageToProveInYears: ageToProveInYears,
                         currentDate: personalData.currentDate,
-                        creatorPublicKey: creatorPublicKey,
-                        passkeysPublicKey: PassKeysParams.publicKey,
-                        passkeysId: PassKeysParams.id,
+                        creatorPublicKey: creatorAccount.publicKey,
+                        passkeysPublicKey: passKeys.publicKey,
+                        passkeysId: passKeys.id,
                         isMockData: personalData.isMockData,
                     },
                 };

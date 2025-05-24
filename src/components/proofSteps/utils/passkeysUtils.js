@@ -252,8 +252,8 @@ export const usePasskeys = async () => {
     return {
       id: id,
       // publicKeyHex: passkeys.value,
-      payloadHex: payloadHex,
-      signatureHex: signatureHex,
+      payload: payloadHex,
+      signature: signatureHex,
     }
   }
 };

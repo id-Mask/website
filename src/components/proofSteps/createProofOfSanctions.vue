@@ -11,9 +11,10 @@ import {
 } from 'o1js'
 
 import { compile } from './compile.js'
-import { proofOfSanctions, SanctionsData } from './../zkPrograms/ProofOfSanctions.js'
+import { proofOfSanctions } from './../zkPrograms/ProofOfSanctions.js'
+import { SanctionsData } from './../zkPrograms/ProofOfSanctions.utils.js'
 import { PersonalData } from './../zkPrograms/proof.utils.js'
-import { generateSignature, isWalletAvailable } from './utils/walletUtils.js'
+import { generateCreatorAccountSignature, isWalletAvailable } from './utils/walletUtils.js'
 
 import PasskeysModal from './utils/passkeysModal.vue'
 import { usePasskeysSetup } from './utils/passkeysSetup'
@@ -119,7 +120,7 @@ const createProof = async () => {
   )
 
   // compile
-  msg.content = "3/4 Compiling zkProgam 🧩🔨"
+  msg.content = "3/4 Compiling zkProgam 🛠️"
   await compile(store, props.selectedProof, { useCache: store.state.settings.useCache })
 
   msg.content = "4/4 Creating the proof 🌈✨"

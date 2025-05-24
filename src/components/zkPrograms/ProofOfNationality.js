@@ -7,8 +7,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Field, method, Signature, SmartContract, Permissions, PublicKey, Struct, ZkProgram, } from 'o1js';
-import { PersonalData, PassKeysParams, Secp256r1 } from './proof.utils.js';
+import { Field, method, SmartContract, Permissions, PublicKey, Struct, ZkProgram, } from 'o1js';
+import { PersonalData, PassKeys, CreatorAccount, Secp256r1, } from './proof.utils.js';
 class PublicOutput extends Struct({
     nationality: Field,
     currentDate: Field,
@@ -26,20 +26,18 @@ export const proofOfNationality = ZkProgram({
         proveNationality: {
             privateInputs: [
                 PersonalData,
-                Signature, // zkOracle data signature
-                Signature, // creator wallet signature
-                PublicKey, // creator wallet public key
-                PassKeysParams, // passkeys params
+                CreatorAccount,
+                PassKeys, // passkeys params
             ],
-            async method(personalData, signature, creatorSignature, creatorPublicKey, PassKeysParams) {
+            async method(personalData, creatorAccount, PassKeys) {
                 // verify zkOracle data
-                const validSignatureOracle = signature.verify(PublicKey.fromBase58('B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN'), personalData.toFields());
+                const validSignatureOracle = personalData.signature.verify(PublicKey.fromBase58('B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN'), personalData.toFields());
                 validSignatureOracle.assertTrue();
                 // verify creator signature
-                const validSignatureWallet = creatorSignature.verify(creatorPublicKey, personalData.toFields());
+                const validSignatureWallet = creatorAccount.signature.verify(creatorAccount.publicKey, personalData.toFields());
                 validSignatureWallet.assertTrue();
                 // verify passkeys signature
-                const validSignaturePassKeys = PassKeysParams.signature.verifySignedHash(PassKeysParams.payload, PassKeysParams.publicKey);
+                const validSignaturePassKeys = PassKeys.signature.verifySignedHash(PassKeys.payload, PassKeys.publicKey);
                 validSignaturePassKeys.assertTrue();
                 /*
                   Nationality is expressed as a single Field element which can be mapped
@@ -53,9 +51,9 @@ export const proofOfNationality = ZkProgram({
                     publicOutput: {
                         nationality: nationality,
                         currentDate: personalData.currentDate,
-                        creatorPublicKey: creatorPublicKey,
-                        passkeysPublicKey: PassKeysParams.publicKey,
-                        passkeysId: PassKeysParams.id,
+                        creatorPublicKey: creatorAccount.publicKey,
+                        passkeysPublicKey: PassKeys.publicKey,
+                        passkeysId: PassKeys.id,
                         isMockData: personalData.isMockData,
                     },
                 };

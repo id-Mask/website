@@ -5,7 +5,7 @@ import { useMessage, useThemeVars } from 'naive-ui'
 import { verify } from 'o1js';
 import qrcodeScanner from './qrcodeScanner.vue';
 
-import { Mina, fetchEvents } from 'o1js'
+import { Mina, fetchEvents, verify } from 'o1js'
 
 import proofsPublicOutputDataCard from './componentUtils/proofsPublicOutputDataCard.vue'
 
@@ -13,6 +13,9 @@ import { compile } from './proofSteps/compile.js'
 import { useIsMobile } from '../utils.js'
 import { sleep } from './../utils.js'
 
+import { getProofWorker } from './proofSteps/utils/proofWorker.singleton.js';
+
+const proofWorker = getProofWorker()
 const themeVars = useThemeVars()
 const isMobile = useIsMobile()
 const store = useStore()
@@ -40,6 +43,7 @@ const verifyJSONProof = async (proof) => {
   msg.content = 'Verifying the proof 🧐'
   try {
     let ok = await verify(proof, store.state.proofs.data[props.selectedProof].verificationKey);
+    // let ok = await proofWorker.verify(proof, store.state.proofs.data[props.selectedProof].verificationKey);
     if (ok) {
       msg.type = 'success'
       msg.content = 'The proof is valid!'
@@ -50,6 +54,7 @@ const verifyJSONProof = async (proof) => {
       msg.content = 'Failed to verify the proof'
     }
   } catch (error) {
+    console.log(error)
     msg.type = 'error'
     msg.content = 'Something is wrong.'
   } finally {

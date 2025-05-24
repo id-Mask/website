@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { useMessage } from 'naive-ui'
 import { sleep } from './../../utils.js'
-import { generateSignature, isWalletAvailable } from './utils/walletUtils.js'
+import { generateCreatorAccountSignature, isWalletAvailable } from './utils/walletUtils.js'
 import {
   CircuitString,
   Field,
@@ -75,7 +75,7 @@ const createProof = async () => {
   emit('isLoading', true)
   emit('finished', false)
 
-  msg.content = "2/3 Compiling zkProgam 🧩🔨"
+  msg.content = "2/3 Compiling zkProgam 🛠️"
   await compile(store, props.selectedProof, { useCache: store.state.settings.useCache })
 
   /* pid e.g.:
