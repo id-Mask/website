@@ -6,23 +6,6 @@
   to the compilation step
 
   TODO: store cache files in local storage so it won't we doenloaded again and again?
-
-  TODO: use web worker when possible? https://chatgpt.com/c/6820ac04-72d0-8010-aa92-1575bc3d7ee5
-  not possible due to compile being an async method, right now... The following does not work.
-
-  import { useWebWorkerFn } from '@vueuse/core'
-
-  // ✅ Worker-safe function
-  const compileProofOnly = async ({ proof }) => {
-    const { verificationKey } = await proof.compile();
-    return verificationKey;
-  };
-
-  ...
-  const { workerFn } = useWebWorkerFn(compileProofOnly);
-  const proof = proofs[proofName];
-  ({ verificationKey } = await workerFn({ proof }));
-
 */
 
 import { getProofWorker } from './utils/proofWorker.singleton.js';

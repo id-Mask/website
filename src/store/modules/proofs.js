@@ -1,5 +1,6 @@
 
 const state = () => ({
+  isLoading: false,
   data: {
     proofOfAge: {
       displayName: 'Proof of Age',
@@ -9,6 +10,7 @@ const state = () => ({
       proof: null,
       verificationKey: null,
       url: 'https://github.com/id-Mask/smart-contracts/blob/main/src/ProofOfAge.ts',
+      isLoading: false,
     },
     proofOfSanctions: {
       displayName: 'Proof of Non-Sanctions',
@@ -18,6 +20,7 @@ const state = () => ({
       proof: null,
       verificationKey: null,
       url: 'https://github.com/id-Mask/smart-contracts/blob/main/src/ProofOfSanctions.ts',
+      isLoading: false,
     },
     proofOfUniqueHuman: {
       displayName: 'Proof of Unique Human',
@@ -27,6 +30,7 @@ const state = () => ({
       proof: null,
       verificationKey: null,
       url: 'https://github.com/id-Mask/smart-contracts/blob/main/src/ProofOfUniqueHuman.ts',
+      isLoading: false,
     },
     proofOfNationality: {
       displayName: 'Proof of Nationality',
@@ -36,6 +40,7 @@ const state = () => ({
       proof: null,
       verificationKey: null,
       url: 'https://github.com/id-Mask/smart-contracts/blob/main/src/ProofOfNationality.ts',
+      isLoading: false,
     },
   },
 })

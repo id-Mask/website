@@ -8,6 +8,8 @@ import { proofOfNationality } from '../../zkPrograms/ProofOfNationality.js'
 
 import { verify, Field, VerificationKey } from 'o1js'
 import { PersonalData, CreatorAccount, PassKeys } from '../../zkPrograms/proof.utils.js'
+import { SanctionsData } from '../../zkPrograms/ProofOfSanctions.utils.js'
+import { PersonalSecretValue } from '../../zkPrograms/ProofOfUniqueHuman.utils.js'
 
 const proofs = {
   proofOfAge,
@@ -17,14 +19,12 @@ const proofs = {
 };
 
 const workerApi = {
-  // compile
+
   async compile(proofName) {
     return await proofs[proofName].compile();
   },
 
-  // verify
   async verify(proof, verificationKey) {
-    console.log(verificationKey)
     const vk = new VerificationKey({
       data: verificationKey.data,
       hash: Field(verificationKey.hash)
@@ -34,7 +34,6 @@ const workerApi = {
 
   // run zk-program methods
   async proveAge(...args) {
-    console.time('proofing age');
     const [ageToProveInYears, personalDataJson, creatorAccountJson, passkeysJson] = args;
     const { proof } = await proofs['proofOfAge'].proveAge(
       Field(ageToProveInYears),
@@ -42,18 +41,42 @@ const workerApi = {
       new CreatorAccount(creatorAccountJson),
       new PassKeys(passkeysJson),
     );
-    console.timeEnd('proofing age');
+
     return proof.toJSON()
   },
+
   async proveSanctions(...args) {
-    return await proofs['proofOfSanctions'].proveSanctions(...args);
+    const [sanctionsDataJson, personalDataJson, creatorAccountJson, passkeysJson] = args;
+    const { proof } = await proofs['proofOfSanctions'].proveSanctions(
+      new SanctionsData(sanctionsDataJson),
+      new PersonalData(personalDataJson),
+      new CreatorAccount(creatorAccountJson),
+      new PassKeys(passkeysJson),
+    );
+    return proof.toJSON()
   },
+
   async proveUniqueHuman(...args) {
-    return await proofs['proofOfUniqueHuman'].proveUniqueHuman(...args);
+    const [personalDataJson, personalSecretDataJson, creatorAccountJson, passkeysJson] = args;
+    const { proof } = await proofs['proofOfUniqueHuman'].proveUniqueHuman(
+      new PersonalData(personalDataJson),
+      new PersonalSecretValue(personalSecretDataJson),
+      new CreatorAccount(creatorAccountJson),
+      new PassKeys(passkeysJson),
+    );
+    return proof.toJSON()
   },
+
   async proveNationality(...args) {
-    return await proofs['proofOfNationality'].proveNationality(...args);
+    const [personalDataJson, creatorAccountJson, passkeysJson] = args;
+    const { proof } = await proofs['proofOfNationality'].proveNationality(
+      new PersonalData(personalDataJson),
+      new CreatorAccount(creatorAccountJson),
+      new PassKeys(passkeysJson),
+    );
+    return proof.toJSON()
   },
+
 };
 
 Comlink.expose(workerApi);

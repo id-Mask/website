@@ -77,25 +77,26 @@ const createProof = async () => {
     { type: 'success', duration: 10000, closable: true }
   )
 
-  // compile
-  msg.content = '2/3 Compiling zkProgam 🛠️'
-  await compile(store, props.selectedProof, { useCache: store.state.settings.useCache })
-
   // start loading bars
+  store.state.proofs.isLoading = true
   data.value.isLoading = true
   emit('isLoading', true)
   emit('finished', false)
 
+  // compile
+  msg.content = '2/3 Compiling zkProgam 🛠️'
+  await compile(store, props.selectedProof, { useCache: store.state.settings.useCache })
 
   msg.content = "3/3 Creating the proof 🌈✨"
   try {
+    console.time('running prove method');
     const proof = await proofWorker.proveAge(
       data.value.ageToProveInYears,
       personalData.toJSON(),
       creatorAccount.toJSON(),
       passkeys.toJSON(),
     );
-    console.log(proof)
+    console.timeEnd('running prove method');
 
     data.value.proof = JSON.stringify(proof, null, 2)
 
@@ -117,6 +118,7 @@ const createProof = async () => {
     msg.type = 'error'
     msg.content = "Something is wrong. You sure you are old enough? 👵🏼"
   } finally {
+    store.state.proofs.isLoading = false
     data.value.isLoading = false
     emit('isLoading', false)
     await sleep(10000)
@@ -139,7 +141,7 @@ const createProof = async () => {
     </n-text>
 
     <n-input-group>
-      <n-button type="primary" @click="createProof()" :loading="data.isLoading">
+      <n-button type="primary" @click="createProof()" :loading="data.isLoading" :disabled="store.state.proofs.isLoading && !data.isLoading">
         Create proof
       </n-button>
       <n-input-number
