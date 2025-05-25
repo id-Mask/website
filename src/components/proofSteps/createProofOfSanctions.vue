@@ -11,13 +11,17 @@ import {
 } from 'o1js'
 
 import { compile } from './compile.js'
-import { proofOfSanctions, SanctionsData } from './../zkPrograms/ProofOfSanctions.js'
-import { PersonalData } from './../zkPrograms/proof.utils.js'
-import { generateSignature, isWalletAvailable } from './utils/walletUtils.js'
+import { proofOfSanctions } from './../zkPrograms/ProofOfSanctions.js'
+import { SanctionsData } from './../zkPrograms/ProofOfSanctions.utils.js'
+import { PersonalData, CreatorAccount } from './../zkPrograms/proof.utils.js'
+import { generateCreatorAccountSignature, isWalletAvailable } from './utils/walletUtils.js'
 
 import PasskeysModal from './utils/passkeysModal.vue'
 import { usePasskeysSetup } from './utils/passkeysSetup'
 
+import { getProofWorker } from './utils/proofWorker.singleton.js'
+
+const proofWorker = getProofWorker()
 const message = useMessage()
 const store = useStore()
 const data = ref({
@@ -61,10 +65,6 @@ const createProof = async () => {
     }
   }
 
-  data.value.isLoading = true
-  emit('isLoading', true)
-  emit('finished', false)
-
   // get ofac data and put it to store
   let msg = message.create('1/4 Verifying your status with OFAC 🌐🕵️‍♀️', { type: 'loading', duration: 10e9 })
   const ofacData = await getOFACData()
@@ -87,68 +87,71 @@ const createProof = async () => {
   }
 
   // prepare personal data
-  const pid = store.state.pid.data
   const personalData = new PersonalData({
-    name: CircuitString.fromString(pid.data.name),
-    surname: CircuitString.fromString(pid.data.surname),
-    country: CircuitString.fromString(pid.data.country),
-    pno: CircuitString.fromString(pid.data.pno),
-    currentDate: Field(pid.data.currentDate),
-    isMockData: Field(pid.data.isMockData),
+    ...store.state.pid.data.data,
+    publicKey: store.state.pid.data.publicKey,
+    signature: store.state.pid.data.signature,
   })
 
   // prepare seanctionsData
   const sanctionsData = new SanctionsData({
-    isMatched: Bool(ofacData.data.isMatched),
-    minScore: Field(ofacData.data.minScore),
-    currentDate: Field(ofacData.data.currentDate),
+    isMatched: ofacData.data.isMatched,
+    minScore: ofacData.data.minScore,
+    currentDate: ofacData.data.currentDate,
+    signature: ofacData.signature,
+    publicKey: ofacData.publicKey,
   })
 
   // generate wallet signature
   msg.content = '2/4 Crafting your signature 🤫🔐'
-  const [creatorPublicKey, creatorDataSignature] = await generateSignature(
+  const creatorAccountParams = await generateCreatorAccountSignature(
     sanctionsData.toFields(), 
     store.state.settings.userSignatureOptions
   )
+  const creatorAccount = new CreatorAccount(creatorAccountParams);
 
   // generate passkeys signature
-  const passkeysParams = await setupPasskeys()
+  const passkeys = await setupPasskeys()
   message.create(
     'Passkeys are ready to be linked to your proof',
     { type: 'success', duration: 10000, closable: true }
   )
 
+  // start loading bars
+  store.state.proofs.isLoading = true
+  data.value.isLoading = true
+  emit('isLoading', true)
+  emit('finished', false)
+
   // compile
-  msg.content = "3/4 Compiling zkProgam 🧩🔨"
+  msg.content = "3/4 Compiling zkProgam 🛠️"
   await compile(store, props.selectedProof, { useCache: store.state.settings.useCache })
 
   msg.content = "4/4 Creating the proof 🌈✨"
   try {
 
-    const { proof } = await proofOfSanctions.proveSanctions(
-      sanctionsData,
-      personalData,
-      Signature.fromJSON(pid.signature),
-      Signature.fromJSON(ofacData.signature),
-      creatorDataSignature,
-      creatorPublicKey,
-      passkeysParams,
-    )
+    console.time('running prove method');
+    const proof = await proofWorker.proveSanctions(
+      sanctionsData.toJSON(),
+      personalData.toJSON(),
+      creatorAccount.toJSON(),
+      passkeys.toJSON(),
+    );
+    console.timeEnd('running prove method');
 
-    const jsonProof = proof.toJSON()
-    data.value.proof = JSON.stringify(jsonProof, null, 2)
+    data.value.proof = JSON.stringify(proof, null, 2)
 
     msg.type = 'success'
     msg.content = "Congratulation! You've sucessfully created the proof 🎉"
 
     // save proof to store (to be able to access it form other components)
-    store.dispatch('proofs/saveData', { proofName: props.selectedProof, proof: jsonProof })
+    store.dispatch('proofs/saveData', { proofName: props.selectedProof, proof: proof })
     emit('isLoading', false)
     emit('finished')
     emit('triggerNextStep')
 
     if (store.state.settings.consoleDebugMode) {
-      console.log('Created proof:', jsonProof)
+      console.log('Created proof:', proof)
     }
 
   } catch (error) {
@@ -156,6 +159,7 @@ const createProof = async () => {
     msg.type = 'error'
     msg.content = "Something is wrong. You sure you are not sanctioned? 💀"
   } finally {
+    store.state.proofs.isLoading = false
     data.value.isLoading = false
     emit('isLoading', false)
     await sleep(10000)
@@ -181,7 +185,7 @@ onMounted(async () => {
     </n-text>
 
     <n-input-group>
-      <n-button type="primary" @click="createProof()" :loading="data.isLoading">
+      <n-button type="primary" @click="createProof()" :loading="data.isLoading" :disabled="store.state.proofs.isLoading">
         Create proof
       </n-button>
     </n-input-group>

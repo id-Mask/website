@@ -159,6 +159,7 @@ watch(() => props.selectedProof, () => {
                 quaternary 
                 size="small" 
                 style="padding: 5px;"
+                :disabled="isLoading"
                 @click="currentStep == 0 ? false : currentStep --"
               >
                 <template #icon>
@@ -175,6 +176,7 @@ watch(() => props.selectedProof, () => {
               size="small" 
               icon-placement="right" 
               style="padding: 5px;"
+              :disabled="isLoading"
               @click="currentStep >= (proofs[props.selectedProof].steps.length - 1) ? false : currentStep ++"
             >
               <template #icon>

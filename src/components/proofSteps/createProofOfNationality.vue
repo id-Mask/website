@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { useMessage } from 'naive-ui'
 import { sleep } from './../../utils.js'
-import { generateSignature, isWalletAvailable } from './utils/walletUtils.js'
+import { generateCreatorAccountSignature, isWalletAvailable } from './utils/walletUtils.js'
 import {
   CircuitString,
   Field,
@@ -12,11 +12,14 @@ import {
 
 import { compile } from './compile.js'
 import { proofOfNationality } from './../zkPrograms/ProofOfNationality.js'
-import { PersonalData } from './../zkPrograms/proof.utils.js'
+import { PersonalData, CreatorAccount } from './../zkPrograms/proof.utils.js'
 
 import PasskeysModal from './utils/passkeysModal.vue'
 import { usePasskeysSetup } from './utils/passkeysSetup'
 
+import { getProofWorker } from './utils/proofWorker.singleton.js'
+
+const proofWorker = getProofWorker()
 const message = useMessage()
 const store = useStore()
 const data = ref({
@@ -46,79 +49,59 @@ const createProof = async () => {
   }
 
   // prepare personal data
-  const pid = store.state.pid.data
   const personalData = new PersonalData({
-    name: CircuitString.fromString(pid.data.name),
-    surname: CircuitString.fromString(pid.data.surname),
-    country: CircuitString.fromString(pid.data.country),
-    pno: CircuitString.fromString(pid.data.pno),
-    currentDate: Field(pid.data.currentDate),
-    isMockData: Field(pid.data.isMockData),
+    ...store.state.pid.data.data,
+    publicKey: store.state.pid.data.publicKey,
+    signature: store.state.pid.data.signature,
   })
 
   // Craft the signature of the data using wallet or default creds
   let msg = message.create('1/3 Crafting your signature 🤫🔐', { type: 'loading', duration: 10e9 })
-  const [creatorPublicKey, creatorDataSignature] = await generateSignature(
+  const creatorAccountParams = await generateCreatorAccountSignature(
     personalData.toFields(), 
     store.state.settings.userSignatureOptions
   )
+  const creatorAccount = new CreatorAccount(creatorAccountParams);
 
   // generate passkeys signature
-  const passkeysParams = await setupPasskeys()
+  const passkeys = await setupPasskeys()
   message.create(
     'Passkeys are ready to be linked to your proof',
     { type: 'success', duration: 10000, closable: true }
   )
 
   // start loading bars
+  store.state.proofs.isLoading = true
   data.value.isLoading = true
   emit('isLoading', true)
   emit('finished', false)
 
-  msg.content = "2/3 Compiling zkProgam 🧩🔨"
+  msg.content = "2/3 Compiling zkProgam 🛠️"
   await compile(store, props.selectedProof, { useCache: store.state.settings.useCache })
-
-  /* pid e.g.:
-  const pid = {
-    "data": {
-      "name": "Douglas",
-      "surname": "Lyphe",
-      "country": "EE",
-      "pno": "PNOEE-67807022776",
-      "currentDate": 20231026
-    },
-    "signature": {
-      "r": "24098777140448874930684151839724232933324153889241260987160800793000424886288",
-      "s": "26350209170644202625120216193969973021906199319302861651891544714558488811023"
-    },
-    "publicKey": "B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN"
-  }
-  */
 
   msg.content = "3/3 Creating the proof 🌈✨"
   try {
-    const { proof } = await proofOfNationality.proveNationality(
-      personalData,
-      Signature.fromJSON(pid.signature),
-      creatorDataSignature,
-      creatorPublicKey,
-      passkeysParams,
+    console.time('running prove method');
+    const proof = await proofWorker.proveNationality(
+      personalData.toJSON(),
+      creatorAccount.toJSON(),
+      passkeys.toJSON(),
     );
+    console.timeEnd('running prove method');
 
-    const jsonProof = proof.toJSON()
-    data.value.proof = JSON.stringify(jsonProof, null, 2)
+    data.value.proof = JSON.stringify(proof, null, 2)
 
     msg.type = 'success'
     msg.content = "Congratulation! You've sucessfully created the proof 🎉"
 
     // save proof to store (to be able to access it form other components)
-    store.dispatch('proofs/saveData', { proofName: props.selectedProof, proof: jsonProof })
+    store.dispatch('proofs/saveData', { proofName: props.selectedProof, proof: proof })
     emit('isLoading', false)
     emit('finished')
     emit('triggerNextStep')
 
     if (store.state.settings.consoleDebugMode) {
-      console.log('Created proof:', jsonProof)
+      console.log('Created proof:', proof)
     }
 
   } catch (error) {
@@ -126,6 +109,7 @@ const createProof = async () => {
     msg.type = 'error'
     msg.content = "Something is wrong. Sorry 🤔"
   } finally {
+    store.state.proofs.isLoading = false
     data.value.isLoading = false
     emit('isLoading', false)
     await sleep(10000)
@@ -146,7 +130,7 @@ const createProof = async () => {
         You will generate a proof confirming your nationality and possession of an ID issued by your respective nation.
       </p>
     </n-text>
-    <n-button type="primary" @click="createProof()" :loading="data.isLoading">
+    <n-button type="primary" @click="createProof()" :loading="data.isLoading" :disabled="store.state.proofs.isLoading && !data.isLoading">
       Create proof
     </n-button>
   </n-space>

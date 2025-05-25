@@ -6,36 +6,10 @@
   to the compilation step
 
   TODO: store cache files in local storage so it won't we doenloaded again and again?
-
-  TODO: use web worker when possible? https://chatgpt.com/c/6820ac04-72d0-8010-aa92-1575bc3d7ee5
-  not possible due to compile being an async method, right now... The following does not work.
-
-  import { useWebWorkerFn } from '@vueuse/core'
-
-  // ✅ Worker-safe function
-  const compileProofOnly = async ({ proof }) => {
-    const { verificationKey } = await proof.compile();
-    return verificationKey;
-  };
-
-  ...
-  const { workerFn } = useWebWorkerFn(compileProofOnly);
-  const proof = proofs[proofName];
-  ({ verificationKey } = await workerFn({ proof }));
-
 */
 
-import { proofOfAge } from '.././zkPrograms/ProofOfAge.js'
-import { proofOfSanctions } from '.././zkPrograms/ProofOfSanctions.js'
-import { proofOfUniqueHuman } from '.././zkPrograms/ProofOfUniqueHuman.js'
-import { proofOfNationality } from '.././zkPrograms/ProofOfNationality.js'
-
-const proofs = {
-  proofOfAge: proofOfAge,
-  proofOfSanctions: proofOfSanctions,
-  proofOfUniqueHuman: proofOfUniqueHuman,
-  proofOfNationality: proofOfNationality,
-}
+import { getProofWorker } from './utils/proofWorker.singleton.js';
+const proofWorker = getProofWorker();
 
 const getCacheFiles = async (proofName) => {
   console.log(`fetching cache of ${proofName}`)
@@ -135,7 +109,8 @@ const compile = async (store, proofName, { useCache = true } = {}) => {
       cacheFiles = await getCacheFiles(proofName);
       ({ verificationKey } = await proofs[proofName].compile({ cache: FileSystem(cacheFiles) }));
     } else {
-      ({ verificationKey } = await proofs[proofName].compile());
+      // ({ verificationKey } = await proofs[proofName].compile());
+      ({ verificationKey } = await proofWorker.compile(proofName))
     }
     console.timeEnd(`compiling ${proofName}`);
     store.state.proofs.data[proofName].verificationKey = verificationKey;

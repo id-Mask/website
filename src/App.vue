@@ -9,7 +9,6 @@ import ProofPage from './components/ProofPage.vue'
 import footer_ from './components/footer_.vue'
 import ProofOwnershipValidation from './components/componentUtils/proofOwnershipValidation.vue'
 import PasskeysChallengePage from './components/componentUtils/passkeysChallengePage.vue'
-// import WorkerPOC from './components/workerPOC.vue'
 
 const store = useStore()
 const breakpoint = useBreakpoint()
@@ -61,7 +60,6 @@ const route = computed(() => {
               <header_ style="position: absolute; z-index: 1;"/>
               <n-layout-content :content-style="'margin: 0 auto;' + padding">
                 <LandingPage/>
-                <!-- <WorkerPOC/> -->
                 <ProofPage/>
               </n-layout-content>
             </n-layout>

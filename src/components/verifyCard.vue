@@ -2,10 +2,8 @@
 import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { useMessage, useThemeVars } from 'naive-ui'
-import { verify } from 'o1js';
 import qrcodeScanner from './qrcodeScanner.vue';
-
-import { Mina, fetchEvents } from 'o1js'
+import { Mina, fetchEvents, verify, Field } from 'o1js'
 
 import proofsPublicOutputDataCard from './componentUtils/proofsPublicOutputDataCard.vue'
 
@@ -13,6 +11,9 @@ import { compile } from './proofSteps/compile.js'
 import { useIsMobile } from '../utils.js'
 import { sleep } from './../utils.js'
 
+import { getProofWorker } from './proofSteps/utils/proofWorker.singleton.js';
+
+const proofWorker = getProofWorker()
 const themeVars = useThemeVars()
 const isMobile = useIsMobile()
 const store = useStore()
@@ -39,7 +40,18 @@ const verifyJSONProof = async (proof) => {
   // verify if the provided proof is correct
   msg.content = 'Verifying the proof 🧐'
   try {
-    let ok = await verify(proof, store.state.proofs.data[props.selectedProof].verificationKey);
+    // let ok = await verify(proof, store.state.proofs.data[props.selectedProof].verificationKey);
+
+    /*
+      To pass verification key over to web worker, inputs have to be serielised.
+      Sadly, verificationKey does not have fromJson or similar methods. So we
+      pass over a big int (hash) and will cast it to Field on the workers-end.
+    */
+    const verificationKey = {
+      data: store.state.proofs.data[props.selectedProof].verificationKey.data,
+      hash: store.state.proofs.data[props.selectedProof].verificationKey.hash.value[1][1]
+    }
+    let ok = await proofWorker.verify(proof, verificationKey);
     if (ok) {
       msg.type = 'success'
       msg.content = 'The proof is valid!'
@@ -50,6 +62,7 @@ const verifyJSONProof = async (proof) => {
       msg.content = 'Failed to verify the proof'
     }
   } catch (error) {
+    console.log(error)
     msg.type = 'error'
     msg.content = 'Something is wrong.'
   } finally {
