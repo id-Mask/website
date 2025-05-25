@@ -44,25 +44,25 @@ Each proof includes:
 
 ### Example Proof of age with explanation
 
-```json
+```js
 {
-  "publicInput": ["5"],					// Proving: age ≥ 5
+  "publicInput": ["5"],              // Proving: age ≥ 5
   "publicOutput": [
-    "5",								// [0] Years to prove
-    "20250525",                         // [1] Proof creation date (YYYYMMDD)
-    "80987473785...969161318090",		// [2–3] Mina wallet public key (split into two parts)
+    "5",                             // [0] Years to prove
+    "20250525",                      // [1] Proof creation date (YYYYMMDD)
+    "80987473785...969161318090",    // [2–3] Mina wallet public key (split into two parts)
     "0",                                            
-    "147871521545641193254483407",	    // [4–6] Passkey public key (x-coordinates)
+    "14787152154564119254483407",    // [4–6] Passkey public key (x-coordinates)
     "63391986999191009329240727",
-    "157858871592633068538961",                    
-    "73727926632129849938683848",		// [7–9] Passkey public key (y-coordinates)
-    "8658714720722333757045216",
-    "1109634216066414776357244",                   
-    "8150879811412...8011810765", 		// [10] WebAuthn key ID
-    "1"                                 // [11] Is personal data mocked? ("1" = yes, "0" = no)
+    "15785887159263306888538961",                    
+    "73727926632129849938683848",    // [7–9] Passkey public key (y-coordinates)
+    "86587147207223338757045216",
+    "11096342160664184776357244",                   
+    "8150879811412...8011810765",    // [10] WebAuthn key ID
+    "1"                              // [11] Is personal data mocked? ("1" = yes, "0" = no)
   ],
   "maxProofsVerified": 0,
-  "proof": "KChzdGF0b...nQoKyb29mX"      // Zero-knowledge proof string
+  "proof": "KChzdGF0b...nQoKyb29mX"  // Zero-knowledge proof string
 }
 ```
 
