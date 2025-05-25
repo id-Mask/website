@@ -124,7 +124,7 @@ const createProof = async () => {
   emit('finished', false)
 
   // compile
-  msg.content = "3/4 Compiling zkProgam 🛠️"
+  msg.content = "3/4 Compiling zkProgam 🛠️ (this might take quite some time)"
   await compile(store, props.selectedProof, { useCache: store.state.settings.useCache })
 
   msg.content = "4/4 Creating the proof 🌈✨"
