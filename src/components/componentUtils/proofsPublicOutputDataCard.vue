@@ -247,7 +247,7 @@ onMounted(() => {
 <template>
   <n-spin :show="props.isLoading">
     <div v-if="!props.isLoading">
-      <div v-if="Boolean(props.proofPublicOutput[10])">
+      <div v-if="Boolean(props.proofPublicOutput[11])">
         <n-result
           status="warning"
           title="Warning"
