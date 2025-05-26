@@ -259,10 +259,10 @@ onMounted(() => {
           </n-text>
         </template>
         </n-result>
+        <br/>
+         <n-divider />
+        <br/>
       </div>
-      <br/>
-      <n-divider />
-      <br/>
       <n-space 
         :size="[2, 2]" 
         vertical 
