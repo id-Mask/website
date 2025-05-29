@@ -247,7 +247,7 @@ watch(() => data.personalIdentificationNumber, (_personalIdentificationNumber) =
       </n-tabs>
     </n-space>
 
-    <n-modal v-model:show="verificationCodeModal.show" :mask-closable="false">
+    <n-modal v-model:show="verificationCodeModal.show" :mask-closable="false" style="z-index: 9999;">
       <n-card
         style="max-width: 270px"
         title="Verification Code"
