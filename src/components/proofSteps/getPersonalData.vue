@@ -1,7 +1,8 @@
 <script setup>
-import { reactive, ref, watch } from 'vue'
+import { reactive, ref } from 'vue'
 import { useMessage } from 'naive-ui'
 import { useStore } from 'vuex'
+import { useIsMobile } from '../../utils.js'
 
 import { useNotification, NButton } from 'naive-ui'
 import { h } from 'vue'
@@ -14,6 +15,7 @@ const props = defineProps({
   selectedProof: String,
 })
 
+const isMobile = useIsMobile()
 const message = useMessage()
 const notification = useNotification()
 const notificationLoading = ref(true)
@@ -30,10 +32,8 @@ const data = reactive({
   ],
   selectedSource: 'Mock-ID',
   selectedCountry: 'EE',
-  personalIdentificationNumber: null,
+  personalIdentificationNumber: [],
   isLoading: false,
-  pid: '',
-  inputType: 'text'
 })
 
 const getSmartIDPID = async () => {
@@ -44,7 +44,7 @@ const getSmartIDPID = async () => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      pno: data.personalIdentificationNumber,
+      pno: data.personalIdentificationNumber.join(''),
       country: data.selectedCountry,
       displayText: 'ID-Mask is requesting your data 🙋'
     }),
@@ -119,7 +119,9 @@ const getMockPID = async () => {
 
 const getPID = async () => {
 
-  if ((data.selectedSource == 'Smart-ID') && (!data.personalIdentificationNumber)) {
+  console.log(data.personalIdentificationNumber, data.personalIdentificationNumber.length)
+
+  if ((data.selectedSource == 'Smart-ID') && (data.personalIdentificationNumber.length != 11)) {
     message.error('Input your personal identification number')
     return
   }
@@ -158,15 +160,6 @@ const getPID = async () => {
   }
 }
 
-// this is a hack to make sure the input is not regarded as password
-// and explorers do not suggest to save it. This works because on load
-// input type is text, and then once the user starts typing it's set to password
-watch(() => data.personalIdentificationNumber, (_personalIdentificationNumber) => {
-  if (_personalIdentificationNumber.length > 0) {
-    data.inputType = 'password'
-  }
-})
-
 </script>
 
 <template>
@@ -188,13 +181,13 @@ watch(() => data.personalIdentificationNumber, (_personalIdentificationNumber) =
         <n-tab-pane name="Mock-ID" tab="Mock-ID">
           <n-input-group>
             <n-button type="primary" @click="getPID()" :loading="data.isLoading">
-              Get data
+              Fetch
             </n-button>
             <n-popover trigger="hover">
               <template #trigger>
                 <n-select
                   value="🏴"
-                  style="width: 100px;"
+                  style="max-width: 60px;"
                   disabled
                 />
               </template>
@@ -203,7 +196,7 @@ watch(() => data.personalIdentificationNumber, (_personalIdentificationNumber) =
               </span>
             </n-popover>
             <n-input
-              style="width: 100%"
+              style="width: 400px;"
               placeholder="Personal Identification Number"
               disabled
             />
@@ -212,7 +205,7 @@ watch(() => data.personalIdentificationNumber, (_personalIdentificationNumber) =
         <n-tab-pane name="Smart-ID" tab="Smart-ID">
           <n-input-group>
             <n-button type="primary" @click="getPID()" :loading="data.isLoading">
-              Get data
+              Fetch
             </n-button>
             <n-select
               :options="[
@@ -230,16 +223,17 @@ watch(() => data.personalIdentificationNumber, (_personalIdentificationNumber) =
                 }
               ]"
               v-model:value="data.selectedCountry"
-              style="width: 100px;"
+              style="max-width: 60px;"
             />
-            <n-input
-              style="width: 100%"
-              :type="data.inputType"
-              show-password-on="mousedown"
-              v-model:value="data.personalIdentificationNumber"
-              placeholder="Personal Identification Number"
-              :show-button="false"
-            />
+            <div :style="isMobile ? 'padding-left: 5px' : 'padding-left: 10px'">
+              <n-input-otp 
+                v-model:value="data.personalIdentificationNumber" 
+                :length="11" 
+                :gap="isMobile ? 3 : 5"
+                style="max-width: 400px;"
+                mask
+              />
+            </div>
           </n-input-group>
         </n-tab-pane>
         <!-- <n-tab-pane name="Ausweisapp" tab="Ausweis-app" disabled></n-tab-pane>? -->
@@ -247,7 +241,7 @@ watch(() => data.personalIdentificationNumber, (_personalIdentificationNumber) =
       </n-tabs>
     </n-space>
 
-    <n-modal v-model:show="verificationCodeModal.show" :mask-closable="false" style="z-index: 9999;">
+    <n-modal v-model:show="verificationCodeModal.show" :mask-closable="false">
       <n-card
         style="max-width: 270px"
         title="Verification Code"
