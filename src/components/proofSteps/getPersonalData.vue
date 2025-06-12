@@ -225,7 +225,7 @@ const getPID = async () => {
               v-model:value="data.selectedCountry"
               style="max-width: 60px;"
             />
-            <div :style="isMobile ? 'padding-left: 5px' : 'padding-left: 10px'">
+            <div :style="isMobile ? 'padding-left: 5px' : 'padding-left: 6px'">
               <n-input-otp 
                 v-model:value="data.personalIdentificationNumber" 
                 :length="11" 
