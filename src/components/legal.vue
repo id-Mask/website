@@ -11,7 +11,7 @@ const contactsModal = ref(false)
 <template>
   <n-space justify="center" style="text-align: center;" vertical>
     <n-text style="font-size: 90%" depth="3">
-      © {{ new Date().getFullYear() }} Ethenticator, Inc.. All rights reserved.
+      © {{ new Date().getFullYear() }} Id-mask
     </n-text>
 
     <div>
@@ -20,7 +20,7 @@ const contactsModal = ref(false)
     </div>
     <div>
       <!-- <n-button size="tiny" quaternary @click="imprintModal = true">Imprint</n-button> -->
-      <n-button size="tiny" quaternary @click="contactsModal = true">Contacts</n-button>
+      <!-- <n-button size="tiny" quaternary @click="contactsModal = true">Contacts</n-button> -->
     </div>
   </n-space>
 
@@ -42,14 +42,14 @@ const contactsModal = ref(false)
           verification, allowing users to generate and selectively prove their
           personal data without disclosing personal privacy details to id-mask or
           third parties. These Terms &amp; Conditions (the “Terms”) govern access to
-          and the use of ethenticator.io / ethenticator.com (the “Website”) and
-          related services offered by Ethenticator, Inc. / id-mask (the “Services”).
+          and the use of idmask.xyz (the “Website”) and
+          related services offered by Id-mask (the “Services”).
       </p>
       <p>
           By accessing or using the Website or Services, the user acknowledges that
           they have read, understood, and agreed to be bound by these Terms and any
           additional terms and conditions and policies referenced herein or made
-          available by Ethenticator, Inc. / id-mask in connection with the Website or
+          available by Id-mask in connection with the Website or
           Services. If the user disagrees with these Terms, they should not access or
           use the Website or Services.
       </p>
@@ -65,8 +65,7 @@ const contactsModal = ref(false)
                   Protocol, once data is brought onto the blockchain as part of the
                   proof storage process, it cannot be deleted from the blockchain.
                   Users also acknowledge that this characteristic is inherent to
-                  blockchain technology and is beyond the control of Ethenticator,
-                  Inc. / id-mask.
+                  blockchain technology and is beyond the control of Id-mask.
               </p>
           </li>
           <li>
@@ -79,7 +78,7 @@ const contactsModal = ref(false)
           </li>
           <li>
               <p>
-                  <b>Agreement between User and Ethenticator, Inc. / id-mask</b>: This
+                  <b>Agreement between User and Id-mask</b>: This
                   agreement constitutes a legally binding agreement between the user
                   and the Website. The user must read, agree with and accept all of
                   the terms and conditions contained in this agreement in order to use
@@ -201,9 +200,9 @@ const contactsModal = ref(false)
               </li>
               <li>
                   <p>
-                      Ethenticator, Inc. / id-mask is not informed about a user’s
+                      Id-mask is not informed about a user’s
                       attempt to generate a proof on their behalf. Everything that is
-                      visible to Ethenticator, Inc. / id-mask technology-wise are the
+                      visible to Id-mask technology-wise are the
                       Google Cloud logs, which contain metadata such as IP-information
                       but no personal data or information. A user’s attempt to
                       generate a proof of their personal data is not traceable to
@@ -243,12 +242,11 @@ const contactsModal = ref(false)
               </li>
               <li>
                   <p>
-                      Ethenticator, Inc. / id-mask relies on Smart-ID as a third-party
+                      Id-mask relies on Smart-ID as a third-party
                       service and is not able to identify and combat identity theft
                       that has already occurred in Smart-ID. It assumes that Smart-ID
                       fulfills its service to the fullest and that only true
-                      identities of their true identity-holder are transferred to
-                      Ethenticator, Inc. / id-mask.
+                      identities of their true identity-holder are transferred to id-mask.
                   </p>
               </li>
           </ol>
@@ -256,7 +254,7 @@ const contactsModal = ref(false)
               <p>
                   <b>Intellectual Property</b>: The Website and Services, including all
                   content, software, and technology provided, are owned by or licensed
-                  to Ethenticator, Inc. / id-mask and are protected by applicable
+                  to Id-mask and are protected by applicable
                   copyright, trademark, patent, trade secret, and other intellectual
                   property laws. Users are granted a limited, non-exclusive,
                   non-transferable, revocable license to access and use the Website
@@ -280,8 +278,8 @@ const contactsModal = ref(false)
               <p>
                   <b>Liability Disclaimer</b>: The Website and its Services are provided on
                   an "as is" and "as available" basis. The Website makes no warranties
-                  of any kind, express or implied. In no event shall Ethenticator,
-                  Inc. / id-mask or its affiliates be liable for any damages arising
+                  of any kind, express or implied. In no event shall Id-mask or its 
+                  affiliates be liable for any damages arising
                   out of or in connection with the use or inability to use the Website
                   or the generated proofs.
               </p>
@@ -290,11 +288,11 @@ const contactsModal = ref(false)
               <p>
                   <b>Termination/Access Restriction</b>: The Website reserves the right to
                   terminate the user's access to the Website’s Services at any time
-                  for any reason. Ethenticator, Inc. / id-mask may terminate a user’s
+                  for any reason. Id-mask may terminate a user’s
                   use of our website at any time, without prior notice, for any
                   reason. For example, users who provide personal data that is listed
                   on the OFAC sanctions list will not be able to generate a proof of
-                  “Non-Sanctions” via Ethenticator, Inc. / id-mask.
+                  “Non-Sanctions” via Id-mask.
               </p>
           </li>
           <li>
@@ -316,7 +314,7 @@ const contactsModal = ref(false)
           </li>
           <li>
               <p>
-                <b>Modification of terms</b>: Ethenticator, Inc. reserves the right to
+                <b>Modification of terms</b>: Id-mask reserves the right to
                   modify these terms and conditions at any time, without prior notice.
                   The user’s continued use of our website constitutes your acceptance
                   of the modified terms and conditions.
@@ -324,7 +322,7 @@ const contactsModal = ref(false)
           </li>
           <li>
               <p>
-                <b>Language</b>: Ethenticator, Inc. / id-mask does not warrant the
+                <b>Language</b>: Id-mask does not warrant the
                   accuracy, completeness, or reliability of any translations, and
                   users agree that in case of any discrepancies, the English version
                   shall govern.
@@ -344,20 +342,6 @@ const contactsModal = ref(false)
                   of or related to the Website or Services must commence within one
                   (1) year after the cause of action accrues. Otherwise, such cause of
                   action is permanently barred.
-              </p>
-          </li>
-          <li>
-              <p>
-                <b>Contact information</b>: For general inquiries, users may contact
-                  Ethenticator, Inc. / id-mask at any time by email at
-                  maren@ethenticator.io. We strive to respond to inquiries promptly.
-                  In urgent and important matters, users are encouraged to reach out
-                  to our registered agent. The registered agent can be contacted at
-                  251 Little Falls Drive, Wilmington, DE USA 19808. Please include
-                  "URGENT" in the subject line for expedited attention. Users
-                  acknowledge that communication via email carries certain risks,
-                  including potential security risks. It is advisable not to include
-                  sensitive or confidential information in email communications.
               </p>
           </li>
       </ol>
@@ -381,10 +365,10 @@ const contactsModal = ref(false)
               verification, allowing users to generate and selectively prove their
               personal data without disclosing personal privacy details to id-mask or
               third parties. These Terms &amp; Conditions (the “Terms”) govern access to
-              and the use of ethenticator.io / ethenticator.com (the “Website”) and
-              related services offered by Ethenticator, Inc. / id-mask (the “Services”).
+              and the use of idmask.xyz (the “Website”) and
+              related services offered by Id-mask (the “Services”).
               This Privacy Policy describes how data is processed which is obtained
-              through our websites id-mask.xyz, ethenticator.io and ethenticator.com.
+              through our websites id-mask.xyz.
           </p>
           <p>
               Information and Data
@@ -453,13 +437,6 @@ const contactsModal = ref(false)
               Google and Apple Wallet Pass, which is only accessible to the user who is
               the owner of the zero-knowledge-proof in the first place.
           </p>
-          <p>
-              Contact
-          </p>
-          <p>
-              If you have any questions or concerns about this Privacy Policy, don't
-              hesitate to get in touch with us at maren@ethenticator.io.
-          </p>
         </n-text>
       </n-scrollbar>
     </n-card>
@@ -475,7 +452,7 @@ const contactsModal = ref(false)
     >
       <n-scrollbar style="max-height: 80vh;">
         <n-text depth="3" style="font-size: 10px;">
-          <p>
+          <!-- <p>
               Ethenticator, Inc.
           </p>
           <p>
@@ -511,7 +488,7 @@ const contactsModal = ref(false)
               laws of the United States. As a C corporation, we adhere to the legal and
               regulatory framework governing corporations in the jurisdiction of our
               incorporation.
-          </p>
+          </p> -->
         </n-text>
       </n-scrollbar>
     </n-card>
