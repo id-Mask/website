@@ -202,7 +202,7 @@ const getPID = async () => {
             />
           </n-input-group>
         </n-tab-pane>
-        <n-tab-pane name="Smart-ID" tab="Smart-ID">
+        <n-tab-pane name="Smart-ID" tab="Smart-ID" disabled>
           <n-input-group>
             <n-button type="primary" @click="getPID()" :loading="data.isLoading">
               Fetch
