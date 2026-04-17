@@ -11,7 +11,7 @@ const contactsModal = ref(false)
 <template>
   <n-space justify="center" style="text-align: center;" vertical>
     <n-text style="font-size: 90%" depth="3">
-      © {{ new Date().getFullYear() }} Id-mask
+      <!-- © {{ new Date().getFullYear() }} Id-mask -->
     </n-text>
 
     <div>
